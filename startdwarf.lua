@@ -6,8 +6,8 @@ if not addr then
 end
 
 local num = tonumber(({...})[1])
-if not num or num < 7 then
-    qerror('argument must be a number no less than 7')
+if not num or num < 7 or num > 9 then
+    qerror('argument must be a number between 7 and 9')
 end
 
 dfhack.with_temp_object(df.new('uint32_t'), function(temp)
