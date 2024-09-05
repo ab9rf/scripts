@@ -10,7 +10,7 @@ local map_points = df.global.plotinfo.waypoints.points
 
 local NOTE_LIST_RESIZE_MIN = {w=26}
 local RESIZE_MIN = {w=65, h=30}
-local NOTE_SEARCH_BATCH_SIZE = 10
+local NOTE_SEARCH_BATCH_SIZE = 25
 
 NotesWindow = defclass(NotesWindow, widgets.Window)
 NotesWindow.ATTRS {
@@ -72,15 +72,36 @@ function NotesWindow:loadNote(ind, note)
 end
 
 function NotesWindow:loadFilteredNotes(search_phrase)
+    local full_list_loaded = self.curr_search_phrase == ''
+
+    search_phrase = search_phrase:lower()
+    if #search_phrase < 3 then
+        search_phrase = ''
+    end
+
+    self.curr_search_phrase = search_phrase
+
     script.start(function ()
+        if #search_phrase == 0 and full_list_loaded then
+            return
+        end
+
         local choices = {}
 
         for ind, map_point in ipairs(map_points) do
             if ind > 0 and ind % NOTE_SEARCH_BATCH_SIZE == 0 then
                 script.sleep(1, 'frames')
             end
+            if self.curr_search_phrase ~= search_phrase then
+                -- stop the work if user provided new search phrase
+                return
+            end
 
-            if #search_phrase < 3 or map_point.name:find(search_phrase) then
+            local point_name_lowercase = map_point.name:lower()
+            if (
+                point_name_lowercase ~= nil and #point_name_lowercase > 0 and
+                point_name_lowercase:find(search_phrase)
+            ) then
                 table.insert(choices, {
                     text=map_point.name,
                     point=map_point
