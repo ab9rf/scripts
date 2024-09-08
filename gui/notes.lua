@@ -5,6 +5,7 @@ local gui = require 'gui'
 local widgets = require 'gui.widgets'
 local script = require 'gui.script'
 local text_editor = reqscript('internal/journal/text_editor')
+local note_manager = reqscript('internal/notes/note_manager')
 
 local map_points = df.global.plotinfo.waypoints.points
 
@@ -22,6 +23,7 @@ NotesWindow.ATTRS {
 
 function NotesWindow:init()
     self.selected_note = nil
+    self.note_manager = nil
 
     self:addviews{
         widgets.Panel{
@@ -107,8 +109,7 @@ function NotesWindow:init()
                             auto_width=true,
                             label='Edit',
                             key='CUSTOM_ALT_U',
-                            -- on_activate=function() self:createNote() end,
-                            -- enabled=function() return #self.subviews.name:getText() > 0 end,
+                            on_activate=function() self:showNoteManager(self.selected_note) end,
                         },
                         widgets.HotkeyLabel{
                             view_id='delete',
@@ -116,7 +117,7 @@ function NotesWindow:init()
                             auto_width=true,
                             label='Delete',
                             key='CUSTOM_ALT_D',
-                            -- on_activate=function() self:deleteNote() end,
+                            on_activate=function() self:deleteNote(self.selected_note) end,
                         },
                     }
                 }
@@ -124,11 +125,40 @@ function NotesWindow:init()
         }
     }
 
-    self:loadFilteredNotes('')
+    self:loadFilteredNotes('', true)
+end
+
+function NotesWindow:showNoteManager(note)
+    if self.note_manager ~= nil then
+        self.note_manager:dismiss()
+    end
+
+    self.note_manager = note_manager.NoteManager{
+        note=note,
+        on_dismiss=function() self.visible = true end
+    }
+
+    self.visible = false
+    return self.note_manager:show():raise()
+end
+
+function NotesWindow:deleteNote(note)
+    for ind, map_point in pairs(map_points) do
+        if map_point.id == note.point.id then
+            map_points:erase(ind)
+            break
+        end
+    end
+
+    self:loadFilteredNotes(self.curr_search_phrase, true)
 end
 
 function NotesWindow:loadNote(note)
     self.selected_note = note
+
+    if note == nil then
+        return
+    end
 
     local note_width = self.subviews.name_panel.frame_body.width
     local wrapped_name = note.point.name:wrap(note_width)
@@ -141,7 +171,7 @@ function NotesWindow:loadNote(note)
     dfhack.gui.pauseRecenter(note.point.pos)
 end
 
-function NotesWindow:loadFilteredNotes(search_phrase)
+function NotesWindow:loadFilteredNotes(search_phrase, force)
     local full_list_loaded = self.curr_search_phrase == ''
 
     search_phrase = search_phrase:lower()
@@ -152,7 +182,7 @@ function NotesWindow:loadFilteredNotes(search_phrase)
     self.curr_search_phrase = search_phrase
 
     script.start(function ()
-        if #search_phrase == 0 and full_list_loaded then
+        if #search_phrase == 0 and full_list_loaded and not force then
             return
         end
 
@@ -180,15 +210,8 @@ function NotesWindow:loadFilteredNotes(search_phrase)
         end
 
         self.subviews.note_list:setChoices(choices)
-    end)
-end
-
-function NotesWindow:postUpdateLayout()
-    if self.selected_note == nil then
         self.subviews.note_list:submit()
-    else
-        self:loadNote(self.selected_note)
-    end
+    end)
 end
 
 
