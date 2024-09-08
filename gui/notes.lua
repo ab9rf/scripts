@@ -21,6 +21,8 @@ NotesWindow.ATTRS {
 }
 
 function NotesWindow:init()
+    self.selected_note = nil
+
     self:addviews{
         widgets.Panel{
             view_id='note_list_panel',
@@ -49,7 +51,7 @@ function NotesWindow:init()
                     frame={l=0},
                     frame_inset={t=1},
                     row_height=1,
-                    on_submit=self:callback('loadNote')
+                    on_submit=function (ind, note) self:loadNote(note) end
                 },
             }
         },
@@ -62,12 +64,80 @@ function NotesWindow:init()
             frame_style_t=false,
             frame_style_b=false,
         },
+        widgets.Panel{
+            view_id='note_details',
+            frame={l=NOTE_LIST_RESIZE_MIN.w + 1,t=0,b=0},
+            frame_inset=1,
+            autoarrange_gap=1,
+            subviews={
+                widgets.Panel{
+                    view_id="name_panel",
+                    frame_title='Name',
+                    frame_style=gui.FRAME_INTERIOR,
+                    frame={l=0,r=0,t=0,h=4},
+                    frame_inset={l=1,r=1},
+                    auto_height=true,
+                    subviews={
+                        widgets.Label{
+                            view_id='name',
+                            frame={t=0,l=0,r=0}
+                        },
+                    },
+                },
+                widgets.Panel{
+                    view_id="comment_panel",
+                    frame_title='Comment',
+                    frame_style=gui.FRAME_INTERIOR,
+                    frame={l=0,r=0,t=4,b=2},
+                    frame_inset={l=1,r=1,t=1},
+                    subviews={
+                        widgets.Label{
+                            view_id='comment',
+                            frame={t=0,l=0,r=0}
+                        },
+                    }
+                },
+                widgets.Panel{
+                    frame={l=0,r=0,b=0,h=2},
+                    frame_inset={l=1,r=1,t=1},
+                    subviews={
+                        widgets.HotkeyLabel{
+                            view_id='edit',
+                            frame={l=0,t=0,h=1},
+                            auto_width=true,
+                            label='Edit',
+                            key='CUSTOM_ALT_U',
+                            -- on_activate=function() self:createNote() end,
+                            -- enabled=function() return #self.subviews.name:getText() > 0 end,
+                        },
+                        widgets.HotkeyLabel{
+                            view_id='delete',
+                            frame={r=0,t=0,h=1},
+                            auto_width=true,
+                            label='Delete',
+                            key='CUSTOM_ALT_D',
+                            -- on_activate=function() self:deleteNote() end,
+                        },
+                    }
+                }
+            }
+        }
     }
 
     self:loadFilteredNotes('')
 end
 
-function NotesWindow:loadNote(ind, note)
+function NotesWindow:loadNote(note)
+    self.selected_note = note
+
+    local note_width = self.subviews.name_panel.frame_body.width
+    local wrapped_name = note.point.name:wrap(note_width)
+    local wrapped_comment = note.point.comment:wrap(note_width)
+
+    self.subviews.name:setText(wrapped_name)
+    self.subviews.comment:setText(wrapped_comment)
+    self.subviews.note_details:updateLayout()
+
     dfhack.gui.pauseRecenter(note.point.pos)
 end
 
@@ -111,6 +181,14 @@ function NotesWindow:loadFilteredNotes(search_phrase)
 
         self.subviews.note_list:setChoices(choices)
     end)
+end
+
+function NotesWindow:postUpdateLayout()
+    if self.selected_note == nil then
+        self.subviews.note_list:submit()
+    else
+        self:loadNote(self.selected_note)
+    end
 end
 
 

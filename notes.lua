@@ -227,7 +227,7 @@ function NoteManager:init()
                             key='CUSTOM_ALT_D',
                             visible=edit_mode,
                             on_activate=function() self:deleteNote() end,
-                        } or nil,
+                        },
                     }
                 }
             },
