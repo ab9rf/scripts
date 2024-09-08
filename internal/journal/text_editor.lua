@@ -94,6 +94,8 @@ TextEditor.ATTRS{
     select_pen = COLOR_CYAN,
     on_text_change = DEFAULT_NIL,
     on_cursor_change = DEFAULT_NIL,
+    -- called on submit, only in one line mode
+    on_submit = DEFAULT_NIL,
     one_line_mode = false,
     debug = false
 }
@@ -112,6 +114,7 @@ function TextEditor:init()
             select_pen=self.select_pen,
             debug=self.debug,
             one_line_mode=self.one_line_mode,
+            on_submit=self.on_submit,
 
             on_text_change=function (val)
                 self:updateLayout()
@@ -255,6 +258,7 @@ TextEditorView.ATTRS{
     enable_cursor_blink = true,
     debug = false,
     one_line_mode = false,
+    on_submit = DEFAULT_NIL,
     history_size = 10,
 }
 
@@ -796,7 +800,11 @@ end
 function TextEditorView:onTextManipulationInput(keys)
     if keys.SELECT then
         -- handle enter
-        if not self.one_line_mode then
+        if self.one_line_mode then
+            if self.on_submit then
+                self:on_submit()
+            end
+        else
             self.history:store(
                 HISTORY_ENTRY.WHITESPACE_BLOCK,
                 self.text,

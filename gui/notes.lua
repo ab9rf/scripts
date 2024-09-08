@@ -32,7 +32,6 @@ function NotesWindow:init()
             visible=true,
             frame_inset={l=1, t=1, b=1, r=1},
             autoarrange_subviews=true,
-
             subviews={
                 widgets.HotkeyLabel {
                     key='CUSTOM_ALT_S',
@@ -46,14 +45,35 @@ function NotesWindow:init()
                     frame={l=0,h=3},
                     frame_style=gui.FRAME_INTERIOR,
                     one_line_mode=true,
-                    on_text_change=self:callback('loadFilteredNotes')
+                    on_text_change=self:callback('loadFilteredNotes'),
+                    on_submit=function()
+                        self.subviews.note_list:submit()
+                    end
+                },
+                widgets.Panel{
+                    frame={h=2},
+                    frame_inset={t=1},
+                    subviews={
+                        widgets.HotkeyLabel {
+                            key='CUSTOM_ALT_L',
+                            label='Notes',
+                            frame={l=0,t=0},
+                            auto_width=true,
+                            on_activate=function()
+                                self.subviews.note_list:setFocus(true)
+                            end,
+                        },
+                    }
                 },
                 widgets.List{
                     view_id='note_list',
                     frame={l=0},
-                    frame_inset={t=1},
+                    frame_inset={t=0},
                     row_height=1,
-                    on_submit=function (ind, note) self:loadNote(note) end
+                    on_submit=function (ind, note)
+                        self:loadNote(note)
+                        dfhack.gui.pauseRecenter(note.point.pos)
+                    end
                 },
             }
         },
@@ -160,15 +180,16 @@ function NotesWindow:loadNote(note)
         return
     end
 
-    local note_width = self.subviews.name_panel.frame_body.width
-    local wrapped_name = note.point.name:wrap(note_width)
-    local wrapped_comment = note.point.comment:wrap(note_width)
+    local note_details_frame = self.subviews.name_panel.frame_body
+    if note_details_frame ~= nil then
+        local note_width = self.subviews.name_panel.frame_body.width
+        local wrapped_name = note.point.name:wrap(note_width)
+        local wrapped_comment = note.point.comment:wrap(note_width)
 
-    self.subviews.name:setText(wrapped_name)
-    self.subviews.comment:setText(wrapped_comment)
-    self.subviews.note_details:updateLayout()
-
-    dfhack.gui.pauseRecenter(note.point.pos)
+        self.subviews.name:setText(wrapped_name)
+        self.subviews.comment:setText(wrapped_comment)
+        self.subviews.note_details:updateLayout()
+    end
 end
 
 function NotesWindow:loadFilteredNotes(search_phrase, force)
@@ -210,7 +231,9 @@ function NotesWindow:loadFilteredNotes(search_phrase, force)
         end
 
         self.subviews.note_list:setChoices(choices)
-        self.subviews.note_list:submit()
+
+        local sel_ind, sel_note = self.subviews.note_list:getSelected()
+        self:loadNote(sel_note)
     end)
 end
 
