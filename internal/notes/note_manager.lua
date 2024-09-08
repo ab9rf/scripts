@@ -16,6 +16,7 @@ NoteManager.ATTRS{
 }
 
 function NoteManager:init()
+    self.note_pos = nil
     local edit_mode = self.note ~= nil
 
     self:addviews{
@@ -95,8 +96,12 @@ function NoteManager:init()
     }
 end
 
+function NoteManager:setNotePos(note_pos)
+    self.notes_pos = note_pos
+end
+
 function NoteManager:createNote()
-    local cursor_pos = guidm.getCursorPos()
+    local cursor_pos = self.notes_pos or guidm.getCursorPos()
     if cursor_pos == nil then
         dfhack.printerr('Enable keyboard cursor to add a note.')
         return
@@ -145,6 +150,9 @@ function NoteManager:saveNote()
 
     self.note.point.name = name
     self.note.point.comment = comment
+    if self.notes_pos then
+        self.note.pos=self.notes_pos
+    end
 
     if self.on_update then
         self.on_update()

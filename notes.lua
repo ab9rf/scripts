@@ -36,7 +36,7 @@ function NotesOverlay:overlay_onupdate()
 end
 
 function NotesOverlay:overlay_trigger(args)
-    return self:showNoteManager()
+    self:reloadVisibleNotes()
 end
 
 function NotesOverlay:onInput(keys)

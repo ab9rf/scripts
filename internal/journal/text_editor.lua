@@ -235,12 +235,16 @@ function TextEditor:renderSubviews(dc)
 end
 
 function TextEditor:onInput(keys)
-    if (self.subviews.scrollbar.is_dragging) then
-        return self.subviews.scrollbar:onInput(keys)
-    end
-
     if keys._MOUSE_L and self:getMousePos() then
         self:setFocus(true)
+    end
+
+    if not self.focus then
+        return false
+    end
+
+    if (self.subviews.scrollbar.is_dragging) then
+        return self.subviews.scrollbar:onInput(keys)
     end
 
     return TextEditor.super.onInput(self, keys)
