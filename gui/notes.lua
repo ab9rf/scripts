@@ -21,6 +21,18 @@ local green_pin = dfhack.textures.loadTileset(
     true
 )
 
+NotesSearchField = defclass(NotesSearchField, text_editor.TextEditor)
+NotesSearchField.ATTRS {}
+
+function NotesSearchField:onInput(keys)
+    -- allow cursor up/down to be used to navigate the notes list
+    if keys.KEYBOARD_CURSOR_UP or keys.KEYBOARD_CURSOR_DOWN then
+        return false
+    end
+
+    return NotesSearchField.super.onInput(self, keys)
+end
+
 NotesWindow = defclass(NotesWindow, widgets.Window)
 NotesWindow.ATTRS {
     frame_title='DF Notes',
@@ -49,7 +61,7 @@ function NotesWindow:init()
                     auto_width=true,
                     on_activate=function() self.subviews.search:setFocus(true) end,
                 },
-                text_editor.TextEditor{
+                NotesSearchField{
                     view_id='search',
                     frame={l=0,h=3},
                     frame_style=gui.FRAME_INTERIOR,
@@ -59,25 +71,10 @@ function NotesWindow:init()
                         self.subviews.note_list:submit()
                     end
                 },
-                widgets.Panel{
-                    frame={h=2},
-                    frame_inset={t=1},
-                    subviews={
-                        widgets.HotkeyLabel {
-                            key='CUSTOM_ALT_L',
-                            label='Notes',
-                            frame={l=0,t=0},
-                            auto_width=true,
-                            on_activate=function()
-                                self.subviews.note_list:setFocus(true)
-                            end,
-                        },
-                    }
-                },
                 widgets.List{
                     view_id='note_list',
                     frame={l=0,b=2},
-                    frame_inset={t=0},
+                    frame_inset={t=1},
                     row_height=1,
                     on_submit=function (ind, note)
                         self:loadNote(note)
@@ -177,7 +174,7 @@ function NotesWindow:showNoteManager(note)
         note=note,
         on_update=function()
             self:reloadFilteredNotes()
-            dfhack.internal.runCommand('overlay trigger notes.map_notes')
+            dfhack.run_command_silent('overlay trigger notes.map_notes')
         end,
         on_dismiss=function() self.visible = true end
     }
@@ -204,7 +201,7 @@ function NotesWindow:loadNote(note)
         return
     end
 
-    -- self.note_width_calculated = false
+    self:updateLayout()
 end
 
 function NotesWindow:postUpdateLayout()
@@ -268,7 +265,6 @@ function NotesWindow:loadFilteredNotes(search_phrase, force)
 
         local sel_ind, sel_note = self.subviews.note_list:getSelected()
         self:loadNote(sel_note)
-        self:updateLayout()
     end)
 end
 
@@ -310,7 +306,7 @@ function NotesScreen:onInput(keys)
                 note=nil,
                 on_update=function()
                     self.subviews.notes_window:reloadFilteredNotes()
-                    dfhack.internal.runCommand('overlay trigger notes.map_notes')
+                    dfhack.run_command_silent('overlay trigger notes.map_notes')
                     self:dismiss()
                 end,
                 on_dismiss=function()
