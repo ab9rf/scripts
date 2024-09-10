@@ -5,6 +5,7 @@ local gui = require 'gui'
 local widgets = require 'gui.widgets'
 local guidm = require('gui.dwarfmode')
 local script = require 'gui.script'
+local overlay = require 'plugins.overlay'
 local text_editor = reqscript('internal/journal/text_editor')
 local note_manager = reqscript('internal/notes/note_manager')
 
@@ -13,6 +14,7 @@ local map_points = df.global.plotinfo.waypoints.points
 local NOTE_LIST_RESIZE_MIN = {w=26}
 local RESIZE_MIN = {w=65, h=30}
 local NOTE_SEARCH_BATCH_SIZE = 25
+local OVERLAY_NAME = 'notes.map_notes'
 
 local green_pin = dfhack.textures.loadTileset(
     'hack/data/art/note_green_pin_map.png',
@@ -351,7 +353,17 @@ function NotesScreen:onRenderFrame(dc, rect)
     end
 end
 
+function NotesScreen:onAboutToShow()
+    if not overlay.get_state().config[OVERLAY_NAME].enabled then
+        self.should_disable_overlay = true
+        overlay.overlay_command({'enable', 'notes.map_notes'})
+    end
+end
+
 function NotesScreen:onDismiss()
+    if self.should_disable_overlay then
+        overlay.overlay_command({'disable', 'notes.map_notes'})
+    end
     view = nil
 end
 
