@@ -107,7 +107,6 @@ function NotesWindow:init()
             view_id='note_details',
             frame={l=NOTE_LIST_RESIZE_MIN.w + 1,t=0,b=0},
             frame_inset=1,
-            autoarrange_gap=1,
             subviews={
                 widgets.Panel{
                     view_id="name_panel",
@@ -115,11 +114,11 @@ function NotesWindow:init()
                     frame_style=gui.FRAME_INTERIOR,
                     frame={l=0,r=0,t=0,h=4},
                     frame_inset={l=1,r=1},
-                    auto_height=true,
                     subviews={
-                        widgets.Label{
+                        widgets.WrappedLabel{
                             view_id='name',
-                            frame={t=0,l=0,r=0}
+                            auto_height=false,
+                            frame={l=0,r=0,t=0,b=0},
                         },
                     },
                 },
@@ -130,9 +129,10 @@ function NotesWindow:init()
                     frame={l=0,r=0,t=4,b=2},
                     frame_inset={l=1,r=1,t=1},
                     subviews={
-                        widgets.Label{
+                        widgets.WrappedLabel{
                             view_id='comment',
-                            frame={t=0,l=0,r=0}
+                            auto_height=false,
+                            frame={l=0,r=0,t=0,b=0},
                         },
                     }
                 },
@@ -201,21 +201,9 @@ function NotesWindow:loadNote(note)
         return
     end
 
-    self:updateLayout()
-end
+    self.subviews.name.text_to_wrap = self.selected_note.point.name
+    self.subviews.comment.text_to_wrap = self.selected_note.point.comment
 
-function NotesWindow:postUpdateLayout()
-    if self.selected_note == nil then
-        return
-    end
-    local note_details_frame = self.subviews.name_panel.frame_body
-
-    local note_width = self.subviews.name_panel.frame_body.width
-    local wrapped_name = self.selected_note.point.name:wrap(note_width)
-    local wrapped_comment = self.selected_note.point.comment:wrap(note_width)
-
-    self.subviews.name:setText(wrapped_name)
-    self.subviews.comment:setText(wrapped_comment)
     self.subviews.note_details:updateLayout()
 end
 
