@@ -2,6 +2,7 @@
 
 local gui = require('gui')
 local widgets = require('gui.widgets')
+local guidm = require('gui.dwarfmode')
 local text_editor = reqscript('internal/journal/text_editor')
 
 local waypoints = df.global.plotinfo.waypoints

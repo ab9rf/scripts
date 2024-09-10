@@ -35,8 +35,12 @@ function NotesOverlay:overlay_onupdate()
     self:reloadVisibleNotes()
 end
 
-function NotesOverlay:overlay_trigger(cmd, title)
-    self:reloadVisibleNotes()
+function NotesOverlay:overlay_trigger(cmd)
+    if cmd == 'add' then
+        self:showNoteManager()
+    else
+        self:reloadVisibleNotes()
+    end
 end
 
 function NotesOverlay:onInput(keys)
@@ -164,7 +168,7 @@ local function main(args)
             return
         end
 
-        return dfhack.run_command('overlay trigger notes.map_notes add')
+        return dfhack.run_command_silent('overlay trigger notes.map_notes add')
     end
 end
 
