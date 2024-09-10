@@ -45,6 +45,7 @@ NotesWindow.ATTRS {
 function NotesWindow:init()
     self.selected_note = nil
     self.note_manager = nil
+    self.curr_search_phrase = nil
 
     self:addviews{
         widgets.Panel{
@@ -161,8 +162,12 @@ function NotesWindow:init()
             }
         }
     }
+end
 
-    self:loadFilteredNotes('', true)
+function NotesWindow:postUpdateLayout()
+    if self.curr_search_phrase == nil then
+        self:loadFilteredNotes('', true)
+    end
 end
 
 function NotesWindow:showNoteManager(note)
