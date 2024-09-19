@@ -3,9 +3,11 @@
 
 local gui = require 'gui'
 local widgets = require 'gui.widgets'
-local guidm = require('gui.dwarfmode')
+local guidm = require 'gui.dwarfmode'
 local script = require 'gui.script'
 local overlay = require 'plugins.overlay'
+local utils = require 'utils'
+
 local text_editor = reqscript('internal/journal/text_editor')
 local note_manager = reqscript('internal/notes/note_manager')
 
@@ -228,10 +230,9 @@ function NotesWindow:loadFilteredNotes(search_phrase, force)
                 return
             end
 
-            local point_name_lowercase = map_point.name:lower()
             if (
-                point_name_lowercase ~= nil and #point_name_lowercase > 0 and
-                point_name_lowercase:find(search_phrase)
+                 #map_point.name > 0 and
+                utils.search_text(map_point.name, search_phrase)
             ) then
                 table.insert(choices, {
                     text=map_point.name,
