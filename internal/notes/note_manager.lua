@@ -54,7 +54,6 @@ function NoteManager:init()
                     frame={t=6,b=3},
                     frame_style=gui.FRAME_INTERIOR,
                     init_text=self.note and self.note.point.comment or '',
-                    -- init_cursor=1
                 },
                 widgets.Panel{
                     view_id='buttons',

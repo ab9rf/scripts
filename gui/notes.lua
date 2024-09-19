@@ -79,6 +79,9 @@ function NotesWindow:init()
                     frame={l=0,b=2},
                     frame_inset={t=1},
                     row_height=1,
+                    on_select=function (ind, note)
+                        self:loadNote(note)
+                    end,
                     on_submit=function (ind, note)
                         self:loadNote(note)
                         dfhack.gui.pauseRecenter(note.point.pos)
@@ -300,9 +303,9 @@ function NotesScreen:onInput(keys)
             local manager = note_manager.NoteManager{
                 note=nil,
                 on_update=function()
-                    self.subviews.notes_window:reloadFilteredNotes()
                     dfhack.run_command_silent('overlay trigger notes.map_notes')
-                    self:dismiss()
+                    self.subviews.notes_window:reloadFilteredNotes()
+                    self:stopNoteAdd()
                 end,
                 on_dismiss=function()
                     self:stopNoteAdd()
