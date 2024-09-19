@@ -752,6 +752,9 @@ function TextEditorView:onCursorInput(keys)
         self:setCursor(self.cursor + 1)
         return true
     elseif keys.KEYBOARD_CURSOR_UP then
+        if self.one_line_mode then
+            return false
+        end
         local x, y = self.wrapped_text:indexToCoords(self.cursor)
         local last_cursor_x = self.last_cursor_x or x
         local offset = y > 1 and
@@ -761,6 +764,10 @@ function TextEditorView:onCursorInput(keys)
         self.last_cursor_x = last_cursor_x
         return true
     elseif keys.KEYBOARD_CURSOR_DOWN then
+        if self.one_line_mode then
+            return false
+        end
+
         local x, y = self.wrapped_text:indexToCoords(self.cursor)
         local last_cursor_x = self.last_cursor_x or x
         local offset = y < #self.wrapped_text.lines and

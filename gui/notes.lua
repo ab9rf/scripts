@@ -23,18 +23,6 @@ local green_pin = dfhack.textures.loadTileset(
     true
 )
 
-NotesSearchField = defclass(NotesSearchField, text_editor.TextEditor)
-NotesSearchField.ATTRS {}
-
-function NotesSearchField:onInput(keys)
-    -- allow cursor up/down to be used to navigate the notes list
-    if keys.KEYBOARD_CURSOR_UP or keys.KEYBOARD_CURSOR_DOWN then
-        return false
-    end
-
-    return NotesSearchField.super.onInput(self, keys)
-end
-
 NotesWindow = defclass(NotesWindow, widgets.Window)
 NotesWindow.ATTRS {
     frame_title='DF Notes',
@@ -57,7 +45,7 @@ function NotesWindow:init()
             frame_inset={l=1,t=1,b=1,r=1},
             autoarrange_subviews=true,
             subviews={
-                NotesSearchField{
+                text_editor.TextEditor{
                     view_id='search',
                     frame={l=0,h=3},
                     frame_style=gui.FRAME_INTERIOR,
