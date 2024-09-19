@@ -786,13 +786,13 @@ function TextEditorView:onCursorInput(keys)
         local word_end = self:wordEndOffset()
         self:setCursor(word_end)
         return true
-    elseif keys.CUSTOM_CTRL_H then
+    elseif keys.CUSTOM_HOME then
         -- line start
         self:setCursor(
             self:lineStartOffset()
         )
         return true
-    elseif keys.CUSTOM_CTRL_E then
+    elseif keys.CUSTOM_END then
         -- line end
         self:setCursor(
             self:lineEndOffset()
@@ -890,7 +890,7 @@ function TextEditorView:onTextManipulationInput(keys)
         self:eraseSelection()
 
         return true
-    elseif keys.CUSTOM_CTRL_D then
+    elseif keys.CUSTOM_DELETE then
         -- delete char, there is no support for `Delete` key
         self.history:store(HISTORY_ENTRY.DELETE, self.text, self.cursor)
 

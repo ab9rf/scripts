@@ -57,13 +57,6 @@ function NotesWindow:init()
             frame_inset={l=1,t=1,b=1,r=1},
             autoarrange_subviews=true,
             subviews={
-                widgets.HotkeyLabel {
-                    key='CUSTOM_ALT_S',
-                    label='Search',
-                    frame={l=0},
-                    auto_width=true,
-                    on_activate=function() self.subviews.search:setFocus(true) end,
-                },
                 NotesSearchField{
                     view_id='search',
                     frame={l=0,h=3},
@@ -94,7 +87,7 @@ function NotesWindow:init()
             frame={l=1,b=1,h=1},
             auto_width=true,
             label='New note',
-            key='CUSTOM_ALT_N',
+            key='CUSTOM_CTRL_N',
             visible=edit_mode,
             on_activate=function()
                 if self.on_note_add then
@@ -151,7 +144,7 @@ function NotesWindow:init()
                             frame={l=0,t=0,h=1},
                             auto_width=true,
                             label='Edit',
-                            key='CUSTOM_ALT_U',
+                            key='CUSTOM_CTRL_E',
                             on_activate=function() self:showNoteManager(self.selected_note) end,
                         },
                         widgets.HotkeyLabel{
@@ -159,7 +152,7 @@ function NotesWindow:init()
                             frame={r=0,t=0,h=1},
                             auto_width=true,
                             label='Delete',
-                            key='CUSTOM_ALT_D',
+                            key='CUSTOM_CTRL_D',
                             on_activate=function() self:deleteNote(self.selected_note) end,
                         },
                     }
@@ -357,7 +350,8 @@ function NotesScreen:onRenderFrame(dc, rect)
 end
 
 function NotesScreen:onAboutToShow()
-    if not overlay.get_state().config[OVERLAY_NAME].enabled then
+    local notes_overlay = overlay.get_state().config[OVERLAY_NAME]
+    if notes_overlay and not notes_overlay.enabled then
         self.should_disable_overlay = true
         overlay.overlay_command({'enable', 'notes.map_notes'})
     end
