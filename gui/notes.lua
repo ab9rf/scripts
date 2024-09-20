@@ -208,9 +208,6 @@ function NotesWindow:loadFilteredNotes(search_phrase, force)
     local full_list_loaded = self.curr_search_phrase == ''
 
     search_phrase = search_phrase:lower()
-    if #search_phrase < 3 then
-        search_phrase = ''
-    end
 
     self.curr_search_phrase = search_phrase
 
