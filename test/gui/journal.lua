@@ -95,7 +95,7 @@ local function arrange_empty_journal(options)
         journal_window.frame.h = options.h + 6
     end
 
-    local text_area = journal_window.subviews.text_area
+    local text_area = journal_window.subviews.journal_editor.text_area
 
     text_area.enable_cursor_blink = false
     if not options.save_on_change then
