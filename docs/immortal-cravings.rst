@@ -15,4 +15,3 @@ Usage
 -----
 
 ``enable immortal-cravings``
-``disable immortal-cravings``

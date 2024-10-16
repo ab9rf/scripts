@@ -24,8 +24,7 @@ local function findClosest(pos, item_vector, is_good)
     local dclosest = -1
     for _,item in ipairs(item_vector) do
         if not item.flags.in_job and (not is_good or is_good(item)) then
-            local x, y, z = dfhack.items.getPosition(item)
-            local pitem = xyz2pos(x, y, z)
+            local pitem = xyz2pos(dfhack.items.getPosition(item))
             local ditem = distance(pos, pitem)
             if dfhack.maps.canWalkBetween(pos, pitem) and (not closest or ditem < dclosest) then
                 closest = item
@@ -38,11 +37,11 @@ end
 
 ---find a drink
 ---@param pos df.coord
----@return df.item_drinkst|nil
+---@return df.item_drinkst?
 local function get_closest_drink(pos)
     local is_good = function (drink)
         local container = dfhack.items.getContainer(drink)
-        return container and df.item_barrelst:is_instance(container)
+        return container and container:isFoodStorage()
     end
     return findClosest(pos, df.global.world.items.other.DRINK, is_good)
 end
@@ -52,7 +51,12 @@ end
 local function get_closest_meal(pos)
     ---@param meal df.item_foodst
     local function is_good(meal)
-        return meal.flags.rotten == false
+        if meal.flags.rotten then
+            return false
+        else
+            local container = dfhack.items.getContainer(meal)
+            return not container or container:isFoodStorage()
+        end
     end
     return findClosest(pos, df.global.world.items.other.FOOD, is_good)
 end
@@ -123,13 +127,13 @@ local function load_state()
     enabled = persisted_data.enabled or false
 end
 
-DrinkAlcohol = df.need_type['DrinkAlcohol']
-EatGoodMeal = df.need_type['EatGoodMeal']
+DrinkAlcohol = df.need_type.DrinkAlcohol
+EatGoodMeal = df.need_type.EatGoodMeal
 
 ---@type integer[]
-watched = {}
+watched = watched or {}
 
-threshold = -9000
+local threshold = -9000
 
 ---unit loop: check for idle watched units and create eat/drink jobs for them
 local function unit_loop()
@@ -138,23 +142,25 @@ local function unit_loop()
     local kept = {}
     for _, unit_id in ipairs(watched) do
         local unit = df.unit.find(unit_id)
-        if unit and not (unit.flags1.caged or unit.flags1.chained) then
-            if not idle.unitIsAvailable(unit) then
-                table.insert(kept, unit.id)
-            else
-                --
-                for _, need in ipairs(unit.status.current_soul.personality.needs) do
-                    if need.id == DrinkAlcohol and need.focus_level < threshold then
-                        goDrink(unit)
-                        goto next_unit
-                    elseif need.id == EatGoodMeal and need.focus_level < threshold then
-                        goEat(unit)
-                        goto next_unit
-                    end
+        if
+            not unit or not dfhack.units.isActive(unit) or
+            unit.flags1.caged or unit.flags1.chained
+        then
+            goto next_unit
+        end
+        if not idle.unitIsAvailable(unit) then
+            table.insert(kept, unit.id)
+        else
+            -- unit is available for jobs; satisfy one of its needs
+            for _, need in ipairs(unit.status.current_soul.personality.needs) do
+                if need.id == DrinkAlcohol and need.focus_level < threshold then
+                    goDrink(unit)
+                    break
+                elseif need.id == EatGoodMeal and need.focus_level < threshold then
+                    goEat(unit)
+                    break
                 end
             end
-        else
-            -- print('immortal-cravings: unit gone or caged')
         end
         ::next_unit::
     end
@@ -167,7 +173,7 @@ end
 
 ---main loop: look for citizens with personality needs for food/drink but w/o physiological need
 local function main_loop()
-    print('immortal-cravings watching:')
+    -- print('immortal-cravings watching:')
     watched = {}
     for _, unit in ipairs(dfhack.units.getCitizens()) do
         if unit.curse.add_tags1.NO_DRINK or unit.curse.add_tags1.NO_EAT then
@@ -176,7 +182,7 @@ local function main_loop()
                     need.id == EatGoodMeal and need.focus_level < threshold
                 then
                     table.insert(watched, unit.id)
-                    print('  '..dfhack.df2console(dfhack.TranslateName(dfhack.units.getVisibleName(unit))))
+                    -- print('  '..dfhack.df2console(dfhack.TranslateName(dfhack.units.getVisibleName(unit))))
                     goto next_unit
                 end
             end
@@ -208,6 +214,7 @@ end
 dfhack.onStateChange[GLOBAL_KEY] = function(sc)
     if sc == SC_MAP_UNLOADED then
         enabled = false
+        -- repeat-util will cancel the loops on unload
         return
     end
 
