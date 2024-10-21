@@ -27,7 +27,7 @@ Examples
     Exports the fortress map to JSON with ALL data included
 
 ``export-map include -m -s -v``
-    Exports the fortress map to JSON with only materials, shape, and variant 
+    Exports the fortress map to JSON with only materials, shape, and variant
     data included
 
 ``export-map exclude --variant --hidden --light``
@@ -113,11 +113,11 @@ JSON DATA
 ``KEYS``
     The tables containing the [number ID] values for different options.
 
-    ``"SHAPE": {"-1": "NONE", "0": "EMPTY", "1": "FLOOR", "2": "BOULDERS", 
+    ``"SHAPE": {"-1": "NONE", "0": "EMPTY", "1": "FLOOR", "2": "BOULDERS",
     "3": "PEBBLES", "4": "WALL", ..., "18": "ENDLESS_PIT"}``
-    
-    ``"PLANT": {"0": "SINGLE-GRAIN_WHEAT", "1": "TWO-GRAIN_WHEAT", 
-    "2": "SOFT_WHEAT", "3": "HARD_WHEAT", "4": "SPELT", "5": "BARLEY", ..., 
+
+    ``"PLANT": {"0": "SINGLE-GRAIN_WHEAT", "1": "TWO-GRAIN_WHEAT",
+    "2": "SOFT_WHEAT", "3": "HARD_WHEAT", "4": "SPELT", "5": "BARLEY", ...,
     "224": "PALM"}``
 
     ``"AQUIFER": {"0": "NONE", "1": "LIGHT", "2": "HEAVY"}``
