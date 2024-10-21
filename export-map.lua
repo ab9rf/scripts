@@ -222,7 +222,7 @@ local positionals = argparse.processArgsGetopt(args, {
     {'t', 'tiletype', handler=function() options.tiletype = true end},
     {'s', 'shape', handler=function() options.shape = true end},
     {'p', 'special', handler=function() options.special = true end},
-    {'r', 'variant', handler=function() options.variant = true end},
+    {'v', 'variant', handler=function() options.variant = true end},
     {'h', 'hidden', handler=function() options.hidden = true end},
     {'l', 'light', handler=function() options.light = true end},
     {'b', 'subterranean', handler=function() options.subterranean = true end},

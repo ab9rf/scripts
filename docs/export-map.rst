@@ -27,8 +27,8 @@ Examples
     Exports the fortress map to JSON with ALL data included
 
 ``export-map include -m -s -v``
-    Exports the fortress map to JSON with only materials, shape, and vein data
-    included
+    Exports the fortress map to JSON with only materials, shape, and variant 
+    data included
 
 ``export-map exclude --variant --hidden --light``
     Exports the fortress map to JSON with variant, hidden, and light data
@@ -61,7 +61,7 @@ Options
     The tile surface special properties for smoothness [number ID]
     (NORMAL/SMOOTH/ROUGH/etc.) (used for engraving)
 
-``-r``, ``--variant``
+``-v``, ``--variant``
     The specific variant of a tile that have visual variations [number] (like
     grass tiles in ASCII mode)
 
