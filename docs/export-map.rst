@@ -5,12 +5,12 @@ export-map
     :summary: Export fortress map tile data to a JSON file
     :tags: dev map
 
-WARNING - This command will cause the game to freeze for minutes depending on 
+WARNING - This command will cause the game to freeze for minutes depending on
 map size and options enabled.
 
-Exports the fortress map tile data to a JSON file. (does not include items, 
-characters, buildings, etc.) Depending on options enabled, there will be a 
-``KEY`` table in the JSON with relevant [number ID] values that match a number 
+Exports the fortress map tile data to a JSON file. (does not include items,
+characters, buildings, etc.) Depending on options enabled, there will be a
+``KEY`` table in the JSON with relevant [number ID] values that match a number
 to their object type.
 
 Usage
@@ -27,17 +27,17 @@ Examples
     Exports the fortress map to JSON with ALL data included
 
 ``export-map include -m -s -v``
-    Exports the fortress map to JSON with only materials, shape, and vein data 
+    Exports the fortress map to JSON with only materials, shape, and vein data
     included
 
 ``export-map exclude --variant --hidden --light``
-    Exports the fortress map to JSON with variant, hidden, and light data 
+    Exports the fortress map to JSON with variant, hidden, and light data
     excluded
 
 Required
 --------
 
-When you are using options, you must include one of these settings. 
+When you are using options, you must include one of these settings.
 
 ``include``
     Include only the data listed from options to the JSON (whitelist)
@@ -58,11 +58,11 @@ Options
     The tile shape classification [number ID] (EMPTY/FLOOR/WALL/STAIR/etc.)
 
 ``-p``, ``--special``
-    The tile surface special properties for smoothness [number ID] 
+    The tile surface special properties for smoothness [number ID]
     (NORMAL/SMOOTH/ROUGH/etc.) (used for engraving)
 
 ``-r``, ``--variant``
-    The specific variant of a tile that have visual variations [number] (like 
+    The specific variant of a tile that have visual variations [number] (like
     grass tiles in ASCII mode)
 
 ``-h``, ``--hidden``
@@ -72,7 +72,7 @@ Options
     Whether tile is exposed to light [boolean]
 
 ``-b``, ``--subterranean``
-    Whether the tile is considered underground [boolean] (used to determine 
+    Whether the tile is considered underground [boolean] (used to determine
     crops that can be planted underground)
 
 ``-o``, ``--outside``
@@ -84,7 +84,7 @@ Options
 
 ``-m``, ``--material``
     The material inside the tile [number ID] (IRON/GRANITE/CLAY/
-    TOPAZOLITE/BLACK_OPAL/etc.) (will return nil if the tile is empty) 
+    TOPAZOLITE/BLACK_OPAL/etc.) (will return nil if the tile is empty)
 
 ``-u``, ``--underworld``
     Whether the underworld z-levels will be included [boolean]
@@ -103,15 +103,15 @@ JSON DATA
 
 ``MAP_SIZE``
     A table containing basic information about the map size for width, height,
-    depth. (x, y, z) The underworld_z_level is included if the underworld option 
+    depth. (x, y, z) The underworld_z_level is included if the underworld option
     is enabled and the map depth (z) will be automatically adjusted.
 
 ``KEYS``
     The tables containing the [number ID] values for different options.
 
     ``"SHAPE": {
-        "-1": "NONE", 
-        "0": "EMPTY", 
+        "-1": "NONE",
+        "0": "EMPTY",
         "1": "FLOOR",
         "2": "BOULDERS",
         "3": "PEBBLES",
@@ -121,7 +121,7 @@ JSON DATA
     ``
 
     ``"PLANT": {
-        "0": "SINGLE-GRAIN_WHEAT", 
+        "0": "SINGLE-GRAIN_WHEAT",
         "1": "TWO-GRAIN_WHEAT",
         "2": "SOFT_WHEAT",
         "3": "HARD_WHEAT",
@@ -132,38 +132,38 @@ JSON DATA
     ``
 
     ``"AQUIFER": {
-        "0": "NONE", 
+        "0": "NONE",
         "1": "LIGHT",
         "2": "HEAVY"
     ``
 
     Note - when using the ``materials`` option, you need to pair the [number ID]
-    with the correct ``KEYS`` material table. Generally you use ``tiletype`` 
-    option as a helper to sort tiles into different material types. I would 
+    with the correct ``KEYS`` material table. Generally you use ``tiletype``
+    option as a helper to sort tiles into different material types. I would
     recommend consulting ``tile-material.lua`` to see how materials are sorted.
 
 ``map``
-    JSON map data is arranged as: ``map[z][y][x] = {tile_data}`` 
-    
+    JSON map data is arranged as: ``map[z][y][x] = {tile_data}``
+
     JSON maps start at index [1]. (starts at map[1][1][1])
     DF maps start at index [0]. (starts at map[0][0][0])
 
-    To translate an actual DF map position from the JSON map you need add +1 to 
+    To translate an actual DF map position from the JSON map you need add +1 to
     all x/y/z coordinates to get the correct tile position.
 
-    The ``ARGUMENT_OPTION_ORDER`` determines order of tile data. (see above) 
+    The ``ARGUMENT_OPTION_ORDER`` determines order of tile data. (see above)
     I would recommend referencing the tile data like so:
     ``shape = json_data.map[z][x][y][json_data.ARGUMENT_OPTIONS_ORDER.shape]``
     ``light = json_data.map[z][x][y][json_data.ARGUMENT_OPTIONS_ORDER.light]``
 
-    Note - some of the bottom z-levels for hell do not have the same 
-    width/height as the default map. So if your map is 190x190, the last hell 
+    Note - some of the bottom z-levels for hell do not have the same
+    width/height as the default map. So if your map is 190x190, the last hell
     z-levels are gonna be like 90x90.
 
     Instead of returning normal tile data like:
     ``map[0][90][90] = {tile_data}``
 
     It will return nil instead:
-    ``map[0][91][91] = nil`` 
+    ``map[0][91][91] = nil``
 
     So you need to account for this!
