@@ -109,7 +109,7 @@ JSON DATA
 ``KEYS``
     The tables containing the [number ID] values for different options.
 
-    ``"SHAPE": {
+    "SHAPE": {
         "-1": "NONE",
         "0": "EMPTY",
         "1": "FLOOR",
@@ -118,9 +118,8 @@ JSON DATA
         "4": "WALL",
         ...
         "18": "ENDLESS_PIT"
-    ``
-
-    ``"PLANT": {
+    
+    "PLANT": {
         "0": "SINGLE-GRAIN_WHEAT",
         "1": "TWO-GRAIN_WHEAT",
         "2": "SOFT_WHEAT",
@@ -129,13 +128,11 @@ JSON DATA
         "5": "BARLEY",
         ...
         "224": "PALM"
-    ``
 
-    ``"AQUIFER": {
+    "AQUIFER": {
         "0": "NONE",
         "1": "LIGHT",
         "2": "HEAVY"
-    ``
 
     Note - when using the ``materials`` option, you need to pair the [number ID]
     with the correct ``KEYS`` material table. Generally you use ``tiletype``
