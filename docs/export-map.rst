@@ -118,7 +118,7 @@ JSON DATA
         "4": "WALL",
         ...
         "18": "ENDLESS_PIT"
-    
+
     "PLANT": {
         "0": "SINGLE-GRAIN_WHEAT",
         "1": "TWO-GRAIN_WHEAT",
