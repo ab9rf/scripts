@@ -21,11 +21,13 @@ end
 
 -- copied from agitation-rebalance.lua
 -- check only one tile at the center of the map at ground lvl
--- (this ignore different biomes on the edges of the map)
+-- (this ignores different biomes on the edges of the map)
 local function get_evilness()
     -- check around ground level
-    local lvls_above_ground = world.worldgen.worldgen_parms.levels_above_ground
-    local ground_z = (world.map.z_count - 2) - lvls_above_ground
+
+    local lvls_above
+    lvls_above = df.global.world.worldgen.worldgen_parms.levels_above_ground
+    local ground_z = (df.global.world.map.z_count - 2) - lvls_above
     local xmax, ymax = dfhack.maps.getTileSize()
     local center_x, center_y = math.floor(xmax/2), math.floor(ymax/2)
     local rgnX, rgnY = dfhack.maps.getTileBiomeRgn(center_x, center_y, ground_z)
@@ -183,7 +185,7 @@ local function export_all_z_levels(fortress_name, folder, options)
     end
 
     -- start from bottom z-level (underworld) to top z-level (sky)
-    for z = zmin, zmax-1 do
+    for z = 0, 1-1 do
         local level_data = {}
         for y = 0, ymax - 1 do
             local row_data = {}
