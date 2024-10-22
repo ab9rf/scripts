@@ -10,12 +10,28 @@ local argparse = require('argparse')
 
 local include_underworld_z = false
 local underworld_z
+local evilness
 
 -- the layer of the underworld
 for _, feature in ipairs(df.global.world.features.map_features) do
     if feature:getType() == df.feature_type.underworld_from_layer then
         underworld_z = feature.layer
     end
+end
+
+-- copied from agitation-rebalance.lua
+-- check only one tile at the center of the map at ground lvl
+-- (this ignore different biomes on the edges of the map)
+local function get_evilness()
+    -- check around ground level
+    local lvls_above_ground = world.worldgen.worldgen_parms.levels_above_ground
+    local ground_z = (world.map.z_count - 2) - lvls_above_ground
+    local xmax, ymax = dfhack.maps.getTileSize()
+    local center_x, center_y = math.floor(xmax/2), math.floor(ymax/2)
+    local rgnX, rgnY = dfhack.maps.getTileBiomeRgn(center_x, center_y, ground_z)
+    local biome = dfhack.maps.getRegionBiome(rgnX, rgnY)
+
+    return biome and biome.evilness or 0
 end
 
 local function classify_tile(options, x, y, z)
@@ -155,6 +171,7 @@ local function export_all_z_levels(fortress_name, folder, options)
         -- subtract underworld levels if excluded from options
         z = include_underworld_z and zmax or (zmax - underworld_z),
         underworld_z_level = include_underworld_z and underworld_z or nil,
+        evilness = evilness or nil,
     }
     data.KEYS = setup_keys(options)
 
@@ -230,7 +247,8 @@ local positionals = argparse.processArgsGetopt(args, {
     {'a', 'aquifer', handler=function() options.aquifer = true end},
     {'m', 'material', handler=function() options.material = true end},
     -- local var since underworld not in ordered option
-    {'u', 'underworld', handler= function() include_underworld_z = true end},
+    {'u', 'underworld', handler=function() include_underworld_z = true end},
+    {'e', 'evilness', handler=function() evilness = get_evilness() end},
 })
 
 if positionals[1] == "help" or options.help then

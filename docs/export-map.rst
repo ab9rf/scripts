@@ -87,7 +87,12 @@ Options
     TOPAZOLITE/BLACK_OPAL/etc.) (will return nil if the tile is empty)
 
 ``-u``, ``--underworld``
-    Whether the underworld z-levels will be included [boolean]
+    Whether the underworld z-levels will be included
+
+``-e``, ``--evilness``
+    Whether the evilness value will be included in MAP_SIZE table. This only
+    checks the value of the center map tile at ground level and will ignore
+    biomes at the edges of the map.
 
 JSON DATA
 ---------
