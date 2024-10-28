@@ -35,6 +35,8 @@ local command = positionals[1]
 
 if command == "pardon" then
     command_pardon(unit_id)
+elseif not command then
+    qerror('Missing command')
+else
+    qerror(("Unrecognised command: %s"):format(command))
 end
-
-qerror(("Unrecognised command: %s"):format(command))
