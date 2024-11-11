@@ -1,6 +1,3 @@
--- Gelds or ungelds animals
--- Written by Josh Cooper(cppcooper) on 2019-12-10, last modified: 2020-02-23
-
 utils = require('utils')
 
 local validArgs = utils.invert({
@@ -11,29 +8,11 @@ local validArgs = utils.invert({
     'find',
 })
 local args = utils.processArgs({...}, validArgs)
-local help = [====[
-
-geld
-====
-Geld allows the user to geld and ungeld animals.
-
-Valid options:
-
-``-unit <id>``: Gelds the unit with the specified ID.
-                This is optional; if not specified, the selected unit is used instead.
-
-``-ungeld``:    Ungelds the specified unit instead (see also `ungeld`).
-
-``-toggle``:    Toggles the gelded status of the specified unit.
-
-``-help``:      Shows this help information
-
-]====]
 
 unit=nil
 
 if args.help then
-    print(help)
+    print(dfhack.script_help())
     return
 end
 
