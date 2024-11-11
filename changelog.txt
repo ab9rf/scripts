@@ -38,7 +38,6 @@ Template for new versions:
 - `makeown`: halt any hostile jobs the unit may be engaged in, like kidnapping
 - `fix/loyaltycascade`: allow the fix to work on non-dwarven citizens
 - `control-panel`: fix setting numeric preferences from the commandline
-- `gui/confirm`: fix some confirm prompts not working
 
 ## Misc Improvements
 - `control-panel`: Add realistic-melting tweak to control-panel registry
