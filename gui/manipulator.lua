@@ -1341,9 +1341,12 @@ function ManipulatorOverlay:init()
     }
 end
 
-OVERLAY_WIDGETS = {
-    launcher=ManipulatorOverlay,
-}
+--
+-- disable overlay widget while tool is still in dark launch mode
+--
+-- OVERLAY_WIDGETS = {
+--     launcher=ManipulatorOverlay,
+-- }
 
 if dfhack_flags.module then return end
 
