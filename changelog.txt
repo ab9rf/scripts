@@ -38,6 +38,7 @@ Template for new versions:
 - `makeown`: halt any hostile jobs the unit may be engaged in, like kidnapping
 - `fix/loyaltycascade`: allow the fix to work on non-dwarven citizens
 - `control-panel`: fix setting numeric preferences from the commandline
+- `gui/quickfort`: fix build mode evluation rules to allow placement of various furniture and constructions on tiles with stair shapes or without orthagonal floor.
 
 ## Misc Improvements
 - `control-panel`: Add realistic-melting tweak to control-panel registry
