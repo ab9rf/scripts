@@ -14,4 +14,6 @@ occupied.
 Usage
 -----
 
-``enable immortal-cravings``
+::
+
+    enable immortal-cravings
