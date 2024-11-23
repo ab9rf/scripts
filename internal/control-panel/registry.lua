@@ -49,7 +49,7 @@ COMMANDS_BY_IDX = {
         desc='Go to the Standing Orders tab in the Labor screen to save your current settings.'},
     {command='gui/settings-manager load-work-details', group='automation', mode='run',
         desc='Go to the Work Details tab in the Labor screen to save your current definitions.'},
-    {command='infiniteSky', group='automation', mode='enable',
+    {command='infinite-sky', group='automation', mode='enable',
         desc='Enable if you want automatic creation of new sky z-levels.'},
     {command='logistics enable autoretrain', group='automation', mode='run',
         desc='Automatically assign trainers to partially trained livestock so they don\'t revert to wild.'},
