@@ -82,29 +82,29 @@ function necronomicon(include_slabs)
 end
 
 function necronomicon_world(include_slabs)
-	if include_slabs then
-		print("Slabs:")
-		print()
-		for _,rec in ipairs(df.global.world.artifacts.all) do
-			if df.item_slabst:is_instance(rec.item) and check_slab_secrets(rec.item) then
-				print(dfhack.df2console(dfhack.TranslateName(rec.name)))
-			end
-		end
-		print()
-	end
-	print("Books and Scrolls:")
+    if include_slabs then
+        print("Slabs:")
+        print()
+        for _,rec in ipairs(df.global.world.artifacts.all) do
+            if df.item_slabst:is_instance(rec.item) and check_slab_secrets(rec.item) then
+                print(dfhack.df2console(dfhack.TranslateName(rec.name)))
+            end
+        end
+        print()
+    end
+    print("Books and Scrolls:")
     print()
     for _,rec in ipairs(df.global.world.artifacts.all) do
-		if df.item_bookst:is_instance(rec.item) or df.item_toolst:is_instance(rec.item) then
-			local title, interactions = get_book_interactions(rec.item)
+        if df.item_bookst:is_instance(rec.item) or df.item_toolst:is_instance(rec.item) then
+            local title, interactions = get_book_interactions(rec.item)
 
-			if next(interactions) then
-				print("  " .. dfhack.df2console(title))
-				print_interactions(interactions)
-				print()
-			end
-		end
-	end
+            if next(interactions) then
+                print("  " .. dfhack.df2console(title))
+                print_interactions(interactions)
+                print()
+            end
+        end
+    end
 end
 
 local help = false
