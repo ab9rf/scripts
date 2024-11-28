@@ -28,6 +28,7 @@ Template for new versions:
 
 ## New Tools
 - `fix/wildlife`: prevent wildlife from getting stuck when trying to exit the map. This fix needs to be enabled manually in `gui/control-panel` on the Bug Fixes tab since not all players want this bug to be fixed.
+- `immortal-cravings`: allow immortals to satisfy their cravings for food and drink
 
 ## New Features
 - `force`: support the ``Wildlife`` event to allow additional wildlife to enter the map
@@ -38,6 +39,9 @@ Template for new versions:
 - `makeown`: halt any hostile jobs the unit may be engaged in, like kidnapping
 - `fix/loyaltycascade`: allow the fix to work on non-dwarven citizens
 - `control-panel`: fix setting numeric preferences from the commandline
+- `gui/quickfort`: fix build mode evluation rules to allow placement of various furniture and constructions on tiles with stair shapes or without orthagonal floor.
+- `emigration`: save-and-reload no longer resets the emigration cycle timeout, making gameplay more consistent
+- `rejuvenate`: ``--age`` no longer throws the error ``attempt to compare string with number``
 
 ## Misc Improvements
 - `control-panel`: Add realistic-melting tweak to control-panel registry

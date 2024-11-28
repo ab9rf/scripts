@@ -119,6 +119,7 @@ COMMANDS_BY_IDX = {
     {command='fastdwarf', group='gameplay', mode='enable'},
     {command='hermit', group='gameplay', mode='enable'},
     {command='hide-tutorials', group='gameplay', mode='system_enable'},
+    {command='immortal-cravings', group='gameplay', mode='enable'},
     {command='light-aquifers-only', group='gameplay', mode='run'},
     {command='misery', group='gameplay', mode='enable'},
     {command='orders-reevaluate', help_command='orders', group='gameplay', mode='repeat',
