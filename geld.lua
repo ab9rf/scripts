@@ -1,4 +1,4 @@
-utils = require('utils')
+local utils = require('utils')
 
 local validArgs = utils.invert({
     'unit',
@@ -21,7 +21,6 @@ if args.unit then
         unit = df.unit.find(id)
     else
         qerror("Invalid unit ID provided.")
-        return
     end
 else
     unit = dfhack.gui.getSelectedUnit()
@@ -29,12 +28,10 @@ end
 
 if not unit then
     qerror("Invalid unit selection.")
-    return
 end
 
 if unit.sex == df.pronoun_type.she then
     qerror("Cannot geld female animals.")
-    return
 end
 
 -- Find the geldable body part id, returns -1 on failure
