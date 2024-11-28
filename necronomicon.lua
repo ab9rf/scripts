@@ -9,14 +9,16 @@ function get_book_interactions(item)
            improvement._type == df.itemimprovement_writingst then
             for _, content_id in ipairs(improvement.contents) do
                 local written_content = df.written_content.find(content_id)
-                title = written_content.title
+                if not written_content then goto continue end
 
+                title = written_content.title
                 for _, ref in ipairs (written_content.refs) do
                     if ref._type == df.general_ref_interactionst then
                         local interaction = df.interaction.find(ref.interaction_id)
                         table.insert(book_interactions, interaction)
                     end
                 end
+                ::continue::
             end
         end
     end
@@ -85,23 +87,23 @@ function necronomicon_world(include_slabs)
 		print()
 		for _,rec in ipairs(df.global.world.artifacts.all) do
 			if df.item_slabst:is_instance(rec.item) and check_slab_secrets(rec.item) then
-				print(dfhack.TranslateName(rec.name))
+				print(dfhack.df2console(dfhack.TranslateName(rec.name)))
 			end
 		end
-		print()	
+		print()
 	end
 	print("Books and Scrolls:")
     print()
     for _,rec in ipairs(df.global.world.artifacts.all) do
 		if df.item_bookst:is_instance(rec.item) or df.item_toolst:is_instance(rec.item) then
 			local title, interactions = get_book_interactions(rec.item)
-			
+
 			if next(interactions) then
 				print("  " .. dfhack.df2console(title))
 				print_interactions(interactions)
 				print()
 			end
-		end	
+		end
 	end
 end
 
