@@ -120,6 +120,9 @@ local function unstick_surface_wildlife(opts)
         if not is_active_wildlife(unit) or unit.animal.leave_countdown > 0 then
             goto skip
         end
+        if unit.flags1.caged or unit.flags1.chained then
+            goto skip
+        end
         if not check_timeout(opts, unit, week_ago_ticks) then
             goto skip
         end
