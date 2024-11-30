@@ -27,26 +27,25 @@ Template for new versions:
 # Future
 
 ## New Tools
-- `fix/wildlife`: prevent wildlife from getting stuck when trying to exit the map. This fix needs to be enabled manually in `gui/control-panel` on the Bug Fixes tab since not all players want this bug to be fixed.
+- `fix/wildlife`: prevent wildlife from getting stuck when trying to exit the map. This fix needs to be enabled manually in `gui/control-panel` on the Bug Fixes tab since not all players want this bug to be fixed (you can intentionally stall wildlife incursions by trapping non-caged wildlife in an enclosed area).
 - `immortal-cravings`: allow immortals to satisfy their cravings for food and drink
-- `justice`: various functions pertaining to the justice system, currently with a command to pardon a unit's prison sentence
+- `justice`: pardon a criminal's prison sentence
 
 ## New Features
-- `force`: support the ``Wildlife`` event to allow additional wildlife to enter the map
+- `force`: add support a ``Wildlife`` event to allow additional wildlife to enter the map
 
 ## Fixes
 - `gui/quickfort`: only print a help blueprint's text once even if the repeat setting is enabled
 - `makeown`: quell any active enemy or conflict relationships with converted creatures
 - `makeown`: halt any hostile jobs the unit may be engaged in, like kidnapping
 - `fix/loyaltycascade`: allow the fix to work on non-dwarven citizens
-- `control-panel`: fix setting numeric preferences from the commandline
-- `gui/quickfort`: fix build mode evluation rules to allow placement of various furniture and constructions on tiles with stair shapes or without orthagonal floor.
-- `emigration`: save-and-reload no longer resets the emigration cycle timeout, making gameplay more consistent
-- `geld`, `ungeld`: fix gelding/ungelding being undone for units who are historical figures when reloading a game
+- `control-panel`: fix error when setting numeric preferences from the commandline
+- `gui/quickfort`: fix build mode evaluation rules to allow placement of furniture and constructions on tiles with stair shapes or without orthagonal floors
+- `emigration`: save-and-reload no longer resets the emigration cycle timeout
+- `geld`, `ungeld`: save-and-reload no longer loses changes done by `geld` and `ungeld` for units who are historical figures
 - `rejuvenate`: fix error when specifying ``--age`` parameter
 
 ## Misc Improvements
-- `control-panel`: Add realistic-melting tweak to control-panel registry
 - `idle-crafting`: also support making shell crafts for workshops with linked input stockpiles
 - `gui/gm-editor`: automatic display of semantic values for language_name fields
 - `fix/stuck-worship`: reduced console output by default. Added ``--verbose`` and ``--quiet`` options.
