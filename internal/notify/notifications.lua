@@ -71,6 +71,7 @@ local function for_hostile(fn, reverse)
             not dfhack.units.isFortControlled(unit) and
             not dfhack.units.isHidden(unit) and
             not dfhack.units.isAgitated(unit) and
+            (not unit.flags2.visitor or unit.flags2.visitor_uninvited) and
             dfhack.units.isDanger(unit)
     end, fn, reverse)
 end

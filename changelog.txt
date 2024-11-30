@@ -44,6 +44,7 @@ Template for new versions:
 - `emigration`: save-and-reload no longer resets the emigration cycle timeout
 - `geld`, `ungeld`: save-and-reload no longer loses changes done by `geld` and `ungeld` for units who are historical figures
 - `rejuvenate`: fix error when specifying ``--age`` parameter
+- `gui/notify`: don't classify (peacefully) visiting night creatures as hostile
 
 ## Misc Improvements
 - `idle-crafting`: also support making shell crafts for workshops with linked input stockpiles
