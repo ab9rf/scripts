@@ -51,7 +51,7 @@ Template for new versions:
 - `gui/gm-editor`: automatic display of semantic values for language_name fields
 - `fix/stuck-worship`: reduced console output by default. Added ``--verbose`` and ``--quiet`` options.
 - `necronomicon`: new ``--world`` option to list all secret-containing items in the entire world
-- `gui/design`: new overlay ``gui/design.rightclick`` that prevents right click from closing designation mode when drawing rectangles 
+- `gui/design`: new ``gui/design.rightclick`` overlay that prevents right click from closing designation mode when drawing boxes and minecart tracks
 
 ## Removed
 - `modtools/force`: merged into `force`
