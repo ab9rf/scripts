@@ -120,8 +120,42 @@ function DimensionsOverlay:preUpdateLayout(parent_rect)
     self.frame.h = parent_rect.height
 end
 
+---
+--- RightClickOverlay
+---
+
+RightClickOverlay = defclass(RightClickOverlay, overlay.OverlayWidget)
+RightClickOverlay.ATTRS{
+    desc='When drawing boxes, makes right click cancel selection instead of exiting.',
+    default_enabled=true,
+    viewscreens={
+        'dwarfmode/Designate',
+        'dwarfmode/Burrow/Paint',
+        'dwarfmode/Stockpile/Paint',
+        'dwarfmode/Zone/Paint',
+        'dwarfmode/Building/Placement'
+        },
+}
+
+function RightClickOverlay:onInput(keys)
+    if keys._MOUSE_R or keys.LEAVESCREEN then
+        -- building mode
+        if uibs.selection_pos.x >= 0 then
+            uibs.selection_pos:clear()
+            return true
+        -- all other modes
+        elseif selection_rect.start_x >= 0 then
+            selection_rect.start_x = -30000
+            selection_rect.start_y = -30000
+            selection_rect.start_z = -30000
+            return true
+        end
+    end
+end
+
 OVERLAY_WIDGETS = {
     dimensions=DimensionsOverlay,
+    rightclick=RightClickOverlay
 }
 
 ---
