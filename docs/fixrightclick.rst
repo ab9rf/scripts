@@ -12,4 +12,4 @@ Usage
 
 ::
 
-    overlay enable|disable fixrightclick
+    overlay enable|disable fixrightclick.selection
