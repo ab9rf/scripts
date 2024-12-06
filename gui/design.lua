@@ -67,6 +67,7 @@ DimensionsOverlay.ATTRS{
         'dwarfmode/Designate',
         'dwarfmode/Burrow/Paint',
         'dwarfmode/Stockpile/Paint',
+        'dwarfmode/Zone/Paint',
         'dwarfmode/Building/Placement',
     },
 }
@@ -101,10 +102,11 @@ function DimensionsOverlay:init()
     }
 end
 
--- don't imply that stockpiles will be 3d
+-- don't imply that stockpiles or zones will be 3d
 local function check_stockpile_dims()
-    if main_interface.bottom_mode_selected == df.main_bottom_mode_type.STOCKPILE_PAINT and
-        selection_rect.start_x > 0
+    if selection_rect.start_x > 0 and
+        (main_interface.bottom_mode_selected == df.main_bottom_mode_type.STOCKPILE_PAINT or
+         main_interface.bottom_mode_selected == df.main_bottom_mode_type.ZONE_PAINT)
     then
         selection_rect.start_z = df.global.window_z
     end
