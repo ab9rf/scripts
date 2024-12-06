@@ -1040,7 +1040,7 @@ dfhack.onStateChange[GLOBAL_KEY] = function(sc)
     end
 
     -- Reset state when a world or map is loaded to ensure data remains current
-    if sc == SC_WORLD_LOADED or sc == SC_MAP_LOADED then
+    if sc == SC_WORLD_LOADED then
         racefilter.reset_state()
     end
 end
