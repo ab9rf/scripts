@@ -26,7 +26,7 @@ dimensions
 
 The ``gui/design.dimensions`` overlay shows the selected dimensions when designating
 with vanilla tools, for example when painting a burrow or designating digging.
-The dimensions show up in a tooltip that follows the mousecursor.
+The dimensions show up in a tooltip that follows the mouse cursor.
 
 rightclick
 ~~~~~~~~~~

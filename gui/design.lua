@@ -155,7 +155,7 @@ end
 
 OVERLAY_WIDGETS = {
     dimensions=DimensionsOverlay,
-    rightclick=RightClickOverlay
+    rightclick=RightClickOverlay,
 }
 
 ---
