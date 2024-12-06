@@ -18,21 +18,22 @@ local function get_civ_alert()
     return list[1]
 end
 
-local function can_sound_alarm()
+-- public API section
+function can_sound_alarm()
     return df.global.plotinfo.alerts.civ_alert_idx == 0 and
             #get_civ_alert().burrows > 0
 end
 
-local function sound_alarm()
+function sound_alarm()
     if not can_sound_alarm() then return end
     df.global.plotinfo.alerts.civ_alert_idx = 1
 end
 
-local function can_clear_alarm()
+function can_clear_alarm()
     return df.global.plotinfo.alerts.civ_alert_idx ~= 0
 end
 
-local function clear_alarm()
+function clear_alarm()
     df.global.plotinfo.alerts.civ_alert_idx = 0
 end
 
