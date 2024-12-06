@@ -45,6 +45,7 @@ Template for new versions:
 - `geld`, `ungeld`: save-and-reload no longer loses changes done by `geld` and `ungeld` for units who are historical figures
 - `rejuvenate`: fix error when specifying ``--age`` parameter
 - `gui/notify`: don't classify (peacefully) visiting night creatures as hostile
+- `exportlegends`: fix race filter not refreshing on world load, leading to incorrect results
 
 ## Misc Improvements
 - `idle-crafting`: also support making shell crafts for workshops with linked input stockpiles
