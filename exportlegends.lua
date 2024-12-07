@@ -1038,6 +1038,11 @@ dfhack.onStateChange[GLOBAL_KEY] = function(sc)
     if sc == SC_VIEWSCREEN_CHANGED and df.viewscreen_choose_game_typest:is_instance(dfhack.gui.getDFViewscreen(true)) then
         asyncexport.reset_state()
     end
+
+    -- Reset state when a world or map is loaded to ensure data remains current
+    if sc == SC_WORLD_LOADED then
+        racefilter.reset_state()
+    end
 end
 
 if dfhack_flags.module then
