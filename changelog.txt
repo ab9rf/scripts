@@ -27,12 +27,12 @@ Template for new versions:
 # Future
 
 ## New Tools
-- `fix/wildlife`: prevent wildlife from getting stuck when trying to exit the map. This fix needs to be enabled manually in `gui/control-panel` on the Bug Fixes tab since not all players want this bug to be fixed (you can intentionally stall wildlife incursions by trapping non-caged wildlife in an enclosed area).
+- `fix/wildlife`: prevent wildlife from getting stuck when trying to exit the map. This fix needs to be enabled manually in `gui/control-panel` on the Bug Fixes tab since not all players want this bug to be fixed (you can intentionally stall wildlife incursions by trapping wildlife in an enclosed area so they are not caged but still cannot escape).
 - `immortal-cravings`: allow immortals to satisfy their cravings for food and drink
 - `justice`: pardon a criminal's prison sentence
 
 ## New Features
-- `force`: add support a ``Wildlife`` event to allow additional wildlife to enter the map
+- `force`: add support for a ``Wildlife`` event to allow additional wildlife to enter the map
 
 ## Fixes
 - `gui/quickfort`: only print a help blueprint's text once even if the repeat setting is enabled
@@ -45,15 +45,15 @@ Template for new versions:
 - `geld`, `ungeld`: save-and-reload no longer loses changes done by `geld` and `ungeld` for units who are historical figures
 - `rejuvenate`: fix error when specifying ``--age`` parameter
 - `gui/notify`: don't classify (peacefully) visiting night creatures as hostile
-- `exportlegends`: fix race filter not refreshing on world load, leading to incorrect results
+- `exportlegends`: ensure historical figure race filter is usable after re-entering legends mode with a different loaded world
 
 ## Misc Improvements
 - `idle-crafting`: also support making shell crafts for workshops with linked input stockpiles
-- `gui/gm-editor`: automatic display of semantic values for language_name fields
+- `gui/gm-editor`: automatically resolve and display names for ``language_name`` fields
 - `fix/stuck-worship`: reduced console output by default. Added ``--verbose`` and ``--quiet`` options.
 - `gui/design`: add dimensions tooltip to vanilla zone painting interface
 - `necronomicon`: new ``--world`` option to list all secret-containing items in the entire world
-- `gui/design`: new ``gui/design.rightclick`` overlay that prevents right click from closing designation mode when drawing boxes and minecart tracks
+- `gui/design`: new ``gui/design.rightclick`` overlay that allows you to cancel out of partially drawn box and minecart designations without canceling completely out of drawing mode
 
 ## Removed
 - `modtools/force`: merged into `force`
