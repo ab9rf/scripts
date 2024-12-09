@@ -27,6 +27,18 @@ Template for new versions:
 # Future
 
 ## New Tools
+
+## New Features
+
+## Fixes
+
+## Misc Improvements
+
+## Removed
+
+# 50.14-r2
+
+## New Tools
 - `fix/wildlife`: prevent wildlife from getting stuck when trying to exit the map. This fix needs to be enabled manually in `gui/control-panel` on the Bug Fixes tab since not all players want this bug to be fixed (you can intentionally stall wildlife incursions by trapping wildlife in an enclosed area so they are not caged but still cannot escape).
 - `immortal-cravings`: allow immortals to satisfy their cravings for food and drink
 - `justice`: pardon a criminal's prison sentence
