@@ -130,6 +130,7 @@ RightClickOverlay = defclass(RightClickOverlay, overlay.OverlayWidget)
 RightClickOverlay.ATTRS{
     desc='When drawing boxes, makes right click cancel selection instead of exiting.',
     default_enabled=true,
+    fullscreen=true,
     viewscreens={
         'dwarfmode/Designate',
         'dwarfmode/Burrow/Paint',
