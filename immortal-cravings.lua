@@ -79,7 +79,7 @@ local function goDrink(unit)
         return
     end
     dfhack.job.addWorker(job, unit)
-    local name = dfhack.TranslateName(dfhack.units.getVisibleName(unit))
+    local name = dfhack.units.getReadableName(unit)
     print(dfhack.df2console('immortal-cravings: %s is getting a drink'):format(name))
 end
 
@@ -101,7 +101,7 @@ local function goEat(unit)
         return
     end
     dfhack.job.addWorker(job, unit)
-    local name = dfhack.TranslateName(dfhack.units.getVisibleName(unit))
+    local name = dfhack.units.getReadableName(unit)
     print(dfhack.df2console('immortal-cravings: %s is getting something to eat'):format(name))
 end
 
@@ -171,20 +171,26 @@ local function unit_loop()
     end
 end
 
+local function is_active_caste_flag(unit, flag_name)
+    return not unit.curse.rem_tags1[flag_name] and
+        (unit.curse.add_tags1[flag_name] or dfhack.units.casteFlagSet(unit.race, unit.caste, df.caste_raw_flags[flag_name]))
+end
+
 ---main loop: look for citizens with personality needs for food/drink but w/o physiological need
 local function main_loop()
     -- print('immortal-cravings watching:')
     watched = {}
     for _, unit in ipairs(dfhack.units.getCitizens()) do
-        if unit.curse.add_tags1.NO_DRINK or unit.curse.add_tags1.NO_EAT then
-            for _, need in ipairs(unit.status.current_soul.personality.needs) do
-                if need.id == DrinkAlcohol and need.focus_level < threshold or
-                    need.id == EatGoodMeal and need.focus_level < threshold
-                then
-                    table.insert(watched, unit.id)
-                    -- print('  '..dfhack.df2console(dfhack.TranslateName(dfhack.units.getVisibleName(unit))))
-                    goto next_unit
-                end
+        if not is_active_caste_flag(unit, 'NO_DRINK') and not is_active_caste_flag(unit, 'NO_EAT') then
+            goto next_unit
+        end
+        for _, need in ipairs(unit.status.current_soul.personality.needs) do
+            if need.id == DrinkAlcohol and need.focus_level < threshold or
+                need.id == EatGoodMeal and need.focus_level < threshold
+            then
+                table.insert(watched, unit.id)
+                -- print('  '..dfhack.df2console(dfhack.units.getReadableName(unit)))
+                goto next_unit
             end
         end
         ::next_unit::
