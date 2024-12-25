@@ -27,6 +27,7 @@ Template for new versions:
 # Future
 
 ## New Tools
+- `fix/stuck-squad`: allow squads returning from missions to rescue other squads that have gotten stuck on the world map
 
 ## New Features
 
