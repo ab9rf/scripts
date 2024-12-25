@@ -323,9 +323,10 @@ NOTIFICATIONS_BY_IDX = {
         end,
         on_click=function()
             local message = 'A squad is lost on the world map and needs rescue!\n\n' ..
-                'Please send a squad out on a mission that will return to the fort (e.g.\n' ..
-                'a Demand one-time tribute mission, but not a Conquer and occupy mission).\n' ..
-                'They will rescue the stuck squad on their way home.'
+                'Please send a messenger to a holding or a squad out on a mission\n' ..
+                'that will return to the fort (e.g. a Demand one-time tribute mission,\n' ..
+                'but not a Conquer and occupy mission). They will rescue the stuck\n' ..
+                'squad on their way home.'
             if not repeat_util.isScheduled('control-panel/fix/stuck-squad') then
                 message = message .. '\n\n' ..
                     'Please enable fix/stuck-squad in the DFHack control panel to enable\n'..

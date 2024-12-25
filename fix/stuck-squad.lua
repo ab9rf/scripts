@@ -16,10 +16,18 @@ end
 
 local function is_army_valid_and_returning(army)
     local controller = get_top_controller(army.controller)
-    if not controller or controller.goal ~= df.army_controller_goal_type.SITE_INVASION then
-        return false, false
+    if not controller then return false, false end
+    if controller.goal == df.army_controller_goal_type.SITE_INVASION then
+        return true, controller.data.goal_site_invasion.flag.RETURNING_HOME
+    elseif controller.goal == df.army_controller_goal_type.MAKE_REQUEST then
+        return true, controller.data.goal_make_request.flag.RETURNING_HOME
     end
-    return true, controller.data.goal_site_invasion.flag.RETURNING_HOME
+    return false, false
+end
+
+local function get_hf_army(hf)
+    if not hf then return end
+    return df.army.find(hf.info and hf.info.whereabouts and hf.info.whereabouts.army_id or -1)
 end
 
 -- need to check all squad positions since some members may have died
@@ -28,7 +36,7 @@ local function get_squad_army(squad)
     for _,sp in ipairs(squad.positions) do
         local hf = df.historical_figure.find(sp.occupant)
         if not hf then goto continue end
-        local army = df.army.find(hf.info and hf.info.whereabouts and hf.info.whereabouts.army_id or -1)
+        local army = get_hf_army(hf)
         if army then return army end
         ::continue::
     end
@@ -58,6 +66,24 @@ function scan_fort_armies()
         end
         ::continue::
     end
+
+    if #stuck_armies == 0 then return stuck_armies, nil, nil end
+
+    -- prefer returning with a messenger if one is readily available
+    for _,messenger in ipairs(dfhack.units.getUnitsByNobleRole('Messenger')) do
+        local army = get_hf_army(df.historical_figure.find(messenger.hist_figure_id))
+        if not army then goto continue end
+        local valid, returning = is_army_valid_and_returning(army)
+        if valid then
+            if returning then
+                returning_army = {army=army}
+            else
+                outbound_army = {army=army}
+            end
+        end
+        ::continue::
+    end
+
     return stuck_armies, outbound_army, returning_army
 end
 
@@ -67,14 +93,14 @@ local function unstick_armies()
     if not returning_army then
         local instructions = outbound_army
             and ('Please wait for %s to complete their objective and run this command again when they are on their way home.'):format(
-                dfhack.df2console(dfhack.military.getSquadName(outbound_army.squad.id)))
-            or 'Please send a squad out on a mission that will return to the fort, and'..
+                outbound_army.squad and dfhack.df2console(dfhack.military.getSquadName(outbound_army.squad.id)) or 'the messenger')
+            or 'Please send a squad or a messenger out on a mission that will return to the fort, and'..
             ' run this command again when they are on the way home.'
-        qerror(('%d stuck arm%s found, but no returning armies found to rescue them!\n%s'):format(
-            #stuck_armies, #stuck_armies == 1 and 'y' or 'ies', instructions))
+        qerror(('%d stuck squad%s found, but no returning squads or messengers are available to rescue them!\n%s'):format(
+            #stuck_armies, #stuck_armies == 1 and '' or 's', instructions))
         return
     end
-    local returning_squad_name = dfhack.df2console(dfhack.military.getSquadName(returning_army.squad.id))
+    local returning_squad_name = returning_army.squad and dfhack.df2console(dfhack.military.getSquadName(returning_army.squad.id)) or 'the messenger'
     for _,stuck in ipairs(stuck_armies) do
         print(('fix/stuck-squad: Squad rescue operation underway! %s is rescuing %s'):format(
             returning_squad_name, dfhack.military.getSquadName(stuck.squad.id)))
