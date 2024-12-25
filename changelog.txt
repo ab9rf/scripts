@@ -35,6 +35,7 @@ Template for new versions:
 
 ## Misc Improvements
 - `immortal-cravings`: goblins and other naturally non-eating/non-drinking races will now also satisfy their needs for eating and drinking
+- `caravan`: add filter for written works in display furniture assignment dialog
 
 ## Removed
 
