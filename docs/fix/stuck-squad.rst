@@ -13,8 +13,8 @@ mission to rescue the lost squad along the way and bring them home.
 This fix is enabled by default in the DFHack
 `control panel <gui/control-panel>`, or you can run it as needed. However, it
 is still up to you to send out another squad that can be tasked with the rescue
-mission. You can send the squad out on an innocuous "Demand tribute" mission to
-minimize risk to the squad.
+mission. You can send the squad out on a relatively innocuous mission, like
+"Demand one-time tribute", to minimize risk to the squad.
 
 This tool is integrated with `gui/notify`, so you will get a notification in
 the DFHack notification panel when a squad is stuck and there are no squads
