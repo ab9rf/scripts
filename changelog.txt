@@ -30,6 +30,8 @@ Template for new versions:
 - `fix/stuck-squad`: allow squads and messengers returning from missions to rescue squads that have gotten stuck on the world map
 
 ## New Features
+- `gui/settings-manager`: new overlay on the Labor -> Standing Orders tab for configuring the number of barrels to reserve for job use (so you can brew alcohol and not have all your barrels claimed by stockpiles for container storage)
+- `gui/settings-manager`: standing orders save/load now includes the reserved barrels setting
 
 ## Fixes
 
