@@ -34,6 +34,7 @@ Template for new versions:
 - `gui/settings-manager`: standing orders save/load now includes the reserved barrels setting
 
 ## Fixes
+- `fix/dry-buckets`: don't empty buckets for wells that are actively in use
 
 ## Misc Improvements
 - `immortal-cravings`: goblins and other naturally non-eating/non-drinking races will now also satisfy their needs for eating and drinking
