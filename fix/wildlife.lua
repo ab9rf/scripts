@@ -2,6 +2,7 @@
 
 local argparse = require('argparse')
 local exterminate = reqscript('exterminate')
+local guidm = require('gui.dwarfmode')
 
 local GLOBAL_KEY = 'fix/wildlife'
 
@@ -61,7 +62,7 @@ local function refund_population(entry)
     end
 end
 
--- refund unit to population and ensure it doesn't get picked up by unstick_surface_wildlife in the future
+-- refund unit to population and ensure it doesn't get picked up by unstick_wildlife in the future
 local function detach_unit(unit)
     unit.flags2.roaming_wilderness_population_source = false
     unit.flags2.roaming_wilderness_population_source_not_a_map_feature = false
@@ -74,6 +75,7 @@ local TICKS_PER_MONTH = 28 * TICKS_PER_DAY
 local TICKS_PER_SEASON = 3 * TICKS_PER_MONTH
 local TICKS_PER_YEAR = 4 * TICKS_PER_SEASON
 
+-- time checks near year turnover is wishy-washy until we have a datetime API available
 local WEEK_BEFORE_EOY_TICKS = TICKS_PER_YEAR - TICKS_PER_WEEK
 
 -- update stuck_creatures records and check timeout
@@ -113,9 +115,15 @@ function free_all_wildlife(include_hidden)
     end
 end
 
-local function unstick_surface_wildlife(opts)
+local function is_onscreen(unit, viewport)
+    viewport = viewport or guidm.Viewport.get()
+    return viewport:isVisible(xyz2pos(dfhack.units.getPosition(unit))), viewport
+end
+
+local function unstick_wildlife(opts)
     local unstuck = {}
     local week_ago_ticks = math.max(0, df.global.cur_year_tick - TICKS_PER_WEEK)
+    local viewport
     for _,unit in ipairs(df.global.world.units.active) do
         if not is_active_wildlife(unit) or unit.animal.leave_countdown > 0 then
             goto skip
@@ -132,7 +140,9 @@ local function unstick_surface_wildlife(opts)
         unstuck_entry.count = unstuck_entry.count + 1
         if not opts.dry_run then
             stuck_creatures[unit.id] = nil
-            exterminate.killUnit(unit, exterminate.killMethod.DISINTEGRATE)
+            local unit_is_visible
+            unit_is_visible, viewport = is_onscreen(unit, viewport)
+            exterminate.killUnit(unit, not unit_is_visible and exterminate.killMethod.DISINTEGRATE or nil)
         end
         ::skip::
     end
@@ -188,5 +198,5 @@ if positionals[1] == 'ignore' then
         print(('%s will now be ignored by fix/wildlife'):format(dfhack.units.getReadableName(unit)))
     end
 else
-    unstick_surface_wildlife(opts)
+    unstick_wildlife(opts)
 end
