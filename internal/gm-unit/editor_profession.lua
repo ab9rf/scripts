@@ -44,6 +44,7 @@ end
 function Editor_Prof:save_profession(_, choice)
     self.target_unit.profession = choice.profession
     self.target_unit.profession2 = choice.profession
+    self.target_unit.flags4.any_texture_must_be_refreshed = true
 end
 
 function Editor_Prof:onOpen()
