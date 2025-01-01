@@ -9,8 +9,9 @@ local widgets = require('gui.widgets')
 Sitemap = defclass(Sitemap, widgets.Window)
 Sitemap.ATTRS {
     frame_title='Sitemap',
-    frame={w=47, r=2, t=18, h=23},
+    frame={w=57, r=2, t=18, h=25},
     resizable=true,
+    resize_min={w=43, h=20},
 }
 
 local function to_title_case(str)
@@ -99,23 +100,41 @@ local function zoom_to_next_zone(_, choice)
     data.next_idx = data.next_idx % #data.zones + 1
 end
 
-local function get_unit_disposition_and_pen(unit)
+local function get_affiliation(unit)
+    local he = df.historical_entity.find(unit.civ_id)
+    if not he then return 'Unknown affiliation' end
+    local et_name = dfhack.TranslateName(he.name, true)
+    local et_type = df.historical_entity_type[he.type]:gsub('(%l)(%u)', '%1 %2')
+    return ('%s%s %s'):format(#et_name > 0 and et_name or 'Unknown', #et_name > 0 and ',' or '', et_type)
+end
+
+local function get_unit_disposition_and_pen_and_affiliation(unit)
     local prefix = unit.flags1.caged and 'caged ' or ''
     if dfhack.units.isDanger(unit) then
+        if dfhack.units.isInvader(unit) then
+            return prefix..'invader', COLOR_RED, get_affiliation(unit)
+        end
         return prefix..'hostile', COLOR_LIGHTRED
-    end
-    if not dfhack.units.isFortControlled(unit) and dfhack.units.isWildlife(unit) then
+    elseif dfhack.units.isFortControlled(unit) then
+        return prefix..'fort '..(dfhack.units.isAnimal(unit) and 'animal' or 'member'), COLOR_LIGHTBLUE
+    elseif dfhack.units.isWildlife(unit) then
         return prefix..'wildlife', COLOR_GREEN
+    elseif dfhack.units.isVisitor(unit) or dfhack.units.isDiplomat(unit) then
+        return prefix..'visitor', COLOR_MAGENTA, get_affiliation(unit)
+    elseif dfhack.units.isMerchant(unit) or dfhack.units.isForest(unit) then
+        return prefix..'merchant'..(dfhack.units.isAnimal(unit) and ' animal' or ''), COLOR_BROWN, get_affiliation(unit)
     end
     return prefix..'friendly', COLOR_LIGHTGREEN
 end
 
 local function get_unit_choice_text(unit)
-    local disposition, disposition_pen = get_unit_disposition_and_pen(unit)
+    local disposition, disposition_pen, affiliation = get_unit_disposition_and_pen_and_affiliation(unit)
     return {
         dfhack.units.getReadableName(unit),
         ' (',
         {text=disposition, pen=disposition_pen},
+        affiliation and ': ' or '',
+        {text=affiliation, pen=COLOR_YELLOW},
         ')',
     }
 end
