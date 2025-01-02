@@ -511,13 +511,13 @@ function Rename:get_component_action_choices()
     table.insert(choices, {text='', data={fn=function() end}})
 
     local randomize_text = {{text='[', pen=COLOR_RED}, 'Random', {text=']', pen=COLOR_RED}}
-    for val, comp in ipairs(df.language_name_component) do
+    for comp in ipairs(df.language_name_component) do
         local randomize_fn = self:callback('randomize_component_word', comp)
         table.insert(choices, {text=randomize_text, data={fn=randomize_fn}})
         local clear_text = {
-            {text=function() return self.target.words[val] >= 0 and '[' or '' end, pen=COLOR_RED},
-            {text=function() return self.target.words[val] >= 0 and 'Clear' or '' end },
-            {text=function() return self.target.words[val] >= 0 and ']' or '' end, pen=COLOR_RED}
+            {text=function() return self.target.words[comp] >= 0 and '[' or '' end, pen=COLOR_RED},
+            {text=function() return self.target.words[comp] >= 0 and 'Clear' or '' end },
+            {text=function() return self.target.words[comp] >= 0 and ']' or '' end, pen=COLOR_RED}
         }
         local clear_fn = self:callback('clear_component_word', comp)
         table.insert(choices, {text=clear_text, data={fn=clear_fn}})
@@ -537,8 +537,9 @@ function Rename:clear_component_word(comp)
     end
 end
 
-function Rename:set_first_name(choice)
-    self.target.first_name = translations[self.subviews.language:getOptionValue()].words[choice.data.idx].value
+function Rename:set_first_name(word_idx)
+    self.target.first_name = translations[self.subviews.language:getOptionValue()].words[word_idx].value
+    self.target.has_name = true  -- support giving names to previously unnamed units
     for _, sync_target in ipairs(self.sync_targets) do
         if type(sync_target) == 'function' then
             sync_target()
@@ -548,22 +549,26 @@ function Rename:set_first_name(choice)
     end
 end
 
-function Rename:set_component_word(_, choice)
-    local _, comp_choice = self.subviews.component_list:getSelected()
-    if comp_choice.data.is_first_name then
-        self:set_first_name(choice)
-        return
-    end
-    self.target.words[comp_choice.data.val] = choice.data.idx
-    self.target.parts_of_speech[comp_choice.data.val] = choice.data.part_of_speech
+function Rename:set_component_word_by_data(component, word_idx, part_of_speech)
+    self.target.words[component] = word_idx
+    self.target.parts_of_speech[component] = part_of_speech
     for _, sync_target in ipairs(self.sync_targets) do
         if type(sync_target) == 'function' then
             sync_target()
         else
-            sync_target.words[comp_choice.data.val] = choice.data.idx
-            sync_target.parts_of_speech[comp_choice.data.val] = choice.data.part_of_speech
+            sync_target.words[component] = word_idx
+            sync_target.parts_of_speech[component] = part_of_speech
         end
     end
+end
+
+function Rename:set_component_word(_, choice)
+    local _, comp_choice = self.subviews.component_list:getSelected()
+    if comp_choice.data.is_first_name then
+        self:set_first_name(choice.data.idx)
+        return
+    end
+    self:set_component_word_by_data(comp_choice.data.val, choice.data.idx, choice.data.part_of_speech)
 end
 
 function Rename:set_language(val, prev_val)
@@ -581,7 +586,7 @@ function Rename:set_language(val, prev_val)
     end
 end
 
-local langauge_name_type_to_category = {
+local language_name_type_to_category = {
     [df.language_name_type.Figure] = {df.language_name_category.Unit},
     [df.language_name_type.Artifact] = {df.language_name_category.Artifact, df.language_name_category.ArtifactEvil},
     [df.language_name_type.Civilization] = {df.language_name_category.EntityMerchantCompany},
@@ -590,7 +595,7 @@ local langauge_name_type_to_category = {
     [df.language_name_type.World] = {df.language_name_category.Region},
     [df.language_name_type.EntitySite] = {df.language_name_category.Keep},
     [df.language_name_type.Temple] = {df.language_name_category.Temple},
-    [df.language_name_type.MeadHall] = {df.language_name_category.MeadHall},
+    [df.language_name_type.FoodStore] = {df.language_name_category.MeadHall},
     [df.language_name_type.Library] = {df.language_name_category.Library},
     [df.language_name_type.Guildhall] = {df.language_name_category.Guildhall},
     [df.language_name_type.Hospital] = {df.language_name_category.Hospital},
@@ -599,40 +604,45 @@ local langauge_name_type_to_category = {
 local language_name_component_to_word_table_index = {
     [df.language_name_component.FrontCompound] = df.language_word_table_index.FrontCompound,
     [df.language_name_component.RearCompound] = df.language_word_table_index.RearCompound,
-    [df.language_name_component.FrontCompound] = df.language_word_table_index.FirstName,
     [df.language_name_component.FirstAdjective] = df.language_word_table_index.Adjectives,
     [df.language_name_component.SecondAdjective] = df.language_word_table_index.Adjectives,
-    [df.language_name_component.FrontCompound] = df.language_word_table_index.TheX,
-    [df.language_name_component.FrontCompound] = df.language_word_table_index.OfX,
-
+    [df.language_name_component.HyphenCompound] = df.language_word_table_index.FrontCompound,
+    [df.language_name_component.TheX] = df.language_word_table_index.TheX,
+    [df.language_name_component.OfX] = df.language_word_table_index.OfX,
 }
+
+local function get_random_word(category, word_table_index)
+    local word_table = language.word_table[0][category]
+    local words = word_table.words[word_table_index]
+    local idx = #words > 0 and math.random(#words)-1 or -1
+    local word = idx >= 0 and words[idx] or -1
+    local part_of_speech = idx >= 0 and word_table.parts[word_table_index][idx] or df.part_of_speech.Noun
+    return word, part_of_speech
+end
 
 function Rename:randomize_first_name()
     if self.target.type ~= df.language_name_type.Figure then return end
-    local choices = self:get_word_choices(df.language_name_component.TheX)
-    self:set_first_name(choices[math.random(#choices)])
+    local word_idx = get_random_word(df.language_name_category.Unit, df.language_word_table_index.FirstName)
+    self:set_first_name(word_idx)
 end
 
 function Rename:randomize_component_word(comp)
-    local categories = langauge_name_type_to_category[self.target.type]
-    local category = categories[math.random(#categories)]
-    local word_table = language.word_table[0][category]
-    local words = word_table.words[comp]
-    local idx = math.random(#words)-1
-    self.target.words[comp] = words[idx]
-    self.target.parts_of_speech[comp] = word_table.parts[comp][idx]
-    for _, sync_target in ipairs(self.sync_targets) do
-        if type(sync_target) == 'function' then
-            sync_target()
-        else
-            sync_target.words[comp] = words[idx]
-            sync_target.parts_of_speech[comp] = word_table.parts[comp][idx]
-        end
-    end
+    local categories = language_name_type_to_category[self.target.type]
+    local category = categories and categories[math.random(#categories)] or df.language_name_category.MeadHall
+    local word_idx, part_of_speech = get_random_word(category, language_name_component_to_word_table_index[comp])
+    self:set_component_word_by_data(comp, word_idx, part_of_speech)
 end
 
 function Rename:generate_random_name()
-    print('TODO: generate_random_name')
+    print('TODO: call dfhack.GenerateName API once it exists')
+    -- dfhack.GenerateName(self.target)
+    -- for _, sync_target in ipairs(self.sync_targets) do
+    --    if type(sync_target) == 'function' then
+    --       sync_target()
+    --   else
+    --      df.assign(sync_target, self.target)
+    --   end
+    -- end
 end
 
 local part_of_speech_to_display = {
