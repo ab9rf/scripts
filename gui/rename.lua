@@ -786,6 +786,7 @@ WorldRenameOverlay.ATTRS {
     default_enabled=true,
     viewscreens='new_region',
     frame={w=22, h=1},
+    visible=function() return dfhack.isWorldLoaded() end,
 }
 
 function WorldRenameOverlay:init()
