@@ -8,11 +8,54 @@ local CH_DN = string.char(31)
 local ENGLISH_COL_WIDTH = 16
 local NATIVE_COL_WIDTH = 16
 
+local part_of_speech_to_display = {
+    [df.part_of_speech.Noun] = 'Singular Noun',
+    [df.part_of_speech.NounPlural] = 'Plural Noun',
+    [df.part_of_speech.Adjective] = 'Adjective',
+    [df.part_of_speech.Prefix] = 'Prefix',
+    [df.part_of_speech.Verb] = 'Present (1st)',
+    [df.part_of_speech.Verb3rdPerson] = 'Present (3rd)',
+    [df.part_of_speech.VerbPast] = 'Preterite',
+    [df.part_of_speech.VerbPassive] = 'Past Participle',
+    [df.part_of_speech.VerbGerund] = 'Present Participle',
+}
+
+local langauge_name_type_to_category = {
+    [df.language_name_type.Figure] = {df.language_name_category.Unit},
+    [df.language_name_type.Artifact] = {df.language_name_category.Artifact, df.language_name_category.ArtifactEvil},
+    [df.language_name_type.Civilization] = {df.language_name_category.EntityMerchantCompany},
+    [df.language_name_type.Squad] = {df.language_name_category.Battle},
+    [df.language_name_type.Site] = {df.language_name_category.Keep},
+    [df.language_name_type.World] = {df.language_name_category.Region},
+    [df.language_name_type.EntitySite] = {df.language_name_category.Keep},
+    [df.language_name_type.Temple] = {df.language_name_category.Temple},
+    [df.language_name_type.MeadHall] = {df.language_name_category.MeadHall},
+    [df.language_name_type.Library] = {df.language_name_category.Library},
+    [df.language_name_type.Guildhall] = {df.language_name_category.Guildhall},
+    [df.language_name_type.Hospital] = {df.language_name_category.Hospital},
+}
+
+local language_name_component_to_word_table_index = {
+    [df.language_name_component.FrontCompound] = df.language_word_table_index.FrontCompound,
+    [df.language_name_component.RearCompound] = df.language_word_table_index.RearCompound,
+    [df.language_name_component.FrontCompound] = df.language_word_table_index.FirstName,
+    [df.language_name_component.FirstAdjective] = df.language_word_table_index.Adjectives,
+    [df.language_name_component.SecondAdjective] = df.language_word_table_index.Adjectives,
+    [df.language_name_component.FrontCompound] = df.language_word_table_index.TheX,
+    [df.language_name_component.FrontCompound] = df.language_word_table_index.OfX,
+
+}
+
+local language = df.global.world.raws.language
+local translations = df.language_translation.get_vector()
+
 --
 -- target selection
 --
 
 local function select_new_target()
+    local target, sync_targets = nil, {}
+    return target, sync_targets
 end
 
 --
@@ -22,14 +65,14 @@ end
 Rename = defclass(Rename, widgets.Window)
 Rename.ATTRS {
     frame_title='Rename',
-    frame={w=87, h=30},
+    frame={w=88, h=31},
     resizable=true,
-    resize_min={w=77, h=30},
+    resize_min={w=70, h=31},
 }
 
 local function get_language_options()
     local options, max_width = {}, 5
-    for idx, lang in ipairs(df.language_translation.get_vector()) do
+    for idx, lang in ipairs(translations) do
         max_width = math.max(max_width, #lang.name)
         table.insert(options, {label=dfhack.capitalizeStringWords(dfhack.lowerCp437(lang.name)), value=idx, pen=COLOR_CYAN})
     end
@@ -41,21 +84,69 @@ local function pad_text(text, width)
 end
 
 local function sort_by_english_desc(a, b)
+    if a.data.english ~= b.data.english then
+        return a.data.english < b.data.english
+    end
+    local a_native, b_native = a.data.native_fn(), b.data.native_fn()
+    if a_native ~= b_native then
+        return a_native < b_native
+    end
+    return a.data.part_of_speech < b.data.part_of_speech
 end
 
 local function sort_by_english_asc(a, b)
+    if a.data.english ~= b.data.english then
+        return a.data.english > b.data.english
+    end
+    local a_native, b_native = a.data.native_fn(), b.data.native_fn()
+    if a_native ~= b_native then
+        return a_native < b_native
+    end
+    return a.data.part_of_speech < b.data.part_of_speech
 end
 
 local function sort_by_native_desc(a, b)
+    local a_native, b_native = a.data.native_fn(), b.data.native_fn()
+    if a_native ~= b_native then
+        return a_native < b_native
+    end
+    if a.data.english ~= b.data.english then
+        return a.data.english < b.data.english
+    end
+    return a.data.part_of_speech < b.data.part_of_speech
 end
 
 local function sort_by_native_asc(a, b)
+    local a_native, b_native = a.data.native_fn(), b.data.native_fn()
+    if a_native ~= b_native then
+        return a_native > b_native
+    end
+    if a.data.english ~= b.data.english then
+        return a.data.english < b.data.english
+    end
+    return a.data.part_of_speech < b.data.part_of_speech
 end
 
 local function sort_by_part_of_speech_desc(a, b)
+    if a.data.part_of_speech ~= b.data.part_of_speech then
+        return a.data.part_of_speech < b.data.part_of_speech
+    end
+    if a.data.english ~= b.data.english then
+        return a.data.english < b.data.english
+    end
+    local a_native, b_native = a.data.native_fn(), b.data.native_fn()
+    return a_native < b_native
 end
 
 local function sort_by_part_of_speech_asc(a, b)
+    if a.data.part_of_speech ~= b.data.part_of_speech then
+        return a.data.part_of_speech > b.data.part_of_speech
+    end
+    if a.data.english ~= b.data.english then
+        return a.data.english < b.data.english
+    end
+    local a_native, b_native = a.data.native_fn(), b.data.native_fn()
+    return a_native < b_native
 end
 
 function Rename:init(info)
@@ -85,7 +176,7 @@ function Rename:init(info)
                     frame={t=0, r=0},
                     label='Generate random name',
                     key='CUSTOM_CTRL_G',
-                    on_activate=function() end,
+                    on_activate=self:callback('generate_random_name'),
                     auto_width=true,
                 },
                 widgets.Label{
@@ -146,15 +237,20 @@ function Rename:init(info)
                 },
                 widgets.Panel{frame={t=2, l=0, w=30}, -- component selector
                     subviews={
-                        widgets.List{frame={t=0, l=0, b=2},
+                        widgets.List{
+                            frame={t=0, l=0, b=2, w=ENGLISH_COL_WIDTH+2},
                             view_id='component_list',
-                            on_select=function(idx, choice) print('component choice', idx) printall_recurse(choice) end,
+                            on_select=function() if self.subviews.component_list then self:refresh_list() end end,
                             choices=self:get_component_choices(),
                             row_height=2,
-                            scroll_keys={
-                                SECONDSCROLL_UP = -1,
-                                SECONDSCROLL_DOWN = 1,
-                            },
+                            scroll_keys={},
+                        },
+                        widgets.List{
+                            frame={t=0, l=ENGLISH_COL_WIDTH+4, b=3},
+                            on_submit=function(_, choice) choice.data.fn() end,
+                            choices=self:get_component_action_choices(),
+                            cursor_pen=COLOR_CYAN,
+                            scroll_keys={},
                         },
                         widgets.HotkeyLabel{
                             frame={b=1, l=0},
@@ -207,9 +303,9 @@ function Rename:init(info)
                             on_change=self:callback('refresh_list', 'sort_part_of_speech'),
                         },
                         widgets.FilteredList{
-                            view_id='list',
+                            view_id='words_list',
                             frame={t=2, l=0, b=0, r=0},
-                            on_submit=function() end,
+                            on_submit=self:callback('set_component_word'),
                         },
                     },
                 },
@@ -218,10 +314,10 @@ function Rename:init(info)
     }
 
     -- replace the FilteredList's built-in EditField with our own
-    self.subviews.list.list.frame.t = 0
-    self.subviews.list.edit.visible = false
-    self.subviews.list.edit = self.subviews.search
-    self.subviews.search.on_change = self.subviews.list:callback('onFilterChange')
+    self.subviews.words_list.list.frame.t = 0
+    self.subviews.words_list.edit.visible = false
+    self.subviews.words_list.edit = self.subviews.search
+    self.subviews.search.on_change = self.subviews.words_list:callback('onFilterChange')
 
     self:refresh_list()
 end
@@ -230,36 +326,161 @@ function Rename:get_component_choices()
     local choices = {}
     for val, comp in ipairs(df.language_name_component) do
         local text = {
-            {text=comp:gsub('(%l)(%u)', '%1 %2')}, NEWLINE
-            {text=function()
+            {text=comp:gsub('(%l)(%u)', '%1 %2')}, NEWLINE,
+            {gap=2, pen=COLOR_YELLOW, text=function()
                 local word = self.target.words[val]
                 if word < 0 then return end
-                return ('word: %s'):format(df.global.world.raws.language.words[word].forms.Noun)
-            end}
+                return ('%s'):format(language.words[word].forms[self.target.parts_of_speech[val]])
+            end},
         }
         table.insert(choices, {text=text, data={val=val}})
     end
     return choices
 end
 
-function Rename:get_word_choices()
-    --if self.cache[]
-    local translations = df.language_translation.get_vector()
+function Rename:get_component_action_choices()
     local choices = {}
-    for idx, word in ipairs(world.raws.language.words) do
-        table.insert(choices, {
-            text={
-                {text=function() return word.forms.Noun end, width=ENGLISH_COL_WIDTH},
-                {gap=2, text=function() return translations[self.subviews.language:getOptionValue()].words[idx].value end, width=NATIVE_COL_WIDTH},
-                {text=df.language_part_of_speech[word.part_of_speech], width=15},
-            },
-            search_key=function() end,
-        })
+    for val, comp in ipairs(df.language_name_component) do
+        local randomize_text = {{text='[', pen=COLOR_RED}, 'Random', {text=']', pen=COLOR_RED}}
+        local randomize_fn = self:callback('randomize_component_word', comp)
+        table.insert(choices, {text=randomize_text, data={fn=randomize_fn}})
+        local clear_text = {
+            {text=function() return self.target.words[val] >= 0 and '[' or '' end, pen=COLOR_RED},
+            {text=function() return self.target.words[val] >= 0 and 'Clear' or '' end },
+            {text=function() return self.target.words[val] >= 0 and ']' or '' end, pen=COLOR_RED}
+        }
+        local clear_fn = self:callback('clear_component_word', comp)
+        table.insert(choices, {text=clear_text, data={fn=clear_fn}})
     end
     return choices
 end
 
-function Rename:refresh_list()
+function Rename:clear_component_word(comp)
+    self.target.words[comp] = -1
+    for _, sync_target in ipairs(self.sync_targets) do
+        sync_target.words[comp] = -1
+    end
+end
+
+function Rename:set_component_word(_, choice)
+    local _, comp_choice = self.subviews.component_list:getSelected()
+    self.target.words[comp_choice.data.val] = choice.data.idx
+    self.target.parts_of_speech[comp_choice.data.val] = choice.data.part_of_speech
+    for _, sync_target in ipairs(self.sync_targets) do
+        sync_target.words[comp_choice.data.val] = choice.data.idx
+        sync_target.parts_of_speech[comp_choice.data.val] = choice.data.part_of_speech
+    end
+end
+
+function Rename:randomize_component_word(comp)
+    local categories = langauge_name_type_to_category[self.target.type]
+    local category = categories[math.random(#categories)]
+    local word_table = language.word_table[0][category]
+    local words = word_table.words[comp]
+    local idx = math.random(#words)-1
+    self.target.words[comp] = words[idx]
+    self.target.parts_of_speech[comp] = word_table.parts[comp][idx]
+    for _, sync_target in ipairs(self.sync_targets) do
+        sync_target.words[comp] = words[idx]
+        sync_target.parts_of_speech[comp] = word_table.parts[comp][idx]
+    end
+end
+
+function Rename:generate_random_name()
+    print('TODO: generate_random_name')
+end
+
+function Rename:add_word_choice(choices, comp, idx, word, part_of_speech)
+    local english = word.forms[part_of_speech]
+    if #english == 0 then return end
+    local function get_native()
+        return translations[self.subviews.language:getOptionValue()].words[idx].value
+    end
+    local part = part_of_speech_to_display[part_of_speech]
+    local function get_pen()
+        if idx == self.target.words[comp] and part_of_speech == self.target.parts_of_speech[comp] then
+            return COLOR_YELLOW
+        end
+    end
+    table.insert(choices, {
+        text={
+            {text=english, width=ENGLISH_COL_WIDTH, pen=get_pen},
+            {gap=2, text=get_native, width=NATIVE_COL_WIDTH, pen=get_pen},
+            {gap=2, text=part, width=15, pen=get_pen},
+        },
+        search_key=function() return ('%s %s %s'):format(english, get_native(), part) end,
+        data={idx=idx, english=english, native_fn=get_native, part_of_speech=part_of_speech},
+    })
+end
+
+function Rename:get_word_choices(comp)
+    if self.cache[comp] then
+        return self.cache[comp]
+    end
+
+    local choices = {}
+    for idx, word in ipairs(language.words) do
+        local flags = word.flags
+        if comp == df.language_name_component.FrontCompound then
+            if flags.front_compound_noun_sing then self:add_word_choice(choices, comp, idx, word, df.part_of_speech.Noun) end
+            if flags.front_compound_noun_plur then self:add_word_choice(choices, comp, idx, word, df.part_of_speech.NounPlural) end
+            if flags.front_compound_adj then self:add_word_choice(choices, comp, idx, word, df.part_of_speech.Adjective) end
+            if flags.front_compound_prefix then self:add_word_choice(choices, comp, idx, word, df.part_of_speech.Prefix) end
+            if flags.standard_verb then
+                self:add_word_choice(choices, comp, idx, word, df.part_of_speech.Verb)
+                self:add_word_choice(choices, comp, idx, word, df.part_of_speech.VerbPassive)
+            end
+        elseif comp == df.language_name_component.RearCompound then
+            if flags.rear_compound_noun_sing then self:add_word_choice(choices, comp, idx, word, df.part_of_speech.Noun) end
+            if flags.rear_compound_noun_plur then self:add_word_choice(choices, comp, idx, word, df.part_of_speech.NounPlural) end
+            if flags.rear_compound_adj then self:add_word_choice(choices, comp, idx, word, df.part_of_speech.Adjective) end
+            if flags.standard_verb then
+                self:add_word_choice(choices, comp, idx, word, df.part_of_speech.Verb)
+                self:add_word_choice(choices, comp, idx, word, df.part_of_speech.Verb3rdPerson)
+                self:add_word_choice(choices, comp, idx, word, df.part_of_speech.VerbPast)
+                self:add_word_choice(choices, comp, idx, word, df.part_of_speech.VerbPassive)
+            end
+        elseif comp == df.language_name_component.FirstAdjective or comp == df.language_name_component.SecondAdjective then
+            self:add_word_choice(choices, comp, idx, word, df.part_of_speech.Adjective)
+        elseif comp == df.language_name_component.HyphenCompound then
+            if flags.the_compound_noun_sing then self:add_word_choice(choices, comp, idx, word, df.part_of_speech.Noun) end
+            if flags.the_compound_noun_plur then self:add_word_choice(choices, comp, idx, word, df.part_of_speech.NounPlural) end
+            if flags.the_compound_adj then self:add_word_choice(choices, comp, idx, word, df.part_of_speech.Adjective) end
+            if flags.the_compound_prefix then self:add_word_choice(choices, comp, idx, word, df.part_of_speech.Prefix) end
+        elseif comp == df.language_name_component.TheX then
+            if flags.the_noun_sing then self:add_word_choice(choices, comp, idx, word, df.part_of_speech.Noun) end
+            if flags.the_noun_plur then self:add_word_choice(choices, comp, idx, word, df.part_of_speech.NounPlural) end
+        elseif comp == df.language_name_component.OfX then
+            if flags.of_noun_sing then self:add_word_choice(choices, comp, idx, word, df.part_of_speech.Noun) end
+            if flags.of_noun_plur then self:add_word_choice(choices, comp, idx, word, df.part_of_speech.NounPlural) end
+            if flags.standard_verb then
+                self:add_word_choice(choices, comp, idx, word, df.part_of_speech.VerbGerund)
+            end
+        end
+    end
+
+    self.cache[comp] = choices
+    return choices
+end
+
+function Rename:refresh_list(sort_widget)
+    sort_widget = sort_widget or 'sort'
+    sort_fn = self.subviews.sort:getOptionValue()
+    if sort_fn == DEFAULT_NIL then
+        self.subviews[sort_widget]:cycle()
+        return
+    end
+    for _,widget_name in ipairs{'sort', 'sort_english', 'sort_native', 'sort_part_of_speech'} do
+        self.subviews[widget_name]:setOption(sort_fn)
+    end
+    local list = self.subviews.words_list
+    local saved_filter = list:getFilter()
+    list:setFilter('')
+    local _, comp_choice = self.subviews.component_list:getSelected()
+    local choices = self:get_word_choices(comp_choice.data.val)
+    table.sort(choices, self.subviews.sort:getOptionValue())
+    list:setChoices(choices)
+    list:setFilter(saved_filter)
 end
 
 --
@@ -302,30 +523,23 @@ local function get_artifact_target(item)
     return rec.name
 end
 
-local function get_unit_target(unit, sync_targets)
-    if not unit then return end
-    local target = dfhack.units.getVisibleName(unit)
-    local hf = df.historical_figure.find(unit.hist_figure_id)
-    if hf then
-        local hf_name = dfhack.units.getVisibleName(hf)
-        if hf_name ~= target then
-            table.insert(sync_targets, hf_name)
-        end
-    end
-    return target
-end
-
-local function get_hf_target(hf, sync_targets)
+local function get_hf_target(hf)
     if not hf then return end
     local target = dfhack.units.getVisibleName(hf)
     local unit = df.unit.find(hf.unit_id)
+    local sync_targets = {}
     if unit then
         local unit_name = dfhack.units.getVisibleName(unit)
         if unit_name ~= target then
             table.insert(sync_targets, unit_name)
         end
     end
-    return target
+    return target, sync_targets
+end
+
+local function get_unit_target(unit)
+    if not unit then return end
+    return get_hf_target(df.historical_figure.find(unit.hist_figure_id))
 end
 
 local function get_location_target(site, loc_id)
@@ -338,7 +552,7 @@ end
 local function get_target(opts)
     local target, sync_targets = nil, {}
     if opts.histfig_id then
-        target = get_hf_target(df.historical_figure.find(opts.histfig_id), sync_targets)
+        target, sync_targets = get_hf_target(df.historical_figure.find(opts.histfig_id))
         if not target then qerror('Historical figure not found') end
     elseif opts.item_id then
         target = get_artifact_target(df.item.find(opts.item_id))
@@ -357,7 +571,7 @@ local function get_target(opts)
         if not squad then qerror('Squad not found') end
         target = squad.name
     elseif opts.unit_id then
-        target = get_unit_target(df.unit.find(opts.unit_id), sync_targets)
+        target, sync_targets = get_unit_target(df.unit.find(opts.unit_id))
         if not target then qerror('Unit not found') end
     elseif opts.world then
         target = df.global.world.world_data.name
@@ -407,6 +621,11 @@ if not target then
         target = get_artifact_target(item)
     elseif zone then
         target = get_location_target(df.world_site.find(zone.site_id), zone.location_id)
+    else
+        target, sync_targets = select_new_target()
+    end
+    if not target then
+        qerror('No target selected')
     end
 end
 
