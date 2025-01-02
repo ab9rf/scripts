@@ -1,3 +1,5 @@
+--@ module = true
+
 local gui = require('gui')
 local utils = require('utils')
 local widgets = require('gui.widgets')
@@ -18,7 +20,8 @@ local function to_title_case(str)
     return dfhack.capitalizeStringWords(dfhack.lowerCp437(str:gsub('_', ' ')))
 end
 
-local function get_location_desc(loc)
+-- also called by gui/rename
+function get_location_desc(loc)
     if df.abstract_building_hospitalst:is_instance(loc) then
         return 'Hospital', COLOR_WHITE
     elseif df.abstract_building_inn_tavernst:is_instance(loc) then
@@ -307,6 +310,10 @@ end
 
 function SitemapScreen:onDismiss()
     view = nil
+end
+
+if dfhack_flags.module then
+    return
 end
 
 if not dfhack.isMapLoaded() then

@@ -1,5 +1,7 @@
 local argparse = require('argparse')
+local dlg = require('gui.dialogs')
 local gui = require('gui')
+local sitemap = reqscript('gui/sitemap')
 local utils = require('utils')
 local widgets = require('gui.widgets')
 
@@ -15,9 +17,141 @@ local translations = df.language_translation.get_vector()
 -- target selection
 --
 
-local function select_new_target()
-    local target, sync_targets = nil, {}
+local function get_artifact_target(item)
+    if not item or not item.flags.artifact then return end
+    local gref = dfhack.items.getGeneralRef(item, df.general_ref_type.IS_ARTIFACT)
+    if not gref then return end
+    local rec = df.artifact_record.find(gref.artifact_id)
+    if not rec then return end
+    return rec.name
+end
+
+local function get_hf_target(hf)
+    if not hf then return end
+    local target = dfhack.units.getVisibleName(hf)
+    local unit = df.unit.find(hf.unit_id)
+    local sync_targets = {}
+    if unit then
+        local unit_name = dfhack.units.getVisibleName(unit)
+        if unit_name ~= target then
+            table.insert(sync_targets, unit_name)
+        end
+    end
     return target, sync_targets
+end
+
+local function get_unit_target(unit)
+    if not unit then return end
+    local hf = df.historical_figure.find(unit.hist_figure_id)
+    if hf then
+        return get_hf_target(hf)
+    end
+    -- unit with no hf
+    return dfhack.units.getVisibleName(unit), {}
+end
+
+local function get_location_target(site, loc_id)
+    if not site or loc_id < 0 then return end
+    local loc = utils.binsearch(site.buildings, loc_id, 'id')
+    if not loc then return end
+    return loc.name
+end
+
+local function select_artifact(cb)
+    local choices = {}
+    for _, item in ipairs(df.global.world.items.other.ANY_ARTIFACT) do
+        if item.flags.garbage_collect then goto continue end
+        local target = get_artifact_target(item)
+        if not target then goto continue end
+        table.insert(choices, {
+            text=dfhack.items.getReadableDescription(item),
+            data={target=target},
+        })
+        ::continue::
+    end
+    dlg.showListPrompt('Rename', 'Select an artifact to rename:', COLOR_WHITE,
+        choices, function(_, choice) cb(choice.data.target) end, nil, nil, true)
+end
+
+local function select_location(site, cb)
+    local choices = {}
+    for _,loc in ipairs(site.buildings) do
+        local desc, pen = sitemap.get_location_desc(loc)
+        table.insert(choices, {
+            text={
+                dfhack.TranslateName(loc.name, true),
+                ' (',
+                {text=desc, pen=pen},
+                ')',
+            },
+            data={target=loc.name},
+        })
+    end
+    dlg.showListPrompt('Rename', 'Select a location to rename:', COLOR_WHITE,
+        choices, function(_, choice) cb(choice.data.target) end, nil, nil, true)
+end
+
+local function select_site(site, cb)
+    cb(site.name)
+end
+
+local function select_squad(fort, cb)
+    local choices = {}
+    for _,squad_id in ipairs(fort.squads) do
+        local squad = df.squad.find(squad_id)
+        if squad then
+            table.insert(choices, {
+                text=dfhack.military.getSquadName(squad.id),
+                data={target=squad.name},
+            })
+        end
+    end
+    dlg.showListPrompt('Rename', 'Select a squad to rename:', COLOR_WHITE,
+        choices, function(_, choice) cb(choice.data.target) end, nil, nil, true)
+end
+
+local function select_unit(cb)
+    local choices = {}
+    for _,unit in ipairs(df.global.world.units.active) do
+        local target, sync_targets = get_unit_target(unit)
+        if target then
+            table.insert(choices, {
+                text=dfhack.units.getReadableName(unit),
+                data={target=target, sync_targets=sync_targets},
+            })
+        end
+    end
+    dlg.showListPrompt('Rename', 'Select a unit to rename:', COLOR_WHITE,
+        choices, function(_, choice) cb(choice.data.target, choice.data.sync_targets) end,
+        nil, nil, true)
+end
+
+local function select_world(cb)
+    cb(df.global.world.world_data.name)
+end
+
+local function select_new_target(cb)
+    local choices = {}
+    if #df.global.world.items.other.ANY_ARTIFACT > 0 then
+        table.insert(choices, {text='An artifact', data={fn=select_artifact}})
+    end
+    local site = dfhack.world.getCurrentSite()
+    if site then
+        if #site.buildings > 0 then
+            table.insert(choices, {text='A location', data={fn=curry(select_location, site)}})
+        end
+        table.insert(choices, {text='This fortress', data={fn=curry(select_site, site)}})
+        local fort = df.historical_entity.find(df.global.plotinfo.group_id)
+        if fort and #fort.squads > 0 then
+            table.insert(choices, {text='A squad', data={fn=curry(select_squad, fort)}})
+        end
+    end
+    if #df.global.world.units.active > 0 then
+        table.insert(choices, {text='A unit', data={fn=select_unit}})
+    end
+    table.insert(choices, {text='This world', data={fn=select_world}})
+    dlg.showListPrompt('Rename', 'What would you like to rename?', COLOR_WHITE,
+        choices, function(_, choice) choice.data.fn(cb) end)
 end
 
 --
@@ -27,9 +161,9 @@ end
 Rename = defclass(Rename, widgets.Window)
 Rename.ATTRS {
     frame_title='Rename',
-    frame={w=88, h=31},
+    frame={w=89, h=33},
     resizable=true,
-    resize_min={w=70, h=31},
+    resize_min={w=61},
 }
 
 local function get_language_options()
@@ -125,21 +259,22 @@ function Rename:init(info)
                     frame={t=0, l=0},
                     key='CUSTOM_CTRL_N',
                     label='Select new target',
+                    auto_width=true,
                     on_activate=function()
-                        local target, sync_targets = select_new_target()
-                        if target then
-                            self.target, self.sync_targets = target, sync_targets
+                        select_new_target(function(target, sync_targets)
+                            if not target then return end
+                            self.target, self.sync_targets = target, sync_targets or {}
                             self.subviews.language:setOption(self.target.language)
-                        end
+                        end)
                     end,
                     visible=info.show_selector,
                 },
                 widgets.HotkeyLabel{
                     frame={t=0, r=0},
-                    label='Generate random name',
                     key='CUSTOM_CTRL_G',
-                    on_activate=self:callback('generate_random_name'),
+                    label='Generate random name',
                     auto_width=true,
+                    on_activate=self:callback('generate_random_name'),
                 },
                 widgets.Label{
                     frame={t=2},
@@ -215,20 +350,38 @@ function Rename:init(info)
                             scroll_keys={},
                         },
                         widgets.HotkeyLabel{
-                            frame={b=1, l=0},
+                            frame={b=3, l=0},
                             key='SECONDSCROLL_UP',
                             label='Prev component',
                             on_activate=function() self.subviews.component_list:moveCursor(-1) end,
                         },
                         widgets.HotkeyLabel{
-                            frame={b=0, l=0},
+                            frame={b=2, l=0},
                             key='SECONDSCROLL_DOWN',
                             label='Next component',
                             on_activate=function() self.subviews.component_list:moveCursor(1) end,
                         },
+                        widgets.HotkeyLabel{
+                            frame={b=1, l=0},
+                            key='CUSTOM_CTRL_D',
+                            label='Randomize component',
+                            on_activate=function()
+                                local _, comp_choice = self.subviews.component_list:getSelected()
+                                self:randomize_component_word(comp_choice.data.val)
+                            end,
+                        },
+                        widgets.HotkeyLabel{
+                            frame={b=0, l=0},
+                            key='CUSTOM_CTRL_H',
+                            label='Clear component',
+                            on_activate=function()
+                                local _, comp_choice = self.subviews.component_list:getSelected()
+                                self:clear_component_word(comp_choice.data.val)
+                            end,
+                        },
                     },
                 },
-                widgets.Panel{frame={t=2, l=30}, -- words table
+                widgets.Panel{frame={t=2, l=31}, -- words table
                     subviews={
                         widgets.CycleHotkeyLabel{
                             view_id='sort_english',
@@ -463,9 +616,9 @@ function Rename:get_word_choices(comp)
     return choices
 end
 
-function Rename:refresh_list(sort_widget)
+function Rename:refresh_list(sort_widget, sort_fn)
     sort_widget = sort_widget or 'sort'
-    sort_fn = self.subviews.sort:getOptionValue()
+    sort_fn = sort_fn or self.subviews.sort:getOptionValue()
     if sort_fn == DEFAULT_NIL then
         self.subviews[sort_widget]:cycle()
         return
@@ -496,7 +649,7 @@ function RenameScreen:init(info)
     self:addviews{
         Rename{
             target=info.target,
-            sync_targets=info.sync_targets,
+            sync_targets=info.sync_targets or {},
             show_selector=info.show_selector,
         }
     }
@@ -512,46 +665,6 @@ end
 
 if not dfhack.isWorldLoaded() then
     qerror('This script requires a world to be loaded')
-end
-
-local function get_artifact_target(item)
-    if not item or not item.flags.artifact then return end
-    local gref = dfhack.items.getGeneralRef(item, df.general_ref_type.IS_ARTIFACT)
-    if not gref then return end
-    local rec = df.artifact_record.find(gref.artifact_id)
-    if not rec then return end
-    return rec.name
-end
-
-local function get_hf_target(hf)
-    if not hf then return end
-    local target = dfhack.units.getVisibleName(hf)
-    local unit = df.unit.find(hf.unit_id)
-    local sync_targets = {}
-    if unit then
-        local unit_name = dfhack.units.getVisibleName(unit)
-        if unit_name ~= target then
-            table.insert(sync_targets, unit_name)
-        end
-    end
-    return target, sync_targets
-end
-
-local function get_unit_target(unit)
-    if not unit then return end
-    local hf = df.historical_figure.find(unit.hist_figure_id)
-    if hf then
-        return get_hf_target(hf)
-    end
-    -- unit with no hf
-    return dfhack.units.getVisibleName(unit), {}
-end
-
-local function get_location_target(site, loc_id)
-    if not site or loc_id < 0 then return end
-    local loc = utils.binsearch(site.buildings, loc_id, 'id')
-    if not loc then return end
-    return loc.name
 end
 
 local function get_target(opts)
@@ -584,58 +697,71 @@ local function get_target(opts)
     return target, sync_targets
 end
 
-local opts = {
-    help=false,
-    entity_id=nil,
-    histfig_id=nil,
-    item_id=nil,
-    location_id=nil,
-    site_id=nil,
-    squad_id=nil,
-    unit_id=nil,
-    world=false,
-    show_selector=true,
-}
-local positionals = argparse.processArgsGetopt({...}, {
-    { 'a', 'artifact', handler=function(optarg) opts.item_id = argparse.nonnegativeInt(optarg, 'artifact') end },
-    { 'e', 'entity', handler=function(optarg) opts.entity_id = argparse.nonnegativeInt(optarg, 'entity') end },
-    { 'f', 'histfig', handler=function(optarg) opts.histfig_id = argparse.nonnegativeInt(optarg, 'histfig') end },
-    { 'h', 'help', handler = function() opts.help = true end },
-    { 'l', 'location', handler=function(optarg) opts.location_id = argparse.nonnegativeInt(optarg, 'location') end },
-    { 'q', 'squad', handler=function(optarg) opts.squad_id = argparse.nonnegativeInt(optarg, 'squad') end },
-    { 's', 'site', handler=function(optarg) opts.site_id = argparse.nonnegativeInt(optarg, 'site') end },
-    { 'u', 'unit', handler=function(optarg) opts.unit_id = argparse.nonnegativeInt(optarg, 'unit') end },
-    { 'w', 'world', handler=function() opts.world = true end },
-    { '', 'no-target-selector', handler=function() opts.show_selector = false end },
-})
+local function main(args)
+    local opts = {
+        help=false,
+        entity_id=nil,
+        histfig_id=nil,
+        item_id=nil,
+        location_id=nil,
+        site_id=nil,
+        squad_id=nil,
+        unit_id=nil,
+        world=false,
+        show_selector=true,
+    }
+    local positionals = argparse.processArgsGetopt(args, {
+        { 'a', 'artifact', handler=function(optarg) opts.item_id = argparse.nonnegativeInt(optarg, 'artifact') end },
+        { 'e', 'entity', handler=function(optarg) opts.entity_id = argparse.nonnegativeInt(optarg, 'entity') end },
+        { 'f', 'histfig', handler=function(optarg) opts.histfig_id = argparse.nonnegativeInt(optarg, 'histfig') end },
+        { 'h', 'help', handler = function() opts.help = true end },
+        { 'l', 'location', handler=function(optarg) opts.location_id = argparse.nonnegativeInt(optarg, 'location') end },
+        { 'q', 'squad', handler=function(optarg) opts.squad_id = argparse.nonnegativeInt(optarg, 'squad') end },
+        { 's', 'site', handler=function(optarg) opts.site_id = argparse.nonnegativeInt(optarg, 'site') end },
+        { 'u', 'unit', handler=function(optarg) opts.unit_id = argparse.nonnegativeInt(optarg, 'unit') end },
+        { 'w', 'world', handler=function() opts.world = true end },
+        { '', 'no-target-selector', handler=function() opts.show_selector = false end },
+    })
 
-if opts.help or positionals[1] == 'help' then
-    print(dfhack.script_help())
-    return
-end
+    if opts.help or positionals[1] == 'help' then
+        print(dfhack.script_help())
+        return
+    end
 
-local target, sync_targets = get_target(opts)
+    local function launch(target, sync_targets)
+        view = view and view:raise() or RenameScreen{
+            target=target,
+            sync_targets=sync_targets,
+            show_selector=opts.show_selector,
+        }:show()
+    end
 
-if not target then
+    local target, sync_targets = get_target(opts)
+    if target then
+        launch(target, sync_targets)
+        return
+    end
+
     local unit = dfhack.gui.getSelectedUnit(true)
     local item = dfhack.gui.getSelectedItem(true)
     local zone = dfhack.gui.getSelectedCivZone(true)
     if unit then
-        target = get_unit_target(unit, sync_targets)
+        target, sync_targets = get_unit_target(unit)
     elseif item then
         target = get_artifact_target(item)
     elseif zone then
         target = get_location_target(df.world_site.find(zone.site_id), zone.location_id)
-    else
-        target, sync_targets = select_new_target()
     end
-    if not target then
+    if target then
+        launch(target, sync_targets)
+        return
+    end
+
+    if not opts.show_selector then
         qerror('No target selected')
     end
+
+    select_new_target(launch)
 end
 
-view = view and view:raise() or RenameScreen{
-    target=target,
-    sync_targets=sync_targets,
-    show_selector=opts.show_selector
-}:show()
+main{...}
