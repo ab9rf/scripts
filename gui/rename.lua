@@ -286,13 +286,13 @@ function Rename:init(info)
                     end,
                     visible=info.show_selector,
                 },
-                widgets.HotkeyLabel{
-                    frame={t=0, r=0},
-                    key='CUSTOM_CTRL_G',
-                    label='Generate random name',
-                    auto_width=true,
-                    on_activate=self:callback('generate_random_name'),
-                },
+                -- widgets.HotkeyLabel{
+                --     frame={t=0, r=0},
+                --     key='CUSTOM_CTRL_G',
+                --     label='Generate random name',
+                --     auto_width=true,
+                --     on_activate=self:callback('generate_random_name'),
+                -- },
                 widgets.Label{
                     frame={t=2},
                     text={{pen=COLOR_YELLOW, text=function() return pad_text(dfhack.TranslateName(self.target), self.frame_body.width) end}},
@@ -586,51 +586,16 @@ function Rename:set_language(val, prev_val)
     end
 end
 
-local language_name_type_to_category = {
-    [df.language_name_type.Figure] = {df.language_name_category.Unit},
-    [df.language_name_type.Artifact] = {df.language_name_category.Artifact, df.language_name_category.ArtifactEvil},
-    [df.language_name_type.Civilization] = {df.language_name_category.EntityMerchantCompany},
-    [df.language_name_type.Squad] = {df.language_name_category.Battle},
-    [df.language_name_type.Site] = {df.language_name_category.Keep},
-    [df.language_name_type.World] = {df.language_name_category.Region},
-    [df.language_name_type.EntitySite] = {df.language_name_category.Keep},
-    [df.language_name_type.Temple] = {df.language_name_category.Temple},
-    [df.language_name_type.FoodStore] = {df.language_name_category.MeadHall},
-    [df.language_name_type.Library] = {df.language_name_category.Library},
-    [df.language_name_type.Guildhall] = {df.language_name_category.Guildhall},
-    [df.language_name_type.Hospital] = {df.language_name_category.Hospital},
-}
-
-local language_name_component_to_word_table_index = {
-    [df.language_name_component.FrontCompound] = df.language_word_table_index.FrontCompound,
-    [df.language_name_component.RearCompound] = df.language_word_table_index.RearCompound,
-    [df.language_name_component.FirstAdjective] = df.language_word_table_index.Adjectives,
-    [df.language_name_component.SecondAdjective] = df.language_word_table_index.Adjectives,
-    [df.language_name_component.HyphenCompound] = df.language_word_table_index.FrontCompound,
-    [df.language_name_component.TheX] = df.language_word_table_index.TheX,
-    [df.language_name_component.OfX] = df.language_word_table_index.OfX,
-}
-
-local function get_random_word(category, word_table_index)
-    local word_table = language.word_table[0][category]
-    local words = word_table.words[word_table_index]
-    local idx = #words > 0 and math.random(#words)-1 or -1
-    local word = idx >= 0 and words[idx] or -1
-    local part_of_speech = idx >= 0 and word_table.parts[word_table_index][idx] or df.part_of_speech.Noun
-    return word, part_of_speech
-end
-
 function Rename:randomize_first_name()
     if self.target.type ~= df.language_name_type.Figure then return end
-    local word_idx = get_random_word(df.language_name_category.Unit, df.language_word_table_index.FirstName)
-    self:set_first_name(word_idx)
+    local choices = self:get_word_choices(df.language_name_component.TheX)
+    self:set_first_name(choices[math.random(#choices)].data.idx)
 end
 
 function Rename:randomize_component_word(comp)
-    local categories = language_name_type_to_category[self.target.type]
-    local category = categories and categories[math.random(#categories)] or df.language_name_category.MeadHall
-    local word_idx, part_of_speech = get_random_word(category, language_name_component_to_word_table_index[comp])
-    self:set_component_word_by_data(comp, word_idx, part_of_speech)
+    local choices = self:get_word_choices(df.language_name_component.TheX)
+    local choice = choices[math.random(#choices)]
+    self:set_component_word_by_data(comp, choice.data.idx, choice.data.part_of_speech)
 end
 
 function Rename:generate_random_name()
