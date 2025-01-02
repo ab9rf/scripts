@@ -1,3 +1,5 @@
+--@module = true
+
 local argparse = require('argparse')
 local dlg = require('gui.dialogs')
 local gui = require('gui')
@@ -161,7 +163,7 @@ end
 Rename = defclass(Rename, widgets.Window)
 Rename.ATTRS {
     frame_title='Rename',
-    frame={w=89, h=33},
+    frame={w=89, h=43},
     resizable=true,
     resize_min={w=61},
 }
@@ -291,12 +293,7 @@ function Rename:init(info)
                     label='Language:',
                     options=language_options,
                     initial_option=self.target and self.target.language or 0,
-                    on_change=function(val)
-                        self.target.language = val
-                        for _, sync_target in ipairs(self.sync_targets) do
-                            sync_target.language = val
-                        end
-                    end,
+                    on_change=self:callback('set_language'),
                 },
                 widgets.Label{
                     frame={t=6, l=7},
@@ -304,46 +301,29 @@ function Rename:init(info)
                 },
             },
         },
+        widgets.Divider{frame={t=8, l=29, w=1},
+            frame_style=gui.FRAME_THIN,
+            frame_style_t=false,
+            frame_style_b=false,
+        },
         widgets.Panel{frame={t=8}, -- body
             subviews={
-                widgets.Panel{frame={t=0, h=1}, -- toolbar
+                widgets.Panel{frame={t=0, l=0, w=30}, -- component selector
                     subviews={
-                        widgets.CycleHotkeyLabel{
-                            view_id='sort',
-                            frame={t=0, l=0, w=32},
-                            label='Sort by:',
-                            key='CUSTOM_CTRL_O',
-                            options={
-                                {label='English'..CH_DN, value=sort_by_english_desc},
-                                {label='English'..CH_UP, value=sort_by_english_asc},
-                                {label='native'..CH_DN, value=sort_by_native_desc},
-                                {label='native'..CH_UP, value=sort_by_native_asc},
-                                {label='part of speech'..CH_DN, value=sort_by_part_of_speech_desc},
-                                {label='part of speech'..CH_UP, value=sort_by_part_of_speech_asc},
-                            },
-                            initial_option=sort_by_english_desc,
-                            on_change=self:callback('refresh_list', 'sort'),
+                        widgets.Label{
+                            frame={t=0, l=0},
+                            text='Name components:',
                         },
-                        widgets.EditField{
-                            view_id='search',
-                            frame={t=0, l=35},
-                            label_text='Search: ',
-                            ignore_keys={'SECONDSCROLL_DOWN', 'SECONDSCROLL_UP'}
-                        },
-                    },
-                },
-                widgets.Panel{frame={t=2, l=0, w=30}, -- component selector
-                    subviews={
                         widgets.List{
-                            frame={t=0, l=0, b=2, w=ENGLISH_COL_WIDTH+2},
+                            frame={t=2, l=0, b=4, w=ENGLISH_COL_WIDTH+2},
                             view_id='component_list',
-                            on_select=function() if self.subviews.component_list then self:refresh_list() end end,
+                            on_select=self:callback('refresh_list'),
                             choices=self:get_component_choices(),
-                            row_height=2,
+                            row_height=3,
                             scroll_keys={},
                         },
                         widgets.List{
-                            frame={t=0, l=ENGLISH_COL_WIDTH+4, b=3},
+                            frame={t=2, l=ENGLISH_COL_WIDTH+4, b=4},
                             on_submit=function(_, choice) choice.data.fn() end,
                             choices=self:get_component_action_choices(),
                             cursor_pen=COLOR_CYAN,
@@ -353,13 +333,23 @@ function Rename:init(info)
                             frame={b=3, l=0},
                             key='SECONDSCROLL_UP',
                             label='Prev component',
-                            on_activate=function() self.subviews.component_list:moveCursor(-1) end,
+                            on_activate=function()
+                                local clist = self.subviews.component_list
+                                local move = self.target.type ~= df.language_name_type.Figure and
+                                    clist:getSelected() == 2 and #clist:getChoices()-2 or -1
+                                self.subviews.component_list:moveCursor(move)
+                            end,
                         },
                         widgets.HotkeyLabel{
                             frame={b=2, l=0},
                             key='SECONDSCROLL_DOWN',
                             label='Next component',
-                            on_activate=function() self.subviews.component_list:moveCursor(1) end,
+                            on_activate=function()
+                                local clist = self.subviews.component_list
+                                local move = self.target.type ~= df.language_name_type.Figure and
+                                    clist:getSelected() == #clist:getChoices() and -#clist:getChoices()+2 or 1
+                                self.subviews.component_list:moveCursor(move)
+                            end,
                         },
                         widgets.HotkeyLabel{
                             frame={b=1, l=0},
@@ -367,7 +357,11 @@ function Rename:init(info)
                             label='Randomize component',
                             on_activate=function()
                                 local _, comp_choice = self.subviews.component_list:getSelected()
-                                self:randomize_component_word(comp_choice.data.val)
+                                if comp_choice.data.is_first_name then
+                                    self:randomize_first_name()
+                                else
+                                    self:randomize_component_word(comp_choice.data.val)
+                                end
                             end,
                         },
                         widgets.HotkeyLabel{
@@ -378,14 +372,41 @@ function Rename:init(info)
                                 local _, comp_choice = self.subviews.component_list:getSelected()
                                 self:clear_component_word(comp_choice.data.val)
                             end,
+                            enabled=function()
+                                local _, comp_choice = self.subviews.component_list:getSelected()
+                                if comp_choice.data.is_first_name then return false end
+                                return self.target.words[comp_choice.data.val] >= 0
+                            end,
                         },
                     },
                 },
-                widgets.Panel{frame={t=2, l=31}, -- words table
+                widgets.Panel{frame={t=0, l=31}, -- words table
                     subviews={
                         widgets.CycleHotkeyLabel{
+                            view_id='sort',
+                            frame={t=0, l=0, w=19},
+                            label='Change sort',
+                            key='CUSTOM_CTRL_O',
+                            options={
+                                {label='', value=sort_by_english_desc},
+                                {label='', value=sort_by_english_asc},
+                                {label='', value=sort_by_native_desc},
+                                {label='', value=sort_by_native_asc},
+                                {label='', value=sort_by_part_of_speech_desc},
+                                {label='', value=sort_by_part_of_speech_asc},
+                            },
+                            initial_option=sort_by_english_desc,
+                            on_change=self:callback('refresh_list', 'sort'),
+                        },
+                        widgets.EditField{
+                            view_id='search',
+                            frame={t=0, l=22},
+                            label_text='Search: ',
+                            ignore_keys={'SECONDSCROLL_DOWN', 'SECONDSCROLL_UP'}
+                        },
+                        widgets.CycleHotkeyLabel{
                             view_id='sort_english',
-                            frame={t=0, l=0, w=8},
+                            frame={t=2, l=0, w=8},
                             options={
                                 {label='English', value=DEFAULT_NIL},
                                 {label='English'..CH_DN, value=sort_by_english_desc},
@@ -397,7 +418,7 @@ function Rename:init(info)
                         },
                         widgets.CycleHotkeyLabel{
                             view_id='sort_native',
-                            frame={t=0, l=ENGLISH_COL_WIDTH+2, w=7},
+                            frame={t=2, l=ENGLISH_COL_WIDTH+2, w=7},
                             options={
                                 {label='native', value=DEFAULT_NIL},
                                 {label='native'..CH_DN, value=sort_by_native_desc},
@@ -408,7 +429,7 @@ function Rename:init(info)
                         },
                         widgets.CycleHotkeyLabel{
                             view_id='sort_part_of_speech',
-                            frame={t=0, l=ENGLISH_COL_WIDTH+2+NATIVE_COL_WIDTH+2, w=15},
+                            frame={t=2, l=ENGLISH_COL_WIDTH+2+NATIVE_COL_WIDTH+2, w=15},
                             options={
                                 {label='part of speech', value=DEFAULT_NIL},
                                 {label='part_of_speech'..CH_DN, value=sort_by_part_of_speech_desc},
@@ -419,7 +440,7 @@ function Rename:init(info)
                         },
                         widgets.FilteredList{
                             view_id='words_list',
-                            frame={t=2, l=0, b=0, r=0},
+                            frame={t=4, l=0, b=0, r=0},
                             on_submit=self:callback('set_component_word'),
                         },
                     },
@@ -439,6 +460,14 @@ end
 
 function Rename:get_component_choices()
     local choices = {}
+    table.insert(choices, {
+            text={
+                {text='First Name',
+                    pen=function() return self.target.type ~= df.language_name_type.Figure and COLOR_GRAY or nil end},
+                NEWLINE,
+                {gap=2, pen=COLOR_YELLOW, text=function() return self.target.first_name end}
+            },
+            data={val=df.language_name_component.TheX, is_first_name=true}})
     for val, comp in ipairs(df.language_name_component) do
         local text = {
             {text=comp:gsub('(%l)(%u)', '%1 %2')}, NEWLINE,
@@ -455,8 +484,19 @@ end
 
 function Rename:get_component_action_choices()
     local choices = {}
+    table.insert(choices, {
+        text={
+            {text='[', pen=function() return self.target.type ~= df.language_name_type.Figure and COLOR_GRAY or COLOR_RED end},
+            {text='Random', pen=function() return self.target.type ~= df.language_name_type.Figure and COLOR_GRAY or nil end},
+            {text=']', pen=function() return self.target.type ~= df.language_name_type.Figure and COLOR_GRAY or COLOR_RED end}
+        },
+        data={fn=self:callback('randomize_first_name')},
+    })
+    table.insert(choices, {text='', data={fn=function() end}}) -- shouldn't be able to clear a first name, only overwrite
+    table.insert(choices, {text='', data={fn=function() end}})
+
+    local randomize_text = {{text='[', pen=COLOR_RED}, 'Random', {text=']', pen=COLOR_RED}}
     for val, comp in ipairs(df.language_name_component) do
-        local randomize_text = {{text='[', pen=COLOR_RED}, 'Random', {text=']', pen=COLOR_RED}}
         local randomize_fn = self:callback('randomize_component_word', comp)
         table.insert(choices, {text=randomize_text, data={fn=randomize_fn}})
         local clear_text = {
@@ -466,6 +506,7 @@ function Rename:get_component_action_choices()
         }
         local clear_fn = self:callback('clear_component_word', comp)
         table.insert(choices, {text=clear_text, data={fn=clear_fn}})
+        table.insert(choices, {text='', data={fn=function() end}})
     end
     return choices
 end
@@ -477,13 +518,35 @@ function Rename:clear_component_word(comp)
     end
 end
 
+function Rename:set_first_name(choice)
+    self.target.first_name = translations[self.subviews.language:getOptionValue()].words[choice.data.idx].value
+    for _, sync_target in ipairs(self.sync_targets) do
+        sync_target.first_name = self.target.first_name
+    end
+end
+
 function Rename:set_component_word(_, choice)
     local _, comp_choice = self.subviews.component_list:getSelected()
+    if comp_choice.data.is_first_name then
+        self:set_first_name(choice)
+        return
+    end
     self.target.words[comp_choice.data.val] = choice.data.idx
     self.target.parts_of_speech[comp_choice.data.val] = choice.data.part_of_speech
     for _, sync_target in ipairs(self.sync_targets) do
         sync_target.words[comp_choice.data.val] = choice.data.idx
         sync_target.parts_of_speech[comp_choice.data.val] = choice.data.part_of_speech
+    end
+end
+
+function Rename:set_language(val, prev_val)
+    self.target.language = val
+    -- translate current first name into target language
+    local idx = utils.linear_index(translations[prev_val].words, self.target.first_name, 'value')
+    if idx then self.target.first_name = translations[val].words[idx].value end
+    for _, sync_target in ipairs(self.sync_targets) do
+        sync_target.language = val
+        sync_target.first_name = self.target.first_name
     end
 end
 
@@ -512,6 +575,12 @@ local language_name_component_to_word_table_index = {
     [df.language_name_component.FrontCompound] = df.language_word_table_index.OfX,
 
 }
+
+function Rename:randomize_first_name()
+    if self.target.type ~= df.language_name_type.Figure then return end
+    local choices = self:get_word_choices(df.language_name_component.TheX)
+    self:set_first_name(choices[math.random(#choices)])
+end
 
 function Rename:randomize_component_word(comp)
     local categories = langauge_name_type_to_category[self.target.type]
@@ -550,7 +619,12 @@ function Rename:add_word_choice(choices, comp, idx, word, part_of_speech)
         return translations[self.subviews.language:getOptionValue()].words[idx].value
     end
     local part = part_of_speech_to_display[part_of_speech]
+    local clist = self.subviews.component_list
     local function get_pen()
+        local _, comp_choice = clist:getSelected()
+        if comp_choice.data.is_first_name then
+            return get_native() == self.target.first_name and COLOR_YELLOW or nil
+        end
         if idx == self.target.words[comp] and part_of_speech == self.target.parts_of_speech[comp] then
             return COLOR_YELLOW
         end
@@ -617,6 +691,13 @@ function Rename:get_word_choices(comp)
 end
 
 function Rename:refresh_list(sort_widget, sort_fn)
+    local clist = self.subviews.component_list
+    if not clist then return end
+    if self.target.type ~= df.language_name_type.Figure and clist:getSelected() == 1 then
+        clist:setSelected(self.prev_selected_component or 2)
+    end
+    self.prev_selected_component = clist:getSelected()
+
     sort_widget = sort_widget or 'sort'
     sort_fn = sort_fn or self.subviews.sort:getOptionValue()
     if sort_fn == DEFAULT_NIL then
@@ -629,7 +710,7 @@ function Rename:refresh_list(sort_widget, sort_fn)
     local list = self.subviews.words_list
     local saved_filter = list:getFilter()
     list:setFilter('')
-    local _, comp_choice = self.subviews.component_list:getSelected()
+    local _, comp_choice = clist:getSelected()
     local choices = self:get_word_choices(comp_choice.data.val)
     table.sort(choices, self.subviews.sort:getOptionValue())
     list:setChoices(choices)
@@ -660,8 +741,18 @@ function RenameScreen:onDismiss()
 end
 
 --
+-- Overlays
+--
+
+OVERLAY_WIDGETS = {}
+
+--
 -- CLI
 --
+
+if dfhack_flags.module then
+    return
+end
 
 if not dfhack.isWorldLoaded() then
     qerror('This script requires a world to be loaded')
