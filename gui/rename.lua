@@ -8,44 +8,6 @@ local CH_DN = string.char(31)
 local ENGLISH_COL_WIDTH = 16
 local NATIVE_COL_WIDTH = 16
 
-local part_of_speech_to_display = {
-    [df.part_of_speech.Noun] = 'Singular Noun',
-    [df.part_of_speech.NounPlural] = 'Plural Noun',
-    [df.part_of_speech.Adjective] = 'Adjective',
-    [df.part_of_speech.Prefix] = 'Prefix',
-    [df.part_of_speech.Verb] = 'Present (1st)',
-    [df.part_of_speech.Verb3rdPerson] = 'Present (3rd)',
-    [df.part_of_speech.VerbPast] = 'Preterite',
-    [df.part_of_speech.VerbPassive] = 'Past Participle',
-    [df.part_of_speech.VerbGerund] = 'Present Participle',
-}
-
-local langauge_name_type_to_category = {
-    [df.language_name_type.Figure] = {df.language_name_category.Unit},
-    [df.language_name_type.Artifact] = {df.language_name_category.Artifact, df.language_name_category.ArtifactEvil},
-    [df.language_name_type.Civilization] = {df.language_name_category.EntityMerchantCompany},
-    [df.language_name_type.Squad] = {df.language_name_category.Battle},
-    [df.language_name_type.Site] = {df.language_name_category.Keep},
-    [df.language_name_type.World] = {df.language_name_category.Region},
-    [df.language_name_type.EntitySite] = {df.language_name_category.Keep},
-    [df.language_name_type.Temple] = {df.language_name_category.Temple},
-    [df.language_name_type.MeadHall] = {df.language_name_category.MeadHall},
-    [df.language_name_type.Library] = {df.language_name_category.Library},
-    [df.language_name_type.Guildhall] = {df.language_name_category.Guildhall},
-    [df.language_name_type.Hospital] = {df.language_name_category.Hospital},
-}
-
-local language_name_component_to_word_table_index = {
-    [df.language_name_component.FrontCompound] = df.language_word_table_index.FrontCompound,
-    [df.language_name_component.RearCompound] = df.language_word_table_index.RearCompound,
-    [df.language_name_component.FrontCompound] = df.language_word_table_index.FirstName,
-    [df.language_name_component.FirstAdjective] = df.language_word_table_index.Adjectives,
-    [df.language_name_component.SecondAdjective] = df.language_word_table_index.Adjectives,
-    [df.language_name_component.FrontCompound] = df.language_word_table_index.TheX,
-    [df.language_name_component.FrontCompound] = df.language_word_table_index.OfX,
-
-}
-
 local language = df.global.world.raws.language
 local translations = df.language_translation.get_vector()
 
@@ -372,6 +334,32 @@ function Rename:set_component_word(_, choice)
     end
 end
 
+local langauge_name_type_to_category = {
+    [df.language_name_type.Figure] = {df.language_name_category.Unit},
+    [df.language_name_type.Artifact] = {df.language_name_category.Artifact, df.language_name_category.ArtifactEvil},
+    [df.language_name_type.Civilization] = {df.language_name_category.EntityMerchantCompany},
+    [df.language_name_type.Squad] = {df.language_name_category.Battle},
+    [df.language_name_type.Site] = {df.language_name_category.Keep},
+    [df.language_name_type.World] = {df.language_name_category.Region},
+    [df.language_name_type.EntitySite] = {df.language_name_category.Keep},
+    [df.language_name_type.Temple] = {df.language_name_category.Temple},
+    [df.language_name_type.MeadHall] = {df.language_name_category.MeadHall},
+    [df.language_name_type.Library] = {df.language_name_category.Library},
+    [df.language_name_type.Guildhall] = {df.language_name_category.Guildhall},
+    [df.language_name_type.Hospital] = {df.language_name_category.Hospital},
+}
+
+local language_name_component_to_word_table_index = {
+    [df.language_name_component.FrontCompound] = df.language_word_table_index.FrontCompound,
+    [df.language_name_component.RearCompound] = df.language_word_table_index.RearCompound,
+    [df.language_name_component.FrontCompound] = df.language_word_table_index.FirstName,
+    [df.language_name_component.FirstAdjective] = df.language_word_table_index.Adjectives,
+    [df.language_name_component.SecondAdjective] = df.language_word_table_index.Adjectives,
+    [df.language_name_component.FrontCompound] = df.language_word_table_index.TheX,
+    [df.language_name_component.FrontCompound] = df.language_word_table_index.OfX,
+
+}
+
 function Rename:randomize_component_word(comp)
     local categories = langauge_name_type_to_category[self.target.type]
     local category = categories[math.random(#categories)]
@@ -389,6 +377,18 @@ end
 function Rename:generate_random_name()
     print('TODO: generate_random_name')
 end
+
+local part_of_speech_to_display = {
+    [df.part_of_speech.Noun] = 'Singular Noun',
+    [df.part_of_speech.NounPlural] = 'Plural Noun',
+    [df.part_of_speech.Adjective] = 'Adjective',
+    [df.part_of_speech.Prefix] = 'Prefix',
+    [df.part_of_speech.Verb] = 'Present (1st)',
+    [df.part_of_speech.Verb3rdPerson] = 'Present (3rd)',
+    [df.part_of_speech.VerbPast] = 'Preterite',
+    [df.part_of_speech.VerbPassive] = 'Past Participle',
+    [df.part_of_speech.VerbGerund] = 'Present Participle',
+}
 
 function Rename:add_word_choice(choices, comp, idx, word, part_of_speech)
     local english = word.forms[part_of_speech]
@@ -539,7 +539,12 @@ end
 
 local function get_unit_target(unit)
     if not unit then return end
-    return get_hf_target(df.historical_figure.find(unit.hist_figure_id))
+    local hf = df.historical_figure.find(unit.hist_figure_id)
+    if hf then
+        return get_hf_target(hf)
+    end
+    -- unit with no hf
+    return dfhack.units.getVisibleName(unit), {}
 end
 
 local function get_location_target(site, loc_id)
