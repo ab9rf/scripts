@@ -3,6 +3,7 @@
 local argparse = require('argparse')
 local dlg = require('gui.dialogs')
 local gui = require('gui')
+local overlay = require('plugins.overlay')
 local sitemap = reqscript('gui/sitemap')
 local utils = require('utils')
 local widgets = require('gui.widgets')
@@ -57,6 +58,17 @@ local function get_location_target(site, loc_id)
     local loc = utils.binsearch(site.buildings, loc_id, 'id')
     if not loc then return end
     return loc.name
+end
+
+local function get_world_target()
+    local target = df.global.world.world_data.name
+    local sync_targets = {
+        function()
+            df.global.world.cur_savegame.world_header.world_name =
+                ('%s, "%s"'):format(dfhack.TranslateName(target), dfhack.TranslateName(target, true))
+            end
+        }
+    return target, sync_targets
 end
 
 local function select_artifact(cb)
@@ -114,14 +126,16 @@ end
 
 local function select_unit(cb)
     local choices = {}
-    for _,unit in ipairs(df.global.world.units.active) do
+    -- scan through units.all instead of units.active so we can choose starting dwarves on embark prep screen
+    for _,unit in ipairs(df.global.world.units.all) do
+        if not dfhack.units.isActive(unit) then goto continue end
         local target, sync_targets = get_unit_target(unit)
-        if target then
-            table.insert(choices, {
-                text=dfhack.units.getReadableName(unit),
-                data={target=target, sync_targets=sync_targets},
-            })
-        end
+        if not target then goto continue end
+        table.insert(choices, {
+            text=dfhack.units.getReadableName(unit),
+            data={target=target, sync_targets=sync_targets},
+        })
+        ::continue::
     end
     dlg.showListPrompt('Rename', 'Select a unit to rename:', COLOR_WHITE,
         choices, function(_, choice) cb(choice.data.target, choice.data.sync_targets) end,
@@ -129,7 +143,8 @@ local function select_unit(cb)
 end
 
 local function select_world(cb)
-    cb(df.global.world.world_data.name)
+    local target, sync_targets = get_world_target()
+    cb(target, sync_targets)
 end
 
 local function select_new_target(cb)
@@ -148,7 +163,7 @@ local function select_new_target(cb)
             table.insert(choices, {text='A squad', data={fn=curry(select_squad, fort)}})
         end
     end
-    if #df.global.world.units.active > 0 then
+    if #df.global.world.units.all > 0 then
         table.insert(choices, {text='A unit', data={fn=select_unit}})
     end
     table.insert(choices, {text='This world', data={fn=select_world}})
@@ -514,14 +529,22 @@ end
 function Rename:clear_component_word(comp)
     self.target.words[comp] = -1
     for _, sync_target in ipairs(self.sync_targets) do
-        sync_target.words[comp] = -1
+        if type(sync_target) == 'function' then
+            sync_target()
+        else
+            sync_target.words[comp] = -1
+        end
     end
 end
 
 function Rename:set_first_name(choice)
     self.target.first_name = translations[self.subviews.language:getOptionValue()].words[choice.data.idx].value
     for _, sync_target in ipairs(self.sync_targets) do
-        sync_target.first_name = self.target.first_name
+        if type(sync_target) == 'function' then
+            sync_target()
+        else
+            sync_target.first_name = self.target.first_name
+        end
     end
 end
 
@@ -534,8 +557,12 @@ function Rename:set_component_word(_, choice)
     self.target.words[comp_choice.data.val] = choice.data.idx
     self.target.parts_of_speech[comp_choice.data.val] = choice.data.part_of_speech
     for _, sync_target in ipairs(self.sync_targets) do
-        sync_target.words[comp_choice.data.val] = choice.data.idx
-        sync_target.parts_of_speech[comp_choice.data.val] = choice.data.part_of_speech
+        if type(sync_target) == 'function' then
+            sync_target()
+        else
+            sync_target.words[comp_choice.data.val] = choice.data.idx
+            sync_target.parts_of_speech[comp_choice.data.val] = choice.data.part_of_speech
+        end
     end
 end
 
@@ -545,8 +572,12 @@ function Rename:set_language(val, prev_val)
     local idx = utils.linear_index(translations[prev_val].words, self.target.first_name, 'value')
     if idx then self.target.first_name = translations[val].words[idx].value end
     for _, sync_target in ipairs(self.sync_targets) do
-        sync_target.language = val
-        sync_target.first_name = self.target.first_name
+        if type(sync_target) == 'function' then
+            sync_target()
+        else
+            sync_target.language = val
+            sync_target.first_name = self.target.first_name
+        end
     end
 end
 
@@ -591,8 +622,12 @@ function Rename:randomize_component_word(comp)
     self.target.words[comp] = words[idx]
     self.target.parts_of_speech[comp] = word_table.parts[comp][idx]
     for _, sync_target in ipairs(self.sync_targets) do
-        sync_target.words[comp] = words[idx]
-        sync_target.parts_of_speech[comp] = word_table.parts[comp][idx]
+        if type(sync_target) == 'function' then
+            sync_target()
+        else
+            sync_target.words[comp] = words[idx]
+            sync_target.parts_of_speech[comp] = word_table.parts[comp][idx]
+        end
     end
 end
 
@@ -744,7 +779,29 @@ end
 -- Overlays
 --
 
-OVERLAY_WIDGETS = {}
+WorldRenameOverlay = defclass(WorldRenameOverlay, overlay.OverlayWidget)
+WorldRenameOverlay.ATTRS {
+    desc='Adds a button for renaming newly generated worlds.',
+    default_pos={x=57, y=3},
+    default_enabled=true,
+    viewscreens='new_region',
+    frame={w=22, h=1},
+}
+
+function WorldRenameOverlay:init()
+    self:addviews{
+        widgets.TextButton{
+            frame={t=0, l=0},
+            label='Rename world',
+            key='CUSTOM_CTRL_T',
+            on_activate=function() dfhack.run_script('gui/rename', '--world', '--no-target-selector') end,
+        },
+    }
+end
+
+OVERLAY_WIDGETS = {
+    world_rename=WorldRenameOverlay,
+}
 
 --
 -- CLI
@@ -783,7 +840,7 @@ local function get_target(opts)
         target, sync_targets = get_unit_target(df.unit.find(opts.unit_id))
         if not target then qerror('Unit not found') end
     elseif opts.world then
-        target = df.global.world.world_data.name
+        target, sync_targets = get_world_target()
     end
     return target, sync_targets
 end
