@@ -267,6 +267,10 @@ function Rename:init(info)
     self.sync_targets = info.sync_targets or {}
     self.cache = {}
 
+    if self.target.type == df.language_name_type.NONE then
+        self.target.type = df.language_name_type.Figure
+    end
+
     local language_options, max_lang_name_width = get_language_options()
 
     self:addviews{
@@ -538,8 +542,10 @@ function Rename:clear_component_word(comp)
 end
 
 function Rename:set_first_name(word_idx)
+    -- support giving names to previously unnamed units
+    self.target.has_name = true
+
     self.target.first_name = translations[self.subviews.language:getOptionValue()].words[word_idx].value
-    self.target.has_name = true  -- support giving names to previously unnamed units
     for _, sync_target in ipairs(self.sync_targets) do
         if type(sync_target) == 'function' then
             sync_target()
@@ -751,7 +757,7 @@ function RenameScreen:onDismiss()
 end
 
 --
--- Overlays
+-- WorldRenameOverlay
 --
 
 WorldRenameOverlay = defclass(WorldRenameOverlay, overlay.OverlayWidget)
@@ -776,7 +782,7 @@ function WorldRenameOverlay:init()
 end
 
 OVERLAY_WIDGETS = {
-    world_rename=WorldRenameOverlay,
+    world=WorldRenameOverlay,
 }
 
 --

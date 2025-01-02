@@ -2,18 +2,22 @@ gui/rename
 ==========
 
 .. dfhack-tool::
-    :summary: Modify the name of anything that is nameable.
+    :summary: Edit in-game language-based names.
     :tags: adventure fort productivity animals items units
 
-Once you select a target (by clicking on the game map, by passing a commandline
-parameter, or by using the provided selection widget) this tool allows you
-change its language name, generate a new random name, or rename it with your
-preferred component words. It provides an interface similar to the in-game
-naming panel that you can use to customize your fortress name at embark. That
-is, it allows you to choose words from an in-game language to assemble a name,
-just like the default names that the game generates. You will be able to assign
-units new given and last names. You can also use this tool to set freeform
-"nicknames" for targets that support it.
+Once you select a target (by clicking on something on the game map, by passing
+a commandline parameter, or by using the selection dialog) this tool allows you
+change the language of the name, generate a new random name, or replace
+components of the name with your preferred words.
+
+`gui/rename` provides an interface similar to the in-game naming panel that you
+can use to customize your fortress name at embark. That is, it allows you to
+choose words from an in-game language to assemble a name, just like the default
+names that the game generates. You will be able to assign units new given and
+last names, or even rename the world itself.
+
+You can run `gui/rename` while on the "prepare carefully" embark screen to
+rename your starting dwarves.
 
 Usage
 -----
@@ -21,6 +25,16 @@ Usage
 ::
 
     gui/rename [<options>]
+
+The selection dialog will appear if no options are provided. You can
+interactively choose one of the following to rename:
+
+- An artifact on the current map
+- A location (e.g. tavern, hospital, guildhall, temple) on the current map
+- The current fortress (or adventurer site)
+- A squad belonging to the current fortress
+- A unit on the current map
+- The world
 
 Examples
 --------
@@ -37,6 +51,8 @@ Examples
 
 Options
 -------
+
+Targets specified via these options do not need to be on the local map.
 
 ``-a``, ``--artifact <id>``
     Rename the artifact with the given item ID.
@@ -68,8 +84,5 @@ Overlays
 
 This tool supports the following overlays:
 
-``gui/rename.embark``
-    Adds widgets to the embark preparation screen for renaming the starting
-    dwarves.
 ``gui/rename.world``
     Adds a widget to the world generation screen for renaming the world.
