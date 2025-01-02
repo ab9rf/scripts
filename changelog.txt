@@ -28,10 +28,12 @@ Template for new versions:
 
 ## New Tools
 - `fix/stuck-squad`: allow squads and messengers returning from missions to rescue squads that have gotten stuck on the world map
+- `gui/rename`: (reinstated) give new in-game language-based names to anything that can be named (e.g. units, governments, fortresses, or the world)
 
 ## New Features
 - `gui/settings-manager`: new overlay on the Labor -> Standing Orders tab for configuring the number of barrels to reserve for job use (so you can brew alcohol and not have all your barrels claimed by stockpiles for container storage)
 - `gui/settings-manager`: standing orders save/load now includes the reserved barrels setting
+- `gui/rename`: add overlay to worldgen screen allowing you to rename the world before the new world is saved
 
 ## Fixes
 - `fix/dry-buckets`: don't empty buckets for wells that are actively in use
