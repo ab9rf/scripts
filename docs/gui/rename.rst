@@ -19,6 +19,15 @@ last names, or even rename the world itself.
 You can run `gui/rename` while on the "prepare carefully" embark screen to
 rename your starting dwarves.
 
+Start typing to search for a word. You can search in English, in the selected
+native language, or by the part of speech. Click on a word to assign it to the
+selected name component slot. You can also clear or randomize each individual
+name component slot.
+
+When giving a name to a unit that didn't previously have a name, you must
+assign a word to the First Name slot. Otherwise, the game will not display the
+name for the unit.
+
 Usage
 -----
 
