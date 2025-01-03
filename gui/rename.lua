@@ -290,6 +290,7 @@ function Rename:init(info)
                             self.target, self.sync_targets = target, sync_targets or {}
                             normalize_name()
                             self.subviews.language:setOption(self.target.language)
+                            self:refresh_list()
                         end)
                     end,
                     visible=info.show_selector,
