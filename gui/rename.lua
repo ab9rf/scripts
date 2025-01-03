@@ -341,7 +341,7 @@ function Rename:init(info)
                         widgets.List{
                             frame={t=2, l=0, b=4, w=ENGLISH_COL_WIDTH+2},
                             view_id='component_list',
-                            on_select=self:callback('refresh_list'),
+                            on_select=function() self:refresh_list() end,
                             choices=self:get_component_choices(),
                             row_height=3,
                             scroll_keys={},
@@ -715,7 +715,7 @@ function Rename:refresh_list(sort_widget, sort_fn)
     local clist = self.subviews.component_list
     if not clist then return end
     if self.target.type ~= df.language_name_type.Figure and clist:getSelected() == 1 then
-        clist:setSelected(self.prev_selected_component or 2)
+        clist:setSelected(self.prev_selected_component ~= 1 and self.prev_selected_component or 2)
     end
     self.prev_selected_component = clist:getSelected()
 
@@ -733,7 +733,7 @@ function Rename:refresh_list(sort_widget, sort_fn)
     list:setFilter('')
     local _, comp_choice = clist:getSelected()
     local choices = self:get_word_choices(comp_choice.data.val)
-    table.sort(choices, self.subviews.sort:getOptionValue())
+    table.sort(choices, sort_fn)
     list:setChoices(choices)
     list:setFilter(saved_filter)
 end
