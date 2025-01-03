@@ -267,9 +267,12 @@ function Rename:init(info)
     self.sync_targets = info.sync_targets or {}
     self.cache = {}
 
-    if self.target.type == df.language_name_type.NONE then
-        self.target.type = df.language_name_type.Figure
+    local function normalize_name()
+        if self.target.type == df.language_name_type.NONE then
+            self.target.type = df.language_name_type.Figure
+        end
     end
+    normalize_name()
 
     local language_options, max_lang_name_width = get_language_options()
 
@@ -285,6 +288,7 @@ function Rename:init(info)
                         select_new_target(function(target, sync_targets)
                             if not target then return end
                             self.target, self.sync_targets = target, sync_targets or {}
+                            normalize_name()
                             self.subviews.language:setOption(self.target.language)
                         end)
                     end,
