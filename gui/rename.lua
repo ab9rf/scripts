@@ -355,7 +355,8 @@ function Rename:init(info)
                         },
                         widgets.HotkeyLabel{
                             frame={b=3, l=0},
-                            key='SECONDSCROLL_UP',
+                            --key='SECONDSCROLL_UP', -- use when this is available in mainline DF
+                            key='STRING_A045',
                             label='Prev component',
                             on_activate=function()
                                 local clist = self.subviews.component_list
@@ -366,7 +367,8 @@ function Rename:init(info)
                         },
                         widgets.HotkeyLabel{
                             frame={b=2, l=0},
-                            key='SECONDSCROLL_DOWN',
+                            -- key='SECONDSCROLL_DOWN', -- use when this is available in mainline DF
+                            key='STRING_A043',
                             label='Next component',
                             on_activate=function()
                                 local clist = self.subviews.component_list
@@ -426,7 +428,8 @@ function Rename:init(info)
                             view_id='search',
                             frame={t=0, l=22},
                             label_text='Search: ',
-                            ignore_keys={'SECONDSCROLL_DOWN', 'SECONDSCROLL_UP'}
+                            -- ignore_keys={'SECONDSCROLL_DOWN', 'SECONDSCROLL_UP'}
+                            ignore_keys={'STRING_A043', 'STRING_A045'},
                         },
                         widgets.CycleHotkeyLabel{
                             view_id='sort_english',
