@@ -28,6 +28,9 @@ When giving a name to a unit that didn't previously have a name, you must
 assign a word to the First Name slot. Otherwise, the game will not display the
 name for the unit.
 
+When you change the language of a unit's name, the unit's existing first name
+will be translated into the new language.
+
 Usage
 -----
 
