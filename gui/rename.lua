@@ -105,7 +105,7 @@ local function select_location(site, cb)
         choices, function(_, choice) cb(choice.data.target) end, nil, nil, true)
 end
 
-local function select_site(site, cb)
+local function select_entity(site, cb)
     cb(site.name)
 end
 
@@ -153,15 +153,23 @@ local function select_new_target(cb)
         table.insert(choices, {text='An artifact', data={fn=select_artifact}})
     end
     local site = dfhack.world.getCurrentSite()
+    local is_fort_mode = dfhack.world.isFortressMode()
+    local fort = is_fort_mode and df.historical_entity.find(df.global.plotinfo.group_id)
+    local civ = is_fort_mode and df.historical_entity.find(df.global.plotinfo.civ_id)
     if site then
         if #site.buildings > 0 then
             table.insert(choices, {text='A location', data={fn=curry(select_location, site)}})
         end
-        table.insert(choices, {text='This fortress', data={fn=curry(select_site, site)}})
-        local fort = df.historical_entity.find(df.global.plotinfo.group_id)
+        table.insert(choices, {text='This fortress/site', data={fn=curry(select_entity, site)}})
         if fort and #fort.squads > 0 then
             table.insert(choices, {text='A squad', data={fn=curry(select_squad, fort)}})
         end
+    end
+    if fort then
+        table.insert(choices, {text='The government of this fortress', data={fn=curry(select_entity, fort)}})
+    end
+    if civ then
+        table.insert(choices, {text='The civilization of this fortress', data={fn=curry(select_entity, civ)}})
     end
     if #df.global.world.units.all > 0 then
         table.insert(choices, {text='A unit', data={fn=select_unit}})
