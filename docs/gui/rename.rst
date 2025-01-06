@@ -45,8 +45,15 @@ interactively choose one of the following to rename:
 - A location (e.g. tavern, hospital, guildhall, temple) on the current map
 - The current fortress (or adventurer site)
 - A squad belonging to the current fortress
+- The civilization of the current fortress
+- The government of the current fortress
 - A unit on the current map
 - The world
+
+Some of the options above will not show up if there is nothing of the given
+type to rename (e.g. you won't get the option to rename a squad if there are no
+squads, and you won't get an option to rename the government of the fortress if
+you aren't in fortress mode).
 
 Examples
 --------
