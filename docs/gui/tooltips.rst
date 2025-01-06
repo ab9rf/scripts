@@ -2,7 +2,7 @@ gui/tooltips
 ============
 
 .. dfhack-tool::
-    :summary: Show tooltips with useful info.
+    :summary: Show name and job tooltips near units on map.
     :tags: fort inspection
 
 This script shows "tooltips" following units and/or mouse with job names.
