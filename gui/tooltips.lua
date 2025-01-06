@@ -82,7 +82,7 @@ local function GetTooltipText(x,y,z)
     local txt = {}
     local units = dfhack.units.getUnitsInBox(x,y,z,x,y,z) or {} -- todo: maybe (optionally) use filter parameter here?
 
-    for _,unit in pairs(units) do
+    for _,unit in ipairs(units) do
         txt[#txt+1] = GetUnitNameAndJob(unit)
         txt[#txt+1] = NEWLINE
     end
