@@ -59,6 +59,16 @@ function TooltipControlWindow:init()
     }
 end
 
+local function GetUnitHappiness(unit)
+    -- keep in mind, this will look differently with game's font
+    local mapToEmoticon = {[0] = "=C", ":C", ":(", ":]", ":)", ":D", "=D" }
+    -- same as in ASCII mode, but for then middle (3), which is GREY instead of WHITE
+    local mapToColor = {[0] = COLOR_RED, COLOR_LIGHTRED, COLOR_YELLOW, COLOR_GREY, COLOR_GREEN, COLOR_LIGHTGREEN, COLOR_LIGHTCYAN}
+    local stressCat = dfhack.units.getStressCategory(unit)
+    if stressCat > 6 then stressCat = 6 end
+    return mapToEmoticon[stressCat], mapToColor[stressCat]
+end
+
 local function GetUnitJob(unit)
     local job = unit.job
     if job and job.current_job then
@@ -208,13 +218,16 @@ function TooltipsVizualizer:onRenderFrame(dc, rect)
     local used_tiles = {}
     for i = #units, 1, -1 do
         local unit = units[i]
-        local txt = GetUnitJob(unit)
-        if not txt then goto continue end
 
-        txt = shortenings[txt] or txt
+        local happiness, happyPen = GetUnitHappiness(unit)
+        local job = GetUnitJob(unit)
+        job = shortenings[job] or job
+        if not job and not happiness then goto continue end
 
         local pos = xyz2pos(dfhack.units.getPosition(unit))
         if not pos then goto continue end
+
+        local txt = table.concat({happiness, job}, " ")
 
         local scrPos = GetScreenCoordinates(pos)
         local y = scrPos.y - 1 -- subtract 1 to move the text over the heads
@@ -249,10 +262,15 @@ function TooltipsVizualizer:onRenderFrame(dc, rect)
 
         -- in case there isn't enough space, cut the text off
         if usedAt > 0 then
-            txt = txt:sub(0, usedAt - 1) .. '_'
+            local s = happiness and #happiness + 1 or 0
+            job = job:sub(0, usedAt - s - 1) .. '_'
+            txt = txt:sub(0, usedAt - 1) .. '_' -- for marking
         end
 
-        dc:seek(x, y + dy):pen(pen):string(txt)
+        dc:seek(x, y + dy)
+            :pen(happyPen):string(happiness or "")
+            :string((happiness and job) and " " or "")
+            :pen(pen):string(job or "")
 
         -- mark coordinates as used
         for j = 0, #txt - 1 do
