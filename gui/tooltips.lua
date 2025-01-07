@@ -70,11 +70,8 @@ local function GetUnitHappiness(unit)
 end
 
 local function GetUnitJob(unit)
-    local job = unit.job
-    if job and job.current_job then
-        return dfhack.job.getName(job.current_job)
-    end
-    return nil
+    local job = unit.job.current_job
+    return job and dfhack.job.getName(job)
 end
 
 local function GetUnitNameAndJob(unit)
@@ -169,7 +166,6 @@ end
 -- map coordinates -> interface layer coordinates
 function GetScreenCoordinates(map_coord)
     if not map_coord then return end
-
     -- -> map viewport offset
     local vp = df.global.world.viewport
     local vp_Coord = vp.window_x -- is actually coord
@@ -178,20 +174,25 @@ function GetScreenCoordinates(map_coord)
         y = map_coord.y - vp_Coord.y,
         z = map_coord.z - vp_Coord.z,
     }
-    -- -> pixel offset
-    local gps = df.global.gps
-    local map_tile_pixels = gps.viewport_zoom_factor // 4;
-    local screen_coord_px = {
-        x = map_tile_pixels * map_offset_by_vp.x,
-        y = map_tile_pixels * map_offset_by_vp.y,
-    }
-    -- -> interface layer coordinates
-    local screen_coord_text = {
-        x = math.ceil( screen_coord_px.x / gps.tile_pixel_x ),
-        y = math.ceil( screen_coord_px.y / gps.tile_pixel_y ),
-    }
 
-    return screen_coord_text
+    if not dfhack.screen.inGraphicsMode() then
+        return map_offset_by_vp
+    else
+        -- -> pixel offset
+        local gps = df.global.gps
+        local map_tile_pixels = gps.viewport_zoom_factor // 4;
+        local screen_coord_px = {
+            x = map_tile_pixels * map_offset_by_vp.x,
+            y = map_tile_pixels * map_offset_by_vp.y,
+        }
+        -- -> interface layer coordinates
+        local screen_coord_text = {
+            x = math.ceil( screen_coord_px.x / gps.tile_pixel_x ),
+            y = math.ceil( screen_coord_px.y / gps.tile_pixel_y ),
+        }
+
+        return screen_coord_text
+    end
 end
 
 function TooltipsVizualizer:onRenderFrame(dc, rect)
