@@ -39,6 +39,7 @@ Template for new versions:
 - `fix/dry-buckets`: don't empty buckets for wells that are actively in use
 - `gui/unit-info-viewer`: skill progress bars now show correct XP thresholds for skills past Legendary+5
 - `caravan`: no longer incorrectly identify wood-based plant items and plant-based soaps as being ethically unsuitable for trading with the elves
+- `gui/design`: don't require an extra cancel input to exit or cancel designations
 
 ## Misc Improvements
 - `immortal-cravings`: goblins and other naturally non-eating/non-drinking races will now also satisfy their needs for eating and drinking
