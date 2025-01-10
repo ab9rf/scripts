@@ -105,3 +105,6 @@ This tool supports the following overlays:
 
 ``gui/rename.world``
     Adds a widget to the world generation screen for renaming the world.
+``gui/rename.unit_embark``
+    Transparently fixes DF :bug:`12060` on the "Prepare carefully" embark screen
+    where the player is unable to give units nicknames or custom professions.
