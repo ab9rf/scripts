@@ -797,7 +797,67 @@ function WorldRenameOverlay:init()
     }
 end
 
+--
+-- UnitEmbarkRenameOverlay
+--
+
+local mi = df.global.game.main_interface
+
+UnitEmbarkRenameOverlay = defclass(UnitEmbarkRenameOverlay, overlay.OverlayWidget)
+UnitEmbarkRenameOverlay.ATTRS {
+    desc='Allows editing of unit nicknames on the embark preparation screen.',
+    default_enabled=true,
+    viewscreens='setupdwarfgame/Dwarves',
+    fullscreen=true,
+    active=function() return mi.view_sheets.open end,
+}
+
+local function get_selected_embark_unit()
+    local scr = dfhack.gui.getDFViewscreen(true)
+    return scr.s_unit[scr.selected_u]
+end
+
+function UnitEmbarkRenameOverlay:onInput(keys)
+    if (keys.SELECT or keys._STRING) and mi.view_sheets.unit_overview_customizing then
+        if mi.view_sheets.unit_overview_entering_nickname then
+            if keys.SELECT then
+                mi.view_sheets.unit_overview_entering_nickname = false
+                return true
+            end
+            local unit = get_selected_embark_unit()
+            if unit then
+                if keys._STRING == 0 then
+                    unit.name.nickname = string.sub(unit.name.nickname, 1, -2)
+                else
+                    unit.name.nickname = unit.name.nickname .. string.char(keys._STRING)
+                end
+                local hf = df.historical_figure.find(unit.hist_figure_id)
+                if hf then
+                    hf.name.nickname = unit.name.nickname
+                end
+                return true
+            end
+        elseif mi.view_sheets.unit_overview_entering_profession_nickname then
+            if keys.SELECT then
+                mi.view_sheets.unit_overview_entering_profession_nickname = false
+                return true
+            end
+            local unit = get_selected_embark_unit()
+            if unit then
+                if keys._STRING == 0 then
+                    unit.custom_profession = string.sub(unit.custom_profession, 1, -2)
+                else
+                    unit.custom_profession = unit.custom_profession .. string.char(keys._STRING)
+                end
+                return true
+            end
+        end
+    end
+    return false
+end
+
 OVERLAY_WIDGETS = {
+    unit_embark=UnitEmbarkRenameOverlay,
     world=WorldRenameOverlay,
 }
 
