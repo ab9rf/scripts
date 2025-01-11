@@ -414,7 +414,7 @@ function Rename:init(info)
                         },
                     },
                 },
-                widgets.Panel{frame={t=0, l=31}, -- words table
+                widgets.Panel{frame={t=0, l=31, r=0}, -- words table
                     subviews={
                         widgets.CycleHotkeyLabel{
                             view_id='sort',
