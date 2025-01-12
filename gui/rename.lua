@@ -65,7 +65,8 @@ local function get_world_target()
     local sync_targets = {
         function()
             df.global.world.cur_savegame.world_header.world_name =
-                ('%s, "%s"'):format(dfhack.TranslateName(target), dfhack.TranslateName(target, true))
+                ('%s, "%s"'):format(dfhack.translation.translateName(target),
+                    dfhack.translation.translateName(target, true))
             end
         }
     return target, sync_targets
@@ -93,7 +94,7 @@ local function select_location(site, cb)
         local desc, pen = sitemap.get_location_desc(loc)
         table.insert(choices, {
             text={
-                dfhack.TranslateName(loc.name, true),
+                dfhack.translation.translateName(loc.name, true),
                 ' (',
                 {text=desc, pen=pen},
                 ')',
@@ -312,11 +313,11 @@ function Rename:init(info)
                 -- },
                 widgets.Label{
                     frame={t=2},
-                    text={{pen=COLOR_YELLOW, text=function() return pad_text(dfhack.TranslateName(self.target), self.frame_body.width) end}},
+                    text={{pen=COLOR_YELLOW, text=function() return pad_text(dfhack.translation.translateName(self.target), self.frame_body.width) end}},
                 },
                 widgets.Label{
                     frame={t=3},
-                    text={{pen=COLOR_LIGHTCYAN, text=function() return pad_text(('"%s"'):format(dfhack.TranslateName(self.target, true)), self.frame_body.width) end}},
+                    text={{pen=COLOR_LIGHTCYAN, text=function() return pad_text(('"%s"'):format(dfhack.translation.translateName(self.target, true)), self.frame_body.width) end}},
                 },
                 widgets.CycleHotkeyLabel{
                     view_id='language',
@@ -621,8 +622,8 @@ function Rename:randomize_component_word(comp)
 end
 
 function Rename:generate_random_name()
-    print('TODO: call dfhack.GenerateName API once it exists')
-    -- dfhack.GenerateName(self.target)
+    print('TODO: call dfhack.translation.generateName API once it exists')
+    -- dfhack.translation.generateName(self.target)
     -- for _, sync_target in ipairs(self.sync_targets) do
     --    if type(sync_target) == 'function' then
     --       sync_target()

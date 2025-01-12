@@ -38,7 +38,7 @@ function get_location_desc(loc)
         local entity = is_deity and df.historical_figure.find(id) or df.historical_entity.find(id)
         local desc = 'Temple'
         if not entity then return desc, COLOR_YELLOW end
-        local name = dfhack.TranslateName(entity.name, true)
+        local name = dfhack.translation.translateName(entity.name, true)
         if #name > 0 then
             desc = ('%s to %s'):format(desc, name)
         end
@@ -50,7 +50,7 @@ end
 
 local function get_location_label(loc, zones)
     local tokens = {}
-    table.insert(tokens, dfhack.TranslateName(loc.name, true))
+    table.insert(tokens, dfhack.translation.translateName(loc.name, true))
     local desc, pen = get_location_desc(loc)
     if desc then
         table.insert(tokens, ' (')
@@ -106,7 +106,7 @@ end
 local function get_affiliation(unit)
     local he = df.historical_entity.find(unit.civ_id)
     if not he then return 'Unknown affiliation' end
-    local et_name = dfhack.TranslateName(he.name, true)
+    local et_name = dfhack.translation.translateName(he.name, true)
     local et_type = df.historical_entity_type[he.type]:gsub('(%l)(%u)', '%1 %2')
     return ('%s%s %s'):format(#et_name > 0 and et_name or 'Unknown', #et_name > 0 and ',' or '', et_type)
 end
