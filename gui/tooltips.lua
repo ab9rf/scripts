@@ -1,20 +1,25 @@
 -- Show tooltips on units and/or mouse
 
+--@ module = true
+
 local RELOAD = false -- set to true when actively working on this script
 
 local gui = require('gui')
 local widgets = require('gui.widgets')
+local overlay = require('plugins.overlay')
 local ResizingPanel = require('gui.widgets.containers.resizing_panel')
 
 --------------------------------------------------------------------------------
 
-local follow_units = true;
-local follow_mouse = true;
+config = config or {
+    follow_units = true,
+    follow_mouse = true,
+}
 local function change_follow_units(new, old)
-    follow_units = new
+    config.follow_units = new
 end
 local function change_follow_mouse(new, old)
-    follow_mouse = new
+    config.follow_mouse = new
 end
 
 local shortenings = {
@@ -24,6 +29,22 @@ local shortenings = {
 --------------------------------------------------------------------------------
 
 local TITLE = "Tooltips"
+
+if RELOAD then TooltipControlScreen = nil end
+TooltipControlScreen = defclass(TooltipControlScreen, gui.ZScreen)
+TooltipControlScreen.ATTRS {
+    focus_path = "TooltipControlScreen",
+    pass_movement_keys = true,
+}
+
+function TooltipControlScreen:init()
+    local controls = TooltipControlWindow{view_id = 'controls'}
+    self:addviews{controls}
+end
+
+function TooltipControlScreen:onDismiss()
+    view = nil
+end
 
 if RELOAD then TooltipControlWindow = nil end
 TooltipControlWindow = defclass(TooltipControlWindow, widgets.Window)
@@ -130,7 +151,7 @@ function MouseTooltip:init()
 end
 
 function MouseTooltip:render(dc)
-    if not follow_mouse then return end
+    if not config.follow_mouse then return end
 
     local x, y = dfhack.screen.getMousePos()
     if not x then return end
@@ -149,22 +170,25 @@ function MouseTooltip:render(dc)
 end
 
 --------------------------------------------------------------------------------
-
-if RELOAD then TooltipsVizualizer = nil end
-TooltipsVizualizer = defclass(TooltipsVizualizer, gui.ZScreen)
-TooltipsVizualizer.ATTRS{
-    focus_path='TooltipsVizualizer',
-    pass_movement_keys=true,
+if RELOAD then TooltipsOverlay = nil end
+TooltipsOverlay = defclass(TooltipsOverlay, overlay.OverlayWidget)
+TooltipsOverlay.ATTRS{
+    desc='Adds tooltips with some info to units.',
+    default_pos={x=1,y=1},
+    default_enabled=true,
+    fullscreen=true, -- not player-repositionable
+    viewscreens={
+        'dwarfmode/Default',
+    },
 }
 
-function TooltipsVizualizer:init()
-    local controls = TooltipControlWindow{view_id = 'controls'}
+function TooltipsOverlay:init()
     local tooltip = MouseTooltip{view_id = 'tooltip'}
-    self:addviews{controls, tooltip}
+    self:addviews{tooltip}
 end
 
 -- map coordinates -> interface layer coordinates
-function GetScreenCoordinates(map_coord)
+local function GetScreenCoordinates(map_coord)
     if not map_coord then return end
     -- -> map viewport offset
     local vp = df.global.world.viewport
@@ -195,10 +219,10 @@ function GetScreenCoordinates(map_coord)
     end
 end
 
-function TooltipsVizualizer:onRenderFrame(dc, rect)
-    TooltipsVizualizer.super.onRenderFrame(self, dc, rect)
+function TooltipsOverlay:render(dc)
+    TooltipsOverlay.super.render(self, dc)
 
-    if not follow_units then return end
+    if not config.follow_units then return end
 
     if not dfhack.screen.inGraphicsMode() and not gui.blink_visible(500) then
         return
@@ -282,11 +306,20 @@ function TooltipsVizualizer:onRenderFrame(dc, rect)
     end
 end
 
-function TooltipsVizualizer:onDismiss()
-    view = nil
+function TooltipsOverlay:preUpdateLayout(parent_rect)
+    self.frame.w = parent_rect.width
+    self.frame.h = parent_rect.height
 end
 
 ----------------------------------------------------------------
+
+OVERLAY_WIDGETS = {
+    tooltips=TooltipsOverlay,
+}
+
+if dfhack_flags.module then
+    return
+end
 
 if not dfhack.isMapLoaded() then
     qerror('gui/tooltips requires a map to be loaded')
@@ -297,4 +330,4 @@ if RELOAD and view then
     -- view is nil now
 end
 
-view = view and view:raise() or TooltipsVizualizer{}:show()
+view = view and view:raise() or TooltipControlScreen{}:show()
