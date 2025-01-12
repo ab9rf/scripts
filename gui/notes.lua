@@ -8,7 +8,6 @@ local script = require 'gui.script'
 local overlay = require 'plugins.overlay'
 local utils = require 'utils'
 
-local text_editor = reqscript('internal/journal/text_editor')
 local note_manager = reqscript('internal/notes/note_manager')
 
 local map_points = df.global.plotinfo.waypoints.points
@@ -47,7 +46,7 @@ function NotesWindow:init()
             frame_inset={l=1,t=1,b=1,r=1},
             autoarrange_subviews=true,
             subviews={
-                text_editor.TextEditor{
+                widgets.TextArea{
                     view_id='search',
                     frame={l=0,h=3},
                     frame_style=gui.FRAME_INTERIOR,
