@@ -1,8 +1,11 @@
 --@module = true
 
+local dlg = require('gui.dialogs')
 local gui = require('gui')
 local json = require('json')
 local list_agreements = reqscript('list-agreements')
+local repeat_util = require('repeat-util')
+local stuck_squad = reqscript('fix/stuck-squad')
 local warn_stranded = reqscript('warn-stranded')
 
 local CONFIG_FILE = 'dfhack-config/notify.json'
@@ -302,6 +305,36 @@ end
 
 -- the order of this list controls the order the notifications will appear in the overlay
 NOTIFICATIONS_BY_IDX = {
+    {
+        name='stuck_squad',
+        desc='Notifies when a squad is stuck on the world map.',
+        default=true,
+        dwarf_fn=function()
+            local stuck_armies, outbound_army, returning_army = stuck_squad.scan_fort_armies()
+            if #stuck_armies == 0 then return end
+            if repeat_util.isScheduled('control-panel/fix/stuck-squad') and (outbound_army or returning_army) then
+                return
+            end
+            return ('%d squad%s need%s rescue'):format(
+                #stuck_armies,
+                #stuck_armies == 1 and '' or 's',
+                #stuck_armies == 1 and 's' or ''
+            )
+        end,
+        on_click=function()
+            local message = 'A squad is lost on the world map and needs rescue!\n\n' ..
+                'Please send a messenger to a holding or a squad out on a mission\n' ..
+                'that will return to the fort (e.g. a Demand one-time tribute mission,\n' ..
+                'but not a Conquer and occupy mission). They will rescue the stuck\n' ..
+                'squad on their way home.'
+            if not repeat_util.isScheduled('control-panel/fix/stuck-squad') then
+                message = message .. '\n\n' ..
+                    'Please enable fix/stuck-squad in the DFHack control panel to enable\n'..
+                    'missions to rescue stuck squads.'
+            end
+            dlg.showMessage('Rescue stuck squads', message, COLOR_WHITE)
+        end,
+    },
     {
         name='traders_ready',
         desc='Notifies when traders are ready to trade at the depot.',

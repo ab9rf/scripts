@@ -27,10 +27,73 @@ Template for new versions:
 # Future
 
 ## New Tools
+- `fix/stuck-squad`: allow squads and messengers returning from missions to rescue squads that have gotten stuck on the world map
+- `gui/rename`: (reinstated) give new in-game language-based names to anything that can be named (e.g. units, governments, fortresses, or the world)
+
+## New Features
+- `gui/settings-manager`: new overlay on the Labor -> Standing Orders tab for configuring the number of barrels to reserve for job use (so you can brew alcohol and not have all your barrels claimed by stockpiles for container storage)
+- `gui/settings-manager`: standing orders save/load now includes the reserved barrels setting
+- `gui/rename`: add overlay to worldgen screen allowing you to rename the world before the new world is saved
+- `gui/rename`: add overlay to the "Prepare carefully" embark screen that transparently fixes a DF bug where you can't give units nicknames or custom professions
+
+## Fixes
+- `fix/dry-buckets`: don't empty buckets for wells that are actively in use
+- `gui/unit-info-viewer`: skill progress bars now show correct XP thresholds for skills past Legendary+5
+- `caravan`: no longer incorrectly identify wood-based plant items and plant-based soaps as being ethically unsuitable for trading with the elves
+- `gui/design`: don't require an extra right click when canceling building area designations
+- `gui/gm-unit`: refresh unit sprite when profession is changed
+
+## Misc Improvements
+- `immortal-cravings`: goblins and other naturally non-eating/non-drinking races will now also satisfy their needs for eating and drinking
+- `caravan`: add filter for written works in display furniture assignment dialog
+- `fix/wildlife`: don't vaporize stuck wildlife that is onscreen -- kill them instead (as if they died from old age)
+- `gui/sitemap`: show primary group affiliation for visitors and invaders (e.g. civilization name or performance troupe)
+
+## Removed
+
+# 50.15-r1
+
+# 50.14-r2
+
+## New Tools
+- `fix/wildlife`: prevent wildlife from getting stuck when trying to exit the map. This fix needs to be enabled manually in `gui/control-panel` on the Bug Fixes tab since not all players want this bug to be fixed (you can intentionally stall wildlife incursions by trapping wildlife in an enclosed area so they are not caged but still cannot escape).
+- `immortal-cravings`: allow immortals to satisfy their cravings for food and drink
+- `justice`: pardon a criminal's prison sentence
+
+## New Features
+- `force`: add support for a ``Wildlife`` event to allow additional wildlife to enter the map
+
+## Fixes
+- `gui/quickfort`: only print a help blueprint's text once even if the repeat setting is enabled
+- `makeown`: quell any active enemy or conflict relationships with converted creatures
+- `makeown`: halt any hostile jobs the unit may be engaged in, like kidnapping
+- `fix/loyaltycascade`: allow the fix to work on non-dwarven citizens
+- `control-panel`: fix error when setting numeric preferences from the commandline
+- `gui/quickfort`: fix build mode evaluation rules to allow placement of furniture and constructions on tiles with stair shapes or without orthagonal floors
+- `emigration`: save-and-reload no longer resets the emigration cycle timeout
+- `geld`, `ungeld`: save-and-reload no longer loses changes done by `geld` and `ungeld` for units who are historical figures
+- `rejuvenate`: fix error when specifying ``--age`` parameter
+- `gui/notify`: don't classify (peacefully) visiting night creatures as hostile
+- `exportlegends`: ensure historical figure race filter is usable after re-entering legends mode with a different loaded world
+
+## Misc Improvements
+- `idle-crafting`: also support making shell crafts for workshops with linked input stockpiles
+- `gui/gm-editor`: automatically resolve and display names for ``language_name`` fields
+- `fix/stuck-worship`: reduced console output by default. Added ``--verbose`` and ``--quiet`` options.
+- `gui/design`: add dimensions tooltip to vanilla zone painting interface
+- `necronomicon`: new ``--world`` option to list all secret-containing items in the entire world
+- `gui/design`: new ``gui/design.rightclick`` overlay that allows you to cancel out of partially drawn box and minecart designations without canceling completely out of drawing mode
+
+## Removed
+- `modtools/force`: merged into `force`
+
+# 50.13-r5
+
+## New Tools
 - `embark-anyone`: allows you to embark as any civilization, including dead and non-dwarven civs
 - `idle-crafting`: allow dwarves to independently satisfy their need to craft objects
 - `gui/family-affairs`: (reinstated) inspect or meddle with pregnancies, marriages, or lover relationships
-- `notes`: manage map-specific notes
+- `notes`: attach notes to locations on a fort map
 
 ## New Features
 - `caravan`: DFHack dialogs for trade screens (both ``Bring goods to depot`` and the ``Trade`` barter screen) can now filter by item origins (foreign vs. fort-made) and can filter bins by whether they have a mix of ethically acceptable and unacceptable items in them
@@ -57,11 +120,12 @@ Template for new versions:
 - `position`: option to copy keyboard cursor position to the clipboard
 - `assign-minecarts`: reassign vehicles to routes where the vehicle has been destroyed (or has otherwise gone missing)
 - `fix/dry-buckets`: prompt DF to recheck requests for aid (e.g. "bring water" jobs) when a bucket is unclogged and becomes available for use
+- `exterminate`: show descriptive names for the listed races in addition to their IDs
+- `exterminate`: show actual names for unique creatures such as forgotten beasts and titans
+- `fix/ownership`: now also checks and fixes room ownership links
 
 ## Documentation
 - `gui/embark-anywhere`: add information about how the game determines world tile pathability and instructions for bridging two landmasses
-
-## Removed
 
 # 50.13-r4
 
