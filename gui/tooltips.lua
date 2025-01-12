@@ -85,9 +85,9 @@ local function GetUnitNameAndJob(unit)
     return table.concat(sb)
 end
 
-local function GetTooltipText(x,y,z)
+local function GetTooltipText(pos)
     local txt = {}
-    local units = dfhack.units.getUnitsInBox(x,y,z,x,y,z) or {} -- todo: maybe (optionally) use filter parameter here?
+    local units = dfhack.units.getUnitsInBox(pos, pos) or {} -- todo: maybe (optionally) use filter parameter here?
 
     for _,unit in ipairs(units) do
         txt[#txt+1] = GetUnitNameAndJob(unit)
@@ -136,7 +136,7 @@ function MouseTooltip:render(dc)
     if not x then return end
 
     local pos = dfhack.gui.getMousePos()
-    local text = GetTooltipText(pos2xyz(pos))
+    local text = GetTooltipText(pos)
     if #text == 0 then return end
     self.label:setText(text)
 
@@ -210,7 +210,7 @@ function TooltipsVizualizer:onRenderFrame(dc, rect)
     local height = vp.max_y
     local bottomright = {x = topleft.x + width, y = topleft.y + height, z = topleft.z}
 
-    local units = dfhack.units.getUnitsInBox(topleft.x,topleft.y,topleft.z,bottomright.x,bottomright.y,bottomright.z) or {}
+    local units = dfhack.units.getUnitsInBox(topleft, bottomright) or {}
     if #units == 0 then return end
 
     local oneTileOffset = GetScreenCoordinates({x = topleft.x + 1, y = topleft.y + 1, z = topleft.z + 0})
