@@ -168,7 +168,7 @@ function GetScreenCoordinates(map_coord)
     if not map_coord then return end
     -- -> map viewport offset
     local vp = df.global.world.viewport
-    local vp_Coord = vp.window_x -- is actually coord
+    local vp_Coord = vp.corner
     local map_offset_by_vp = {
         x = map_coord.x - vp_Coord.x,
         y = map_coord.y - vp_Coord.y,
@@ -205,7 +205,7 @@ function TooltipsVizualizer:onRenderFrame(dc, rect)
     end
 
     local vp = df.global.world.viewport
-    local topleft = vp.window_x
+    local topleft = vp.corner
     local width = vp.max_x
     local height = vp.max_y
     local bottomright = {x = topleft.x + width, y = topleft.y + height, z = topleft.z}
