@@ -20,42 +20,62 @@ local translations = df.language_translation.get_vector()
 -- target selection
 --
 
+local entity_names = {
+    [df.language_name_type.Figure]=df.entity_name_type.OTHER,
+    [df.language_name_type.FigureFirstOnly]=df.entity_name_type.OTHER,
+    [df.language_name_type.FigureNoFirst]=df.entity_name_type.OTHER,
+    [df.language_name_type.Civilization]=df.entity_name_type.CIV,
+    [df.language_name_type.EntitySite]=df.entity_name_type.SITE,
+    [df.language_name_type.Site]=df.entity_name_type.OTHER,
+    [df.language_name_type.Squad]=df.entity_name_type.OTHER,
+    [df.language_name_type.Temple]=df.entity_name_type.TEMPLE,
+    [df.language_name_type.Library]=df.entity_name_type.LIBRARY,
+    [df.language_name_type.Hospital]=df.entity_name_type.HOSPITAL,
+}
+
+local category_names = {
+    [df.language_name_type.World]=df.language_name_category.Region,
+    [df.language_name_type.Region]=df.language_name_category.Region,
+    [df.language_name_type.LegendaryFigure]=df.language_name_category.Unit,
+    [df.language_name_type.FigureNoFirst]=df.language_name_category.Unit,
+    [df.language_name_type.FigureFirstOnly]=df.language_name_category.Unit,
+    [df.language_name_type.Figure]=df.language_name_category.Unit,
+    [df.language_name_type.Religion]=df.language_name_category.CommonReligion,
+    [df.language_name_type.Temple]=df.language_name_category.Temple,
+    [df.language_name_type.FoodStore]=df.language_name_category.FoodStore,
+    [df.language_name_type.Library]=df.language_name_category.Library,
+    [df.language_name_type.Guildhall]=df.language_name_category.Guildhall,
+    [df.language_name_type.Hospital]=df.language_name_category.Hospital,
+}
+
 local wt = language.word_table
 
 local function get_word_selectors(name_type, civ)
-    -- default to something generic with a lot of word choices
-    local major, minor = wt[0][df.language_name_category.River], wt[1][df.language_name_category.River]
-
-    -- TODO: locations
-
-    -- refine word selector choice based on context
-    if name_type == df.language_name_type.Figure then
-        if civ then
-            major, minor = civ.entity_raw.symbols.symbols_major.OTHER, civ.entity_raw.symbols.symbols_minor.OTHER
-        else
-            major, minor = wt[0][df.language_name_category.Unit], wt[1][df.language_name_category.Unit]
-        end
-    elseif name_type == df.language_name_type.World then
-        major, minor = wt[0][df.language_name_category.Region], wt[1][df.language_name_category.Region]
-    elseif name_type == df.language_name_type.Artifact then
+    -- special cases
+    if name_type == df.language_name_type.Artifact then
         -- The game normally only uses ArtifactEvil if it was created by a fell/macabre mood, but we don't know
         -- at this point, so we'll randomize the choice
         if math.random(5) == 1 then
-            major, minor = wt[0][df.language_name_category.ArtifactEvil], wt[1][df.language_name_category.ArtifactEvil]
+            return wt[0][df.language_name_category.ArtifactEvil], wt[1][df.language_name_category.ArtifactEvil]
         else
-            major, minor = wt[0][df.language_name_category.Artifact], wt[1][df.language_name_category.Artifact]
+            return wt[0][df.language_name_category.Artifact], wt[1][df.language_name_category.Artifact]
         end
-    elseif name_type == df.language_name_type.Civilization and civ then
-        major, minor = civ.entity_raw.symbols.symbols_major.CIV, civ.entity_raw.symbols.symbols_minor.CIV
-    elseif name_type == df.language_name_type.EntitySite and civ then
-        major, minor = civ.entity_raw.symbols.symbols_major.SITE, civ.entity_raw.symbols.symbols_minor.SITE
-    elseif name_type == df.language_name_type.Site and civ then
-        major, minor = civ.entity_raw.symbols.symbols_major.OTHER, civ.entity_raw.symbols.symbols_minor.OTHER
-    elseif name_type == df.language_name_type.Squad and civ then
-        major, minor = civ.entity_raw.symbols.symbols_major.OTHER, civ.entity_raw.symbols.symbols_minor.OTHER
     end
 
-    return major, minor
+    -- entity-based names
+    local etype = entity_names[name_type]
+    if civ and etype then
+        return civ.entity_raw.symbols.symbols_major[etype], civ.entity_raw.symbols.symbols_minor[etype]
+    end
+
+    -- category-based names
+    local ctype = category_names[name_type]
+    if ctype then
+        return wt[0][ctype], wt[1][ctype]
+    end
+
+    -- default to something generic with a lot of word choices
+    return wt[0][df.language_name_category.River], wt[1][df.language_name_category.River]
 end
 
 local function get_artifact_target(item)
@@ -64,8 +84,7 @@ local function get_artifact_target(item)
     if not gref then return end
     local rec = df.artifact_record.find(gref.artifact_id)
     if not rec then return end
-    local major_selector, minor_selector = get_word_selectors(df.language_name_type.Artifact)
-    return {name=rec.name, major_selector=major_selector, minor_selector=minor_selector}
+    return {name=rec.name}
 end
 
 local function get_hf_target(hf)
@@ -79,9 +98,7 @@ local function get_hf_target(hf)
             table.insert(sync_names, unit_name)
         end
     end
-    local civ = df.historical_entity.find(hf.civ_id)
-    local major_selector, minor_selector = get_word_selectors(df.language_name_type.Figure, civ)
-    return {name=name, sync_names=sync_names, major_selector=major_selector, minor_selector=minor_selector}
+    return {name=name, sync_names=sync_names, civ_id=hf.civ_id}
 end
 
 local function get_unit_target(unit)
@@ -91,31 +108,29 @@ local function get_unit_target(unit)
         return get_hf_target(hf)
     end
     -- unit with no hf
-    local civ = df.historical_entity.find(unit.civ_id)
-    local major_selector, minor_selector = get_word_selectors(df.language_name_type.Figure, civ)
-    return {name=dfhack.units.getVisibleName(unit), major_selector=major_selector, minor_selector=minor_selector}
+    return {name=dfhack.units.getVisibleName(unit), civ_id=unit.civ_id}
 end
 
-local function get_civ_from_entity(entity)
+local function get_civ_id_from_entity(entity)
     if not entity then return end
-    if entity.type == df.historical_entity_type.Civilization then return entity end
+    if entity.type == df.historical_entity_type.Civilization then return entity.id end
     for _,ee_link in ipairs(entity.entity_links) do
         if ee_link.type ~= df.entity_entity_link_type.PARENT then goto continue end
         local linked_he = df.historical_entity.find(ee_link.target)
         if linked_he and linked_he.type == df.historical_entity_type.Civilization then
-            return linked_he
+            return ee_link.target
         end
         ::continue::
     end
 end
 
-local function get_civ_from_site(site)
+local function get_civ_id_from_site(site)
     if not site then return end
     for _,he_link in ipairs(site.entity_links) do
         if he_link.type ~= df.entity_site_link_type.All then goto continue end
         local linked_he = df.historical_entity.find(he_link.entity_id)
         if linked_he and linked_he.type == df.historical_entity_type.Civilization then
-            return linked_he
+            return he_link.entity_id
         end
         ::continue::
     end
@@ -123,27 +138,23 @@ end
 
 local function get_entity_target(entity)
     if not entity then return end
-    local major_selector, minor_selector = get_word_selectors(entity.name.type, get_civ_from_entity(entity))
-    return {name=entity.name, major_selector=major_selector, minor_selector=minor_selector}
+    return {name=entity.name, civ_id=get_civ_id_from_entity(entity)}
 end
 
 local function get_site_target(site)
     if not site then return end
-    local major_selector, minor_selector = get_word_selectors(site.name.type, get_civ_from_site(site))
-    return {name=site.name, major_selector=major_selector, minor_selector=minor_selector}
+    return {name=site.name, civ_id=get_civ_id_from_site(site)}
 end
 
 local function get_location_target(site, loc_id)
     if not site or loc_id < 0 then return end
     local loc = utils.binsearch(site.buildings, loc_id, 'id')
     if not loc then return end
-    local major_selector, minor_selector = get_word_selectors(loc.name.type, get_civ_from_site(site))
-    return {name=loc.name, major_selector=major_selector, minor_selector=minor_selector}
+    return {name=loc.name, civ_id=get_civ_id_from_site(site)}
 end
 
 local function get_squad_target(fort, squad)
-    local major_selector, minor_selector = get_word_selectors(squad.name.type, get_civ_from_entity(fort))
-    return {name=squad.name, major_selector=major_selector, minor_selector=minor_selector}
+    return {name=squad.name, civ_id=get_civ_id_from_entity(fort)}
 end
 
 local function get_world_target()
@@ -155,8 +166,7 @@ local function get_world_target()
                     dfhack.translation.translateName(name, true))
         end
     }
-    local major_selector, minor_selector = get_word_selectors(df.language_name_type.World)
-    return {name=name, sync_names=sync_names, major_selector=major_selector, minor_selector=minor_selector}
+    return {name=name, sync_names=sync_names}
 end
 
 local function select_artifact(cb)
@@ -251,10 +261,10 @@ local function select_new_target(cb)
         if #site.buildings > 0 then
             table.insert(choices, {text='A location', data={fn=curry(select_location, site)}})
         end
-        table.insert(choices, {text='This fortress/site', data={fn=curry(select_site, site)}})
         if fort and #fort.squads > 0 then
             table.insert(choices, {text='A squad', data={fn=curry(select_squad, fort)}})
         end
+        table.insert(choices, {text='This fortress/site', data={fn=curry(select_site, site)}})
     end
     if fort then
         table.insert(choices, {text='The government of this fortress', data={fn=curry(select_entity, fort)}})
@@ -712,8 +722,13 @@ function Rename:randomize_component_word(comp)
 end
 
 function Rename:generate_random_name()
-    dfhack.translation.generateName(self.target.name, self.target.name.language, self.target.name.type,
-        self.target.major_selector, self.target.minor_selector)
+    local civ
+    if self.target.civ_id then
+        civ = df.historical_entity.find(self.target.civ_id)
+    end
+    local major_selector, minor_selector = get_word_selectors(self.target.name.type, civ)
+    dfhack.translation.generateName(self.target.name, self.target.name.language,
+        self.target.name.type, major_selector, minor_selector)
     for _, sync_name in ipairs(self.target.sync_names) do
        if type(sync_name) == 'function' then
           sync_name()
