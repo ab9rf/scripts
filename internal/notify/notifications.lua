@@ -524,6 +524,22 @@ NOTIFICATIONS_BY_IDX = {
         adv_fn=curry(get_bar, get_blood, get_max_blood, "Blood", COLOR_RED),
         on_click=nil,
     },
+    {
+        name='autosave',
+        desc='Shows a reminder to save now and then.',
+        default=true,
+        dwarf_fn=function ()
+            local dur = dur or 8
+            return "Save Reminder! Last Save: ".. dur ..' mins ago'            
+        end,
+        on_click=function ()
+            local dur = dur or 8
+            local message = 'It has been ' .. dur .. ' mins since your last save. \n\nWould you like to save now? ' ..
+            '(Note: You can still close this reminder and save manually)'
+            dlg.showYesNoPrompt('Save now?', message, nil, function()
+                dfhack.run_script('quicksave') end)
+        end,
+    },
 }
 
 NOTIFICATIONS_BY_NAME = {}
