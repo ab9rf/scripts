@@ -14,6 +14,8 @@ local buildings = df.global.world.buildings
 local caravans = df.global.plotinfo.caravans
 local units = df.global.world.units
 
+SaveDur = 0
+
 function for_iter(vec, match_fn, action_fn, reverse)
     local offset = type(vec) == 'table' and 1 or 0
     local idx1 = reverse and #vec-1+offset or offset
@@ -529,12 +531,12 @@ NOTIFICATIONS_BY_IDX = {
         desc='Shows a reminder to save now and then.',
         default=true,
         dwarf_fn=function ()
-            local dur = dur or 8
-            return "Save Reminder! Last Save: ".. dur ..' mins ago'            
+            local durMS = getTickCount() - getSaveTick()
+            SaveDur = durMS / (60 * 1000) -- 60 seconds, 1000 ms in a second
+            return "Save Reminder! Last Save: ".. SaveDur ..' mins ago'            
         end,
         on_click=function ()
-            local dur = dur or 8
-            local message = 'It has been ' .. dur .. ' mins since your last save. \n\nWould you like to save now? ' ..
+            local message = 'It has been ' .. SaveDur .. ' mins since your last save. \n\nWould you like to save now? ' ..
             '(Note: You can still close this reminder and save manually)'
             dlg.showYesNoPrompt('Save now?', message, nil, function()
                 dfhack.run_script('quicksave') end)
