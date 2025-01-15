@@ -535,7 +535,7 @@ NOTIFICATIONS_BY_IDX = {
             if minsSinceSave < 15 then
                 return nil
             end
-            return "Last save: ".. (dfhack.formatInt(minsSinceSave)) ..' mins ago'            
+            return "Last save: ".. (dfhack.formatInt(minsSinceSave)) ..' mins ago'
         end,
         on_click=function ()
             local minsSinceSave = dfhack.persistent.getUnsavedSeconds()//60
