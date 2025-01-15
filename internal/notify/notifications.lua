@@ -531,12 +531,10 @@ NOTIFICATIONS_BY_IDX = {
         desc='Shows a reminder to save now and then.',
         default=true,
         dwarf_fn=function ()
-            local durMS = getTickCount() - getSaveTick()
-            SaveDur = durMS / (60 * 1000) -- 60 seconds, 1000 ms in a second
-            return "Save Reminder! Last Save: ".. SaveDur ..' mins ago'            
+            return "Save Reminder! Last Save: ".. dfhack.persistence.getCurSaveDur() ..' mins ago'            
         end,
         on_click=function ()
-            local message = 'It has been ' .. SaveDur .. ' mins since your last save. \n\nWould you like to save now? ' ..
+            local message = 'It has been ' .. dfhack.persistence.getCurSaveDur() .. ' mins since your last save. \n\nWould you like to save now? ' ..
             '(Note: You can still close this reminder and save manually)'
             dlg.showYesNoPrompt('Save now?', message, nil, function()
                 dfhack.run_script('quicksave') end)
