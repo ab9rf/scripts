@@ -3,10 +3,10 @@
 local gui = require('gui')
 local widgets = require('gui.widgets')
 local guidm = require('gui.dwarfmode')
-local text_editor = reqscript('internal/journal/text_editor')
 
 local waypoints = df.global.plotinfo.waypoints
 local map_points = df.global.plotinfo.waypoints.points
+
 
 NoteManager = defclass(NoteManager, gui.ZScreen)
 NoteManager.ATTRS{
@@ -34,7 +34,7 @@ function NoteManager:init()
                     auto_width=true,
                     on_activate=function() self.subviews.name:setFocus(true) end,
                 },
-                text_editor.TextEditor{
+                widgets.TextArea{
                     view_id='name',
                     frame={t=1,h=3},
                     frame_style=gui.FRAME_INTERIOR,
@@ -49,7 +49,7 @@ function NoteManager:init()
                     auto_width=true,
                     on_activate=function() self.subviews.comment:setFocus(true) end,
                 },
-                text_editor.TextEditor{
+                widgets.TextArea{
                     view_id='comment',
                     frame={t=6,b=3},
                     frame_style=gui.FRAME_INTERIOR,
