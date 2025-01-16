@@ -14,8 +14,6 @@ local buildings = df.global.world.buildings
 local caravans = df.global.plotinfo.caravans
 local units = df.global.world.units
 
-SaveDur = 0
-
 function for_iter(vec, match_fn, action_fn, reverse)
     local offset = type(vec) == 'table' and 1 or 0
     local idx1 = reverse and #vec-1+offset or offset
@@ -527,7 +525,7 @@ NOTIFICATIONS_BY_IDX = {
         on_click=nil,
     },
     {
-        name='autosave',
+        name='save-reminder',
         desc='Shows a reminder if it has been more than 15 minutes since your last save.',
         default=true,
         dwarf_fn=function ()
