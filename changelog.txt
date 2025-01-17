@@ -27,6 +27,18 @@ Template for new versions:
 # Future
 
 ## New Tools
+
+## New Features
+
+## Fixes
+
+## Misc Improvements
+
+## Removed
+
+# 50.15-r2
+
+## New Tools
 - `fix/stuck-squad`: allow squads and messengers returning from missions to rescue squads that have gotten stuck on the world map
 - `gui/rename`: (reinstated) give new in-game language-based names to anything that can be named (units, governments, fortresses, the world, etc.)
 
@@ -49,8 +61,6 @@ Template for new versions:
 - `caravan`: add filter for written works in display furniture assignment dialog
 - `fix/wildlife`: don't vaporize stuck wildlife that is onscreen -- kill them instead (as if they died from old age)
 - `gui/sitemap`: show primary group affiliation for visitors and invaders (e.g. civilization name or performance troupe)
-
-## Removed
 
 # 50.15-r1
 
