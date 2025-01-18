@@ -175,7 +175,7 @@ function TooltipControlWindow:init()
             maxNameLength = l
         end
     end
-    
+
     local indent = 3
     for lvl, cfg in pairs(config.happiness_levels) do
         happinessLabels[#happinessLabels + 1] = ToggleLabel{
