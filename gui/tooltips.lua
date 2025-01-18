@@ -11,19 +11,79 @@ local ResizingPanel = require('gui.widgets.containers.resizing_panel')
 
 --------------------------------------------------------------------------------
 
-config = config or {
-    follow_units = true,
-    follow_mouse = true,
-}
-local function change_follow_units(new, old)
-    config.follow_units = new
+-- pens are the same as gui/control-panel.lua
+local textures = require('gui.textures')
+local function get_icon_pens()
+    local enabled_pen_left = dfhack.pen.parse{fg=COLOR_CYAN,
+            tile=curry(textures.tp_control_panel, 1), ch=string.byte('[')}
+    local enabled_pen_center = dfhack.pen.parse{fg=COLOR_LIGHTGREEN,
+            tile=curry(textures.tp_control_panel, 2) or nil, ch=251} -- check
+    local enabled_pen_right = dfhack.pen.parse{fg=COLOR_CYAN,
+            tile=curry(textures.tp_control_panel, 3) or nil, ch=string.byte(']')}
+    local disabled_pen_left = dfhack.pen.parse{fg=COLOR_CYAN,
+            tile=curry(textures.tp_control_panel, 4) or nil, ch=string.byte('[')}
+    local disabled_pen_center = dfhack.pen.parse{fg=COLOR_RED,
+            tile=curry(textures.tp_control_panel, 5) or nil, ch=string.byte('x')}
+    local disabled_pen_right = dfhack.pen.parse{fg=COLOR_CYAN,
+            tile=curry(textures.tp_control_panel, 6) or nil, ch=string.byte(']')}
+    local button_pen_left = dfhack.pen.parse{fg=COLOR_CYAN,
+            tile=curry(textures.tp_control_panel, 7) or nil, ch=string.byte('[')}
+    local button_pen_right = dfhack.pen.parse{fg=COLOR_CYAN,
+            tile=curry(textures.tp_control_panel, 8) or nil, ch=string.byte(']')}
+    local help_pen_center = dfhack.pen.parse{
+            tile=curry(textures.tp_control_panel, 9) or nil, ch=string.byte('?')}
+    local configure_pen_center = dfhack.pen.parse{
+            tile=curry(textures.tp_control_panel, 10) or nil, ch=15} -- gear/masterwork symbol
+    return enabled_pen_left, enabled_pen_center, enabled_pen_right,
+            disabled_pen_left, disabled_pen_center, disabled_pen_right,
+            button_pen_left, button_pen_right,
+            help_pen_center, configure_pen_center
 end
-local function change_follow_mouse(new, old)
-    config.follow_mouse = new
+local ENABLED_PEN_LEFT, ENABLED_PEN_CENTER, ENABLED_PEN_RIGHT,
+      DISABLED_PEN_LEFT, DISABLED_PEN_CENTER, DISABLED_PEN_RIGHT,
+      BUTTON_PEN_LEFT, BUTTON_PEN_RIGHT,
+      HELP_PEN_CENTER, CONFIGURE_PEN_CENTER = get_icon_pens()
+
+if RELOAD then ToggleLabel = nil end
+ToggleLabel = defclass(ToggleLabel, widgets.CycleHotkeyLabel)
+ToggleLabel.ATTRS{
+    options={{value=true},
+             {value=false}},
+}
+function ToggleLabel:init()
+    ToggleLabel.super.init(self)
+
+    local text = self.text
+    -- the very last token is the On/Off text -- we'll repurpose it as an indicator
+    text[#text] =     { tile = function() return self:getOptionValue() and ENABLED_PEN_LEFT or DISABLED_PEN_LEFT end }
+    text[#text + 1] = { tile = function() return self:getOptionValue() and ENABLED_PEN_CENTER or DISABLED_PEN_CENTER end }
+    text[#text + 1] = { tile = function() return self:getOptionValue() and ENABLED_PEN_RIGHT or DISABLED_PEN_RIGHT end }
+    self:setText(text)
 end
 
-local shortenings = {
-    ["Store item in stockpile"] = "Store item",
+---
+
+if RELOAD then config = nil end
+config = config or {
+    follow_units = true,
+    follow_mouse = false,
+    show_happiness = true,
+    happiness_levels = {
+        -- keep in mind, the text will look differently with game's font
+        -- colors are same as in ASCII mode, but for then middle (3), which is GREY instead of WHITE
+        [0] =
+        {text = "=C", pen = COLOR_RED,        visible = true,  name = "Miserable"},
+        {text = ":C", pen = COLOR_LIGHTRED,   visible = true,  name = "Unhappy"},
+        {text = ":(", pen = COLOR_YELLOW,     visible = false, name = "Displeased"},
+        {text = ":]", pen = COLOR_GREY,       visible = false, name = "Content"},
+        {text = ":)", pen = COLOR_GREEN,      visible = false, name = "Pleased"},
+        {text = ":D", pen = COLOR_LIGHTGREEN, visible = true,  name = "Happy"},
+        {text = "=D", pen = COLOR_LIGHTCYAN,  visible = true,  name = "Ecstatic"},
+    },
+    show_unit_jobs = true,
+    job_shortenings = {
+        ["Store item in stockpile"] = "Store item",
+    }
 }
 
 --------------------------------------------------------------------------------
@@ -53,44 +113,93 @@ TooltipControlWindow.ATTRS {
     frame_inset=0,
     resizable=false,
     frame = {
-        w = 25,
-        h = 4,
+        w = 27,
+        h = 2 -- border
+          + 4 -- main options
+          + 7 -- happiness
+        ,
         -- just under the minimap:
         r = 2,
         t = 18,
     },
 }
 
+-- right pad string `s` to `n` symbols with spaces
+local function rpad(s, n)
+    local formatStr = "%-" .. n .. "s" -- `"%-10s"`
+    return string.format(formatStr, s)
+end
+
 function TooltipControlWindow:init()
+    local w = self.frame.w - 2 - 3 -- 2 is border, 3 is active indicator width
+    local keyW = 7 -- Length of "Alt+u: "
+
     self:addviews{
-        widgets.ToggleHotkeyLabel{
+        ToggleLabel{
             view_id = 'btn_follow_units',
             frame={t=0, h=1},
-            label="Follow units",
+            label=rpad("Unit banners", w - keyW),
             key='CUSTOM_ALT_U',
-            on_change=change_follow_units,
+            initial_option=config.follow_units,
+            on_change=function(new) config.follow_units = new end,
         },
-        widgets.ToggleHotkeyLabel{
+        ToggleLabel{
             view_id = 'btn_follow_mouse',
             frame={t=1, h=1},
-            label="Follow mouse",
+            label=rpad("Mouse tooltip", w - keyW),
             key='CUSTOM_ALT_M',
-            on_change=change_follow_mouse,
+            initial_option=config.follow_mouse,
+            on_change=function(new) config.follow_mouse = new end,
+        },
+        ToggleLabel{
+            frame={t=2, h=1},
+            label=rpad("Show jobs", w),
+            initial_option=config.show_unit_jobs,
+            on_change=function(new) config.show_unit_jobs = new end,
+        },
+        ToggleLabel{
+            frame={t=3, h=1},
+            label=rpad("Show stress levels", w),
+            initial_option=config.show_happiness,
+            on_change=function(new) config.show_happiness = new end,
         },
     }
+
+    local happinessLabels = {}
+
+    -- align the emoticons
+    local maxNameLength = 1
+    for _, v in pairs(config.happiness_levels) do
+        local l = #v.name
+        if l > maxNameLength then
+            maxNameLength = l
+        end
+    end
+    
+    local indent = 3
+    for lvl, cfg in pairs(config.happiness_levels) do
+        happinessLabels[#happinessLabels + 1] = ToggleLabel{
+            frame={t=4+lvl, h=1, l=indent},
+            initial_option=cfg.visible,
+            text_pen = cfg.pen,
+            label = rpad(rpad(cfg.name, maxNameLength) .. " " .. cfg.text, w - indent),
+            on_change = function(new) cfg.visible = new end
+        }
+    end
+    self:addviews(happinessLabels)
 end
 
 local function GetUnitHappiness(unit)
-    -- keep in mind, this will look differently with game's font
-    local mapToEmoticon = {[0] = "=C", ":C", ":(", ":]", ":)", ":D", "=D" }
-    -- same as in ASCII mode, but for then middle (3), which is GREY instead of WHITE
-    local mapToColor = {[0] = COLOR_RED, COLOR_LIGHTRED, COLOR_YELLOW, COLOR_GREY, COLOR_GREEN, COLOR_LIGHTGREEN, COLOR_LIGHTCYAN}
+    if not config.show_happiness then return end
     local stressCat = dfhack.units.getStressCategory(unit)
     if stressCat > 6 then stressCat = 6 end
-    return mapToEmoticon[stressCat], mapToColor[stressCat]
+    local happiness_level_cfg = config.happiness_levels[stressCat]
+    if not happiness_level_cfg.visible then return end
+    return happiness_level_cfg.text, happiness_level_cfg.pen
 end
 
 local function GetUnitJob(unit)
+    if not config.show_unit_jobs then return end
     local job = unit.job.current_job
     return job and dfhack.job.getName(job)
 end
@@ -189,7 +298,6 @@ end
 
 -- map coordinates -> interface layer coordinates
 local function GetScreenCoordinates(map_coord)
-    if not map_coord then return end
     -- -> map viewport offset
     local vp = df.global.world.viewport
     local vp_Coord = vp.corner
@@ -234,12 +342,13 @@ function TooltipsOverlay:render(dc)
     local height = vp.max_y
     local bottomright = {x = topleft.x + width, y = topleft.y + height, z = topleft.z}
 
-    local units = dfhack.units.getUnitsInBox(topleft, bottomright) or {}
-    if #units == 0 then return end
+    local units = dfhack.units.getUnitsInBox(topleft, bottomright)
+    if not units or #units == 0 then return end
 
     local oneTileOffset = GetScreenCoordinates({x = topleft.x + 1, y = topleft.y + 1, z = topleft.z + 0})
     local pen = COLOR_WHITE
 
+    local shortenings = config.job_shortenings
     local used_tiles = {}
     for i = #units, 1, -1 do
         local unit = units[i]
@@ -252,7 +361,9 @@ function TooltipsOverlay:render(dc)
         local pos = xyz2pos(dfhack.units.getPosition(unit))
         if not pos then goto continue end
 
-        local txt = table.concat({happiness, job}, " ")
+        local txt = (happiness and job and happiness .. " " .. job)
+                    or happiness
+                    or job
 
         local scrPos = GetScreenCoordinates(pos)
         local y = scrPos.y - 1 -- subtract 1 to move the text over the heads
