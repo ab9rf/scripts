@@ -216,6 +216,8 @@ local function GetUnitNameAndJob(unit)
 end
 
 local function GetTooltipText(pos)
+    if not pos then return end
+
     local txt = {}
     local units = dfhack.units.getUnitsInBox(pos, pos) or {} -- todo: maybe (optionally) use filter parameter here?
 
@@ -267,7 +269,7 @@ function MouseTooltip:render(dc)
 
     local pos = dfhack.gui.getMousePos()
     local text = GetTooltipText(pos)
-    if #text == 0 then return end
+    if not text or #text == 0 then return end
     self.label:setText(text)
 
     local sw, sh = dfhack.screen.getWindowSize()
