@@ -43,5 +43,3 @@ instead of the easy-to-satisfy ideal defaults::
     their horrifying features.  When possible, she prefers to consume sewer
     brew, gutter cruor and bloated tubers.  She absolutely detests elves,
     humans and dwarves.
-
-

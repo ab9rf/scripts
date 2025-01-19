@@ -269,7 +269,7 @@ function build_all_lists(printflag)
 end -- end func build_all_lists
 -- ---------------------------------------------------------------------------
 function get_preferences(unit)
-    if not unit then  
+    if not unit then
         print("No unit selected!")
         return
     end
