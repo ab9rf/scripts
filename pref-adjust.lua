@@ -326,7 +326,7 @@ build_all_lists(false)
 local opt = ({...})[1]
 
 function handle_one(profile)
-    local unit = dfhack.gui.getSelectedUnit()
+    local unit = dfhack.gui.getSelectedUnit(true)
     if unit == nil then
         print ("No unit available!  Aborting with extreme prejudice.")
         return
@@ -343,7 +343,7 @@ end
 if opt == "list" then
     build_all_lists(true)
 elseif opt == "clear" then
-    local unit = dfhack.gui.getSelectedUnit()
+    local unit = dfhack.gui.getSelectedUnit(true)
     if unit==nil then
         print ("No unit available!  Aborting with extreme prejudice.")
         return
