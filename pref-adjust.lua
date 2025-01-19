@@ -269,7 +269,8 @@ function build_all_lists(printflag)
 end -- end func build_all_lists
 -- ---------------------------------------------------------------------------
 function get_preferences(unit)
-    if unit == nil then
+    if not unit then  
+
         print("No unit selected!")
         return
     end
@@ -294,17 +295,17 @@ function get_preferences(unit)
         elseif pref_type == "LikePlant" then
             description = "Likes plant: " .. dfhack.matinfo.getToken(pref.mattype, pref.matindex)
         elseif pref_type == "HateCreature" then
-            description = "Hates creature: " .. df.global.world.raws.creatures.all[pref.poetic_form_id].creature_id
+            description = "Hates creature: " .. df.global.world.raws.creatures.all[pref.creature_id].creature_id
         elseif pref_type == "LikeColor" then
-            description = "Likes color: " .. df.global.world.raws.descriptors.colors[pref.poetic_form_id].id
+            description = "Likes color: " .. df.global.world.raws.descriptors.colors[pref.color_id].id
         elseif pref_type == "LikeShape" then
-            description = "Likes shape: " .. df.global.world.raws.descriptors.shapes[pref.poetic_form_id].id
+            description = "Likes shape: " .. df.global.world.raws.descriptors.shapes[pref.shape_id].id
         elseif pref_type == "LikePoeticForm" then
             description = "Likes poetic form: " .. dfhack.translation.translateName(df.global.world.poetic_forms.all[pref.poetic_form_id].name, true)
         elseif pref_type == "LikeMusicalForm" then
-            description = "Likes musical form: " .. dfhack.translation.translateName(df.global.world.musical_forms.all[pref.poetic_form_id].name, true)
+            description = "Likes musical form: " .. dfhack.translation.translateName(df.global.world.musical_forms.all[pref.musical_form_id].name, true)
         elseif pref_type == "LikeDanceForm" then
-            description = "Likes dance form: " .. dfhack.translation.translateName(df.global.world.dance_forms.all[pref.poetic_form_id].name, true)
+            description = "Likes dance form: " .. dfhack.translation.translateName(df.global.world.dance_forms.all[pref.dance_form_id].name, true)
         else
             description = "Unknown preference type: " .. tostring(pref.type)
         end
