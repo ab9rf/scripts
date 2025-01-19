@@ -362,7 +362,7 @@ elseif opt == "all" then
 elseif opt == "goth_all" then
     handle_all("GOTH")
 if opt == "show" then
-    local unit = dfhack.gui.getSelectedUnit()
+    local unit = dfhack.gui.getSelectedUnit(true)
     get_preferences(unit)
 else
     print ("Sets preferences of one dwarf, or of all dwarves, using profiles.")
