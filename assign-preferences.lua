@@ -482,7 +482,7 @@ local function showPreferences(unit)
     if not unit then
         qerror("No unit found.")
     end
-    
+
     for i, pref in ipairs(unit.status.current_soul.preferences) do
         format_preference(pref, i)
     end
