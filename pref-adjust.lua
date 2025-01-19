@@ -270,7 +270,6 @@ end -- end func build_all_lists
 -- ---------------------------------------------------------------------------
 function get_preferences(unit)
     if not unit then  
-
         print("No unit selected!")
         return
     end
@@ -362,20 +361,11 @@ elseif opt == "all" then
     handle_all("IDEAL")
 elseif opt == "goth_all" then
     handle_all("GOTH")
-if opt == "show" then
+elseif opt == "show" then
     local unit = dfhack.gui.getSelectedUnit(true)
     get_preferences(unit)
 else
-    print ("Sets preferences of one dwarf, or of all dwarves, using profiles.")
-    print ("Valid options:")
-    print ("list       -- show available preference type lists")
-    print ("show       -- show current preferences")
-    print ("clear      -- clear preferences of selected unit")
-    print ("clear_all  -- clear preferences of all units")
-    print ("goth       -- alter current dwarf preferences to Goth")
-    print ("goth_all   -- alter all dwarf preferences to Goth")
-    print ("one        -- alter current dwarf preferences to Ideal")
-    print ("all        -- alter all dwarf preferences to Ideal")
+    print(dfhack.script_help())
     if opt and opt ~= "help" then
         qerror("Unrecognized option: " .. opt)
     end
