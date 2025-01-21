@@ -3,7 +3,7 @@ pref-adjust
 
 .. dfhack-tool::
     :summary: See the preferences of a dwarf or set them to a designated profile.
-    :tags: fort armok units preferences
+    :tags: fort armok units
 
 This tool replaces a dwarf's preferences with an "ideal" set which is easy to
 satisfy::
