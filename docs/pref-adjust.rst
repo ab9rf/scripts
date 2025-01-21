@@ -19,7 +19,7 @@ Usage
 ``pref-adjust list``
     List all types of preferences. No changes will be made to any units.
 ``pref-adjust show``
-    Show the preferences of a unit.
+    Show the preferences of the selected unit.
 ``pref-adjust all|goth_all|clear_all``
     Changes/clears preferences for all units.
 ``pref-adjust one|goth|clear``
