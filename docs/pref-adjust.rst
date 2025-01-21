@@ -30,7 +30,7 @@ Examples
 --------
 
 ``pref-adjust all``
-    Change preferences for all units to an ideal.
+    Change preferences for all citizens to an ideal.
 
 Goth mode
 ---------
