@@ -47,6 +47,17 @@ function unitIsAvailable(unit)
     return true
 end
 
+---check if unit can perform labor at workshop
+---@param unit df.unit
+---@param unit_labor df.unit_labor
+---@param workshop df.building
+---@return boolean
+function availableLaborer(unit, unit_labor, workshop)
+    return unit.status.labors[unit_labor]
+       and unitIsAvailable(unit)
+       and ic.canAccessWorkshop(unit, workshop)
+end
+
 ---find unit with a particular labor enabled
 ---@param unit_labor df.unit_labor
 ---@param job_skill df.job_skill
@@ -58,9 +69,7 @@ end
     local max_skill = -1
     for _, unit in ipairs(dfhack.units.getCitizens(true, false)) do
         if
-            unit.status.labors[unit_labor] and
-            unitIsAvailable(unit) and
-            ic.canAccessWorkshop(unit, workshop)
+            availableLaborer(unit, unit_labor, workshop)
         then
             local unit_skill = dfhack.units.getNominalSkill(unit, job_skill, true)
             if unit_skill > max_skill then
@@ -90,13 +99,32 @@ local function findMilkBarrel(min_liquids)
     end
 end
 
-function findWorkshop()
+---find a workshop to which the barrel can be brought
+---if the workshop has a master, only return workshop and master if the master is available
+---@param pos df.coord
+---@return df.building_workshopst?
+---@return df.unit?
+function findWorkshop(pos)
     for _,workshop in ipairs(df.global.world.buildings.other.WORKSHOP_FARMER) do
         if
+            dfhack.maps.canWalkBetween(pos, xyz2pos(workshop.centerx, workshop.centery, workshop.z)) and
             not workshop.profile.blocked_labors[df.unit_labor.MAKE_CHEESE] and
-            #workshop.jobs == 0 and #workshop.profile.permitted_workers == 0
+            #workshop.jobs == 0
         then
-            return workshop
+            if #workshop.profile.permitted_workers == 0 then
+                -- immediately return workshop without master
+                return workshop, nil
+            else
+                unit = df.unit.find(workshop.profile.permitted_workers[0])
+                if
+                    unit and availableLaborer(unit, df.unit_labor.MAKE_CHEESE, workshop)
+                then
+                    -- return workshop and master, if master is available
+                    return workshop, unit
+                else
+                    print("autocheese: Skipping farmer's workshop with unavailable master")
+                end
+            end
         end
     end
 end
@@ -127,14 +155,18 @@ if not reagent then
     return
 end
 
-local workshop = findWorkshop()
+local workshop, worker = findWorkshop(xyz2pos(dfhack.items.getPosition(reagent)))
 
 if not workshop then
-    print('autocheese: no Farmer's Workshop available')
+    print("autocheese: no Farmer's Workshop available")
     return
 end
 
-local worker, skill = findAvailableLaborer(df.unit_labor.MAKE_CHEESE, df.job_skill.CHEESEMAKING, workshop)
+-- try to find laborer for workshop without master
+if not worker then
+    worker, _ = findAvailableLaborer(df.unit_labor.MAKE_CHEESE, df.job_skill.CHEESEMAKING, workshop)
+end
+
 if not worker then
     print('autocheese: no cheesemaker available')
     return
