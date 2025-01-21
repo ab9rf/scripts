@@ -2,7 +2,7 @@ assign-preferences
 ==================
 
 .. dfhack-tool::
-    :summary: View or Adjust a unit's preferences.
+    :summary: View or adjust a unit's preferences.
     :tags: fort armok units
 
 You will need to know the token of the object you want your dwarf to like.
