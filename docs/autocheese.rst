@@ -2,12 +2,13 @@ autocheese
 ==========
 
 .. dfhack-tool::
-    :summary: Automatically make cheese using barrels that have accumulated sufficient milk.
+    :summary: Schedule cheese making jobs based on milk reserves.
     :tags: fort auto
 
-Cheese making is difficult to automate using work orders, because a single job
-can consume anything from a bucket was a single unit of milk to barrel
-containing up to 100 units of milk.
+Cheese making is difficult to automate using work orders. A single job
+can consume anything from a bucket with a single unit of milk to a barrel
+with 100 units of milk. This makes it hard to predict how much cheese will
+actually be produced by an automated order.
 
 The script will scan your fort for barrels with a certain minimum amount of milk
 (default: 50), create a cheese making job specifically for that barrel, and

@@ -130,7 +130,7 @@ end
 local workshop = findWorkshop()
 
 if not workshop then
-    print('autocheese: no workshop available')
+    print('autocheese: no Farmer's Workshop available')
     return
 end
 
@@ -142,7 +142,7 @@ end
 local job = makeCheese(reagent, workshop)
 
 print(('autocheese: dispatching cheesemaking job for %s (%d milk) to %s'):format(
-    dfhack.items.getDescription(reagent, 0),
+    dfhack.df2console(dfhack.items.getReadableDescription(reagent)),
     #reagent.general_refs,
     dfhack.df2console(dfhack.units.getReadableName(worker))
 ))
