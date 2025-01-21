@@ -21,7 +21,7 @@ Usage
 ``pref-adjust show``
     Show the preferences of the selected unit.
 ``pref-adjust all|goth_all|clear_all``
-    Changes/clears preferences for all units.
+    Changes/clears preferences for all citizens.
 ``pref-adjust one|goth|clear``
     Changes/clears preferences for the currently selected dwarf.
 
