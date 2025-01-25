@@ -31,12 +31,16 @@ Template for new versions:
 ## New Features
 
 ## Fixes
-- `deathcause`: fix error when retrieving the name of a historical figure
 
 ## Misc Improvements
 - `pref-assign`: updated to allow users to run `pref-assign show` to get a list of units current preferences
 
 ## Removed
+
+# 51.02-r1
+
+## Fixes
+- `deathcause`: fix error when retrieving the name of a historical figure
 
 # 50.15-r2
 
