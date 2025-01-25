@@ -35,6 +35,8 @@ Template for new versions:
 ## Misc Improvements
 - `assign-preferences`: new ``--show`` option to display the preferences of the selected unit
 - `pref-adjust`: new ``show`` command to display the preferences of the selected unit
+- `hide-tutorials`: if enabled, also hide tutorial popups for adventure mode
+- `hide-tutorials`: new ``reset`` command that will re-enable popups in the current game
 
 ## Removed
 
