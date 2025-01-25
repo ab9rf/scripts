@@ -28,6 +28,8 @@ Template for new versions:
 
 ## New Tools
 
+- `autocheese`: automatically make cheese using barrels that have accumulated sufficient milk
+
 ## New Features
 
 ## Fixes
