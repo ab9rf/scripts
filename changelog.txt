@@ -34,7 +34,7 @@ Template for new versions:
 
 ## Misc Improvements
 - `assign-preferences`: new ``--show`` option to display the preferences of the selected unit
-- `pref-assign`: new ``show`` command to display the preferences of the selected unit
+- `pref-adjust`: new ``show`` command to display the preferences of the selected unit
 
 ## Removed
 
