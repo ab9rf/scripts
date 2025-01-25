@@ -33,7 +33,8 @@ Template for new versions:
 ## Fixes
 
 ## Misc Improvements
-- `assign-preferences`: updated to allow users to run `assign-preferences --show` to get a list of selected units preferences
+- `assign-preferences`: new ``--show`` option to display the preferences of the selected unit
+- `pref-assign`: new ``show`` command to display the preferences of the selected unit
 
 ## Removed
 
