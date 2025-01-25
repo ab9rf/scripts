@@ -51,7 +51,6 @@ Template for new versions:
 
 ## New Tools
 - `fix/stuck-squad`: allow squads and messengers returning from missions to rescue squads that have gotten stuck on the world map
-- `gui/rename`: (reinstated) give new in-game language-based names to anything that can be named (e.g. units, governments, fortresses, or the world)
 - `gui/rename`: (reinstated) give new in-game language-based names to anything that can be named (units, governments, fortresses, the world, etc.)
 
 ## New Features
