@@ -27,12 +27,12 @@ Template for new versions:
 # Future
 
 ## New Tools
-
 - `autocheese`: automatically make cheese using barrels that have accumulated sufficient milk
 
 ## New Features
 
 ## Fixes
+- `advtools`: fix dfhack-added conversation options not appearing in the ask whereabouts conversation tree
 
 ## Misc Improvements
 - `assign-preferences`: new ``--show`` option to display the preferences of the selected unit
