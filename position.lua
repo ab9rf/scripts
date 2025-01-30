@@ -1,4 +1,4 @@
--- Detailed info about time and place. Can also copy keyboard cursor position.
+-- Report cursor and mouse position, along with other info.
 --@ module = true
 
 local argparse = require('argparse')
