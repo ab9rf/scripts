@@ -7,7 +7,6 @@ local RELOAD = false -- set to true when actively working on this script
 local gui = require('gui')
 local widgets = require('gui.widgets')
 local overlay = require('plugins.overlay')
-local ResizingPanel = require('gui.widgets.containers.resizing_panel')
 
 --------------------------------------------------------------------------------
 
@@ -233,7 +232,7 @@ end
 -- MouseTooltip is an almost copy&paste of the DimensionsTooltip
 --
 if RELOAD then MouseTooltip = nil end
-MouseTooltip = defclass(MouseTooltip, ResizingPanel)
+MouseTooltip = defclass(MouseTooltip, widgets.ResizingPanel)
 
 MouseTooltip.ATTRS{
     frame_style=gui.FRAME_THIN,
@@ -330,8 +329,11 @@ local function GetScreenCoordinates(map_coord)
 end
 
 function TooltipsOverlay:render(dc)
+    self:render_unit_banners(dc)
     TooltipsOverlay.super.render(self, dc)
+end
 
+function TooltipsOverlay:render_unit_banners(dc)
     if not config.follow_units then return end
 
     if not dfhack.screen.inGraphicsMode() and not gui.blink_visible(500) then
