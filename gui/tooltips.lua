@@ -5,6 +5,7 @@
 local RELOAD = false -- set to true when actively working on this script
 
 local gui = require('gui')
+local utils = require('utils')
 local widgets = require('gui.widgets')
 local overlay = require('plugins.overlay')
 
@@ -84,6 +85,41 @@ config = config or {
         {text = "=D", pen = COLOR_LIGHTCYAN,  visible = true,  name = "Ecstatic"},
     },
 }
+
+--------------------------------------------------------------------------------
+-- config persistence
+local CONFIG_FILE_PATH = 'dfhack-config/tooltips.json'
+
+local function load_config()
+    local json = require('json')
+
+    local f = json.open(CONFIG_FILE_PATH)
+    if f.exists then
+        -- remove unknown or out of date entries from the loaded config
+        -- shallow search should be enough
+        for k in pairs(f.data) do
+            if config[k] == nil then
+                f.data[k] = nil
+            end
+        end
+
+        -- convert string keys into numbers - workaround json (encoder) limitations
+        ensure_key(f.data, "happiness_levels")
+        local t = f.data.happiness_levels
+        for k, v in pairs(t) do
+            t[tonumber(k)] = v
+            t[k] = nil
+        end
+
+        utils.assign(config, f.data)
+    end
+
+    f.data = config -- link the config info with the file
+    f:write() -- possibly update the stored config
+    return f
+end
+
+local config_file = load_config()
 
 --------------------------------------------------------------------------------
 
@@ -182,6 +218,8 @@ function TooltipControlWindow:on_submit(index, choice)
     local cfg = choice.data.cfg
     local key = choice.data.key
     cfg[key] = not cfg[key]
+
+    config_file:write()
 end
 
 local function GetUnitHappiness(unit)
