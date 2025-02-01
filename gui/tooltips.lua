@@ -66,6 +66,10 @@ if RELOAD then config = nil end
 config = config or {
     follow_units = true,
     follow_mouse = false,
+    show_unit_jobs = true,
+    job_shortenings = {
+        ["Store item in stockpile"] = "Store item",
+    },
     show_happiness = true,
     happiness_levels = {
         -- keep in mind, the text will look differently with game's font
@@ -79,10 +83,6 @@ config = config or {
         {text = ":D", pen = COLOR_LIGHTGREEN, visible = true,  name = "Happy"},
         {text = "=D", pen = COLOR_LIGHTCYAN,  visible = true,  name = "Ecstatic"},
     },
-    show_unit_jobs = true,
-    job_shortenings = {
-        ["Store item in stockpile"] = "Store item",
-    }
 }
 
 --------------------------------------------------------------------------------
@@ -123,69 +123,65 @@ TooltipControlWindow.ATTRS {
     },
 }
 
--- right pad string `s` to `n` symbols with spaces
-local function rpad(s, n)
-    local formatStr = "%-" .. n .. "s" -- `"%-10s"`
-    return string.format(formatStr, s)
-end
+local function make_enabled_text(indent, text, cfg, key)
+    local function get_enabled_button_token(enabled_tile, disabled_tile, cfg, key)
+        return {
+            tile=function() return cfg[key] and enabled_tile or disabled_tile end,
+        }
+    end
 
-function TooltipControlWindow:init()
-    local w = self.frame.w - 2 - 3 -- 2 is border, 3 is active indicator width
-    local keyW = 7 -- Length of "Alt+u: "
-
-    self:addviews{
-        ToggleLabel{
-            view_id = 'btn_follow_units',
-            frame={t=0, h=1},
-            label=rpad("Unit banners", w - keyW),
-            key='CUSTOM_ALT_U',
-            initial_option=config.follow_units,
-            on_change=function(new) config.follow_units = new end,
-        },
-        ToggleLabel{
-            view_id = 'btn_follow_mouse',
-            frame={t=1, h=1},
-            label=rpad("Mouse tooltip", w - keyW),
-            key='CUSTOM_ALT_M',
-            initial_option=config.follow_mouse,
-            on_change=function(new) config.follow_mouse = new end,
-        },
-        ToggleLabel{
-            frame={t=2, h=1},
-            label=rpad("Show jobs", w),
-            initial_option=config.show_unit_jobs,
-            on_change=function(new) config.show_unit_jobs = new end,
-        },
-        ToggleLabel{
-            frame={t=3, h=1},
-            label=rpad("Show stress levels", w),
-            initial_option=config.show_happiness,
-            on_change=function(new) config.show_happiness = new end,
-        },
+    local tokens = {
+        string.format("%" .. indent .. "s", ''),
+        get_enabled_button_token(ENABLED_PEN_LEFT, DISABLED_PEN_LEFT, cfg, key),
+        get_enabled_button_token(ENABLED_PEN_CENTER, DISABLED_PEN_CENTER, cfg, key),
+        get_enabled_button_token(ENABLED_PEN_RIGHT, DISABLED_PEN_RIGHT, cfg, key),
+        ' ',
     }
-
-    local happinessLabels = {}
-
-    -- align the emoticons
-    local maxNameLength = 1
-    for _, v in pairs(config.happiness_levels) do
-        local l = #v.name
-        if l > maxNameLength then
-            maxNameLength = l
+    if type(text) == 'string' then
+        tokens[#tokens+1] = text
+    else -- must be a table
+        -- append it
+        for _, v in ipairs(text) do
+            tokens[#tokens+1] = v
         end
     end
 
-    local indent = 3
-    for lvl, cfg in pairs(config.happiness_levels) do
-        happinessLabels[#happinessLabels + 1] = ToggleLabel{
-            frame={t=4+lvl, h=1, l=indent},
-            initial_option=cfg.visible,
-            text_pen = cfg.pen,
-            label = rpad(rpad(cfg.name, maxNameLength) .. " " .. cfg.text, w - indent),
-            on_change = function(new) cfg.visible = new end
-        }
+    return tokens
+end
+
+local function make_choice(indent, text, cfg, key)
+    return {
+        text=make_enabled_text(indent, text, cfg, key),
+        data={cfg=cfg, key=key},
+    }
+end
+
+function TooltipControlWindow:init()
+    local choices = {}
+    table.insert(choices, make_choice(0, "unit banners", config, "follow_units"))
+    table.insert(choices, make_choice(0, "mouse tooltips", config, "follow_mouse"))
+    table.insert(choices, make_choice(0, "include jobs", config, "show_unit_jobs"))
+    table.insert(choices, make_choice(0, "include stress levels", config, "show_happiness"))
+    for i = 0, #config.happiness_levels do
+        local cfg = config.happiness_levels[i]
+        table.insert(choices, make_choice(3, {{text=cfg.text, pen=cfg.pen}, ' ', cfg.name}, cfg, "visible"))
     end
-    self:addviews(happinessLabels)
+
+    self:addviews{
+        widgets.List{
+            frame={t=0},
+            view_id='list',
+            on_submit=self:callback('on_submit'),
+            row_height=1,
+            choices = choices,
+        },
+    }
+end
+
+function TooltipControlWindow:on_submit(index, choice)
+    local cfg = choice.data.cfg
+    local key = choice.data.key
+    cfg[key] = not cfg[key]
 end
 
 local function GetUnitHappiness(unit)
