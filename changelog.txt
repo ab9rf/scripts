@@ -42,6 +42,7 @@ Template for new versions:
 - `hide-tutorials`: new ``reset`` command that will re-enable popups in the current game
 
 ## Removed
+- `gui/control-panel`: removed ``craft-age-wear`` tweak for Windows users; the tweak doesn't currently load on Windows
 
 # 51.02-r1
 
