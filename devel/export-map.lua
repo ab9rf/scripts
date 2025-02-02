@@ -22,7 +22,7 @@ end
 -- right now the only tile_liquids are Water and Magma
 local liquid_list = {}
 for id, liquid in ipairs(df.tile_liquid) do
-    liquid_list[id] = liquid
+    liquid_list[id] = string.upper(liquid)
 end
 
 -- copied from agitation-rebalance.lua
