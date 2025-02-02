@@ -2,13 +2,13 @@ export-map
 ==========
 
 .. dfhack-tool::
-    :summary: Export fortress map tile data to a JSON file.
+    :summary: Export map tile data to a JSON file.
     :tags: dev
 
 WARNING - This command will cause the game to freeze for minutes depending on
 map size and options enabled.
 
-Exports the fortress map tile data to a JSON file. The export does not include items,
+Exports the map tile data to a JSON file. The export does not include items,
 characters, buildings, etc. Depending on options enabled, there will be a
 ``KEY`` table in the JSON with relevant [number ID] values that match a number
 to their object type.
@@ -25,14 +25,14 @@ Examples
 --------
 
 ``export-map``
-    Export the fortress map to JSON with ALL data included.
+    Export the map to JSON with ALL data included.
 
 ``export-map include -m -s -v``
-    Export the fortress map to JSON with only materials, shape, and variant
+    Export the map to JSON with only materials, shape, and variant
     data included.
 
 ``export-map exclude --variant --hidden --light``
-    Export the fortress map to JSON with variant, hidden, and light data
+    Export the map to JSON with variant, hidden, and light data
     excluded.
 
 Options

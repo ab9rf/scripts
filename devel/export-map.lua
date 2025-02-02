@@ -246,7 +246,7 @@ if dfhack_flags.module then
 end
 
 if not dfhack.isMapLoaded() then
-    qerror('This script requires a fortress map to be loaded')
+    qerror('This script requires a map to be loaded')
 end
 
 local options, args = {
