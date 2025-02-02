@@ -8,8 +8,8 @@ export-map
 WARNING - This command will cause the game to freeze for minutes depending on
 map size and options enabled.
 
-Exports the fortress map tile data to a JSON file. (does not include items,
-characters, buildings, etc.) Depending on options enabled, there will be a
+Exports the fortress map tile data to a JSON file. The export does not include items,
+characters, buildings, etc. Depending on options enabled, there will be a
 ``KEY`` table in the JSON with relevant [number ID] values that match a number
 to their object type.
 
