@@ -18,6 +18,8 @@ COMMANDS_BY_IDX = {
     {command='autobutcher target 10 10 14 2 BIRD_PEAFOWL_BLUE', group='automation', mode='run',
         desc='Enable if you usually want to raise peafowl.'},
     {command='autochop', group='automation', mode='enable'},
+    {command='autocheese', group='automation', mode='repeat',
+        params={'--time', '14', '--timeUnits', 'days', '--command', '[', 'autocheese', ']'}},
     {command='autoclothing', group='automation', mode='enable'},
     {command='autofarm', group='automation', mode='enable'},
     {command='autofarm threshold 150 grass_tail_pig', group='automation', mode='run',
@@ -49,6 +51,7 @@ COMMANDS_BY_IDX = {
         desc='Go to the Standing Orders tab in the Labor screen to save your current settings.'},
     {command='gui/settings-manager load-work-details', group='automation', mode='run',
         desc='Go to the Work Details tab in the Labor screen to save your current definitions.'},
+    {command='infinite-sky', group='automation', mode='enable'},
     {command='logistics enable autoretrain', group='automation', mode='run',
         desc='Automatically assign trainers to partially trained livestock so they don\'t revert to wild.'},
     {command='nestboxes', group='automation', mode='enable'},
@@ -65,8 +68,9 @@ COMMANDS_BY_IDX = {
     -- bugfix tools
     {command='adamantine-cloth-wear', help_command='tweak', group='bugfix', mode='tweak', default=true,
         desc='Prevents adamantine clothing from wearing out while being worn.'},
-    {command='craft-age-wear', help_command='tweak', group='bugfix', mode='tweak', default=true,
-        desc='Allows items crafted from organic materials to wear out over time.'},
+    -- re-inserted below for non-Windows users (where the tweak doesn't work)
+    -- {command='craft-age-wear', help_command='tweak', group='bugfix', mode='tweak', default=true,
+    --     desc='Allows items crafted from organic materials to wear out over time.'},
     {command='fix/blood-del', group='bugfix', mode='run', default=true},
     {command='fix/dead-units', group='bugfix', mode='repeat', default=true,
         desc='Fix units still being assigned to burrows after death.',
@@ -87,8 +91,9 @@ COMMANDS_BY_IDX = {
         params={'--time', '1', '--timeUnits', 'days', '--command', '[', 'fix/ownership', ']'}},
     {command='fix/protect-nicks', group='bugfix', mode='enable', default=true},
     {command='fix/stuck-instruments', group='bugfix', mode='repeat', default=true,
-        desc='Fix activity references on stuck instruments to make them usable again.',
         params={'--time', '1', '--timeUnits', 'days', '--command', '[', 'fix/stuck-instruments', ']'}},
+    {command='fix/stuck-squad', group='bugfix', mode='repeat', default=true,
+        params={'--time', '1', '--timeUnits', 'days', '--command', '[', 'fix/stuck-squad', ']'}},
     {command='fix/stuck-worship', group='bugfix', mode='repeat', default=true,
         params={'--time', '1', '--timeUnits', 'days', '--command', '[', 'fix/stuck-worship', '-q', ']'}},
     {command='fix/noexert-exhaustion', group='bugfix', mode='repeat', default=true,
@@ -119,6 +124,7 @@ COMMANDS_BY_IDX = {
     {command='fastdwarf', group='gameplay', mode='enable'},
     {command='hermit', group='gameplay', mode='enable'},
     {command='hide-tutorials', group='gameplay', mode='system_enable'},
+    {command='immortal-cravings', group='gameplay', mode='enable'},
     {command='light-aquifers-only', group='gameplay', mode='run'},
     {command='misery', group='gameplay', mode='enable'},
     {command='orders-reevaluate', help_command='orders', group='gameplay', mode='repeat',
@@ -128,11 +134,20 @@ COMMANDS_BY_IDX = {
         desc='Displays percentages on partially-consumed items like hospital cloth.'},
     {command='pop-control', group='gameplay', mode='enable'},
     {command='realistic-melting', help_command='tweak', group='gameplay', mode='tweak',
-        desc='Adjust selected item types melt return for all metals to ~95% of forging cost. Reduce melt return by 10% per wear level.'},
+        desc='Fixes metal duplication exploits by setting the melt return for all items to ~95%, reduced by 10% for each wear level.'},
     {command='starvingdead', group='gameplay', mode='enable'},
     {command='timestream', group='gameplay', mode='enable'},
     {command='work-now', group='gameplay', mode='enable'},
 }
+
+-- temporary workaround for Windows users until the tweak works
+if dfhack.getOSType() ~= 'windows' then
+    local idx = utils.linear_index(COMMANDS_BY_IDX, 'adamantine-cloth-wear', 'command') or 1
+    table.insert(COMMANDS_BY_IDX, idx + 1, {
+        command='craft-age-wear', help_command='tweak', group='bugfix', mode='tweak', default=true,
+        desc='Allows items crafted from organic materials to wear out over time.',
+    })
+end
 
 COMMANDS_BY_NAME = {}
 for _,data in ipairs(COMMANDS_BY_IDX) do
