@@ -73,6 +73,13 @@ Options
     The material inside the tile. [number ID] (IRON/GRANITE/CLAY/
     TOPAZOLITE/BLACK_OPAL/etc.) (will return nil if the tile is empty)
 
+``-q``, ``--liquid``
+    The type of liquid inside the tile. [number ID] (WATER/MAGMA) (will return 
+    nil if the tile flow level is zero)
+
+``-f``, ``--flow``
+    The level of liquids inside the tile. [number] (0-7)
+
 ``-u``, ``--underworld``
     Whether the underworld z-levels will be included.
 
