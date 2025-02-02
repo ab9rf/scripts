@@ -25,15 +25,15 @@ Examples
 --------
 
 ``export-map``
-    Exports the fortress map to JSON with ALL data included
+    Export the fortress map to JSON with ALL data included.
 
 ``export-map include -m -s -v``
-    Exports the fortress map to JSON with only materials, shape, and variant
-    data included
+    Export the fortress map to JSON with only materials, shape, and variant
+    data included.
 
 ``export-map exclude --variant --hidden --light``
-    Exports the fortress map to JSON with variant, hidden, and light data
-    excluded
+    Export the fortress map to JSON with variant, hidden, and light data
+    excluded.
 
 Required
 --------
@@ -41,10 +41,10 @@ Required
 When you are using options, you must include one of these settings.
 
 ``include``
-    Include only the data listed from options to the JSON (whitelist)
+    Include only the data listed from options to the JSON (whitelist).
 
 ``exclude``
-    Exclude only the data listed from options to the JSON (blacklist)
+    Exclude only the data listed from options to the JSON (blacklist).
 
 Options
 -------
@@ -53,27 +53,27 @@ Options
     Shows the help menu
 
 ``-t``, ``--tiletype``
-    The tile material classification [number ID] (AIR/SOIL/STONE/RIVER/etc.)
+    The tile material classification. [number ID] (AIR/SOIL/STONE/RIVER/etc.)
 
 ``-s``, ``--shape``
-    The tile shape classification [number ID] (EMPTY/FLOOR/WALL/STAIR/etc.)
+    The tile shape classification. [number ID] (EMPTY/FLOOR/WALL/STAIR/etc.)
 
 ``-p``, ``--special``
-    The tile surface special properties for smoothness [number ID]
-    (NORMAL/SMOOTH/ROUGH/etc.) (used for engraving)
+    The tile surface special properties for smoothness. [number ID]
+    (NORMAL/SMOOTH/ROUGH/etc.) (used for engraving).
 
 ``-v``, ``--variant``
-    The specific variant of a tile that have visual variations [number] (like
+    The specific variant of a tile that have visual variations. [number] (like
     grass tiles in ASCII mode)
 
 ``-h``, ``--hidden``
-    Whether tile is revealed or unrevealed [boolean]
+    Whether tile is revealed or unrevealed. [boolean]
 
 ``-l``, ``--light``
-    Whether tile is exposed to light [boolean]
+    Whether tile is exposed to light. [boolean]
 
 ``-b``, ``--subterranean``
-    Whether the tile is considered underground [boolean] (used to determine
+    Whether the tile is considered underground. [boolean] (used to determine
     crops that can be planted underground)
 
 ``-o``, ``--outside``
@@ -81,14 +81,14 @@ Options
     to trigger on outside tiles)
 
 ``-a``, ``--aquifer``
-    Whether the tile is considered an aquifer [number ID] (NONE/LIGHT/HEAVY)
+    Whether the tile is considered an aquifer. [number ID] (NONE/LIGHT/HEAVY)
 
 ``-m``, ``--material``
-    The material inside the tile [number ID] (IRON/GRANITE/CLAY/
+    The material inside the tile. [number ID] (IRON/GRANITE/CLAY/
     TOPAZOLITE/BLACK_OPAL/etc.) (will return nil if the tile is empty)
 
 ``-u``, ``--underworld``
-    Whether the underworld z-levels will be included
+    Whether the underworld z-levels will be included.
 
 ``-e``, ``--evilness``
     Whether the evilness value will be included in MAP_SIZE table. This only
@@ -99,7 +99,8 @@ JSON DATA
 ---------
 
 ``ARGUMENT_OPTION_ORDER``
-    The order of the selected options for how data is arranged at a map position
+    The order of the selected options for how data is arranged at a map 
+    position.
 
     Example 1:
         ``{"material": 1, "shape": 2, "hidden": 3}``
