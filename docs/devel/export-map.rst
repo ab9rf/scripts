@@ -2,7 +2,7 @@ export-map
 ==========
 
 .. dfhack-tool::
-    :summary: Export fortress map tile data to a JSON file
+    :summary: Export fortress map tile data to a JSON file.
     :tags: dev
 
 WARNING - This command will cause the game to freeze for minutes depending on
