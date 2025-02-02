@@ -73,7 +73,7 @@ function get_enabled_map()
         end
     end
     -- repeat entries override tool names for control-panel
-    for munged_name in pairs(repeatUtil.repeating) do
+    for _,munged_name in ipairs(repeatUtil.listScheduled()) do
         local name = unmunge_repeat_name(munged_name)
         if name then
             enabled_map[name] = true
@@ -118,7 +118,7 @@ local function persist_repeats()
     local cp_repeats = {}
     for _, data in ipairs(registry.COMMANDS_BY_IDX) do
         if data.mode == 'repeat' then
-            if repeatUtil.repeating[munge_repeat_name(data.command)] then
+            if repeatUtil.isScheduled(munge_repeat_name(data.command)) then
                 cp_repeats[data.command] = true
             else
                 cp_repeats[data.command] = false

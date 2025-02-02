@@ -653,7 +653,8 @@ function Spreadsheet:init()
                 data_fn=curry(toggle_sorted_vec_data, wd.assigned_units),
                 toggle_fn=function(unit_id, prev_val)
                     toggle_sorted_vec(wd.assigned_units, unit_id, prev_val)
-                    -- TODO: poke DF to actually apply the work details to units
+                    local unit = df.unit.find(unit_id)
+                    if unit then dfhack.units.setAutomaticProfessions(unit) end
                 end,
             }
         }
@@ -1341,9 +1342,12 @@ function ManipulatorOverlay:init()
     }
 end
 
-OVERLAY_WIDGETS = {
-    launcher=ManipulatorOverlay,
-}
+--
+-- disable overlay widget while tool is still in dark launch mode
+--
+-- OVERLAY_WIDGETS = {
+--     launcher=ManipulatorOverlay,
+-- }
 
 if dfhack_flags.module then return end
 
