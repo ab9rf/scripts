@@ -74,7 +74,7 @@ Options
     TOPAZOLITE/BLACK_OPAL/etc.) (will return nil if the tile is empty)
 
 ``-q``, ``--liquid``
-    The type of liquid inside the tile. [number ID] (WATER/MAGMA) (will return 
+    The type of liquid inside the tile. [number ID] (WATER/MAGMA) (will return
     nil if the tile flow level is zero)
 
 ``-f``, ``--flow``
@@ -92,7 +92,7 @@ JSON DATA
 ---------
 
 ``ARGUMENT_OPTION_ORDER``
-    The order of the selected options for how data is arranged at a map 
+    The order of the selected options for how data is arranged at a map
     position.
 
     Example 1:
