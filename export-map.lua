@@ -212,7 +212,7 @@ local function export_all_z_levels(fortress_name, folder, options)
     end
 
     -- start from bottom z-level (underworld) to top z-level (sky)
-    for z = 25, 25 do --zmax do
+    for z = zmin, zmax do
         local level_data = {}
         for y = 0, ymax - 1 do
             local row_data = {}
