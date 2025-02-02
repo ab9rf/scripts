@@ -1,8 +1,5 @@
 --@ module = true
 
-local gui = require('gui')
-local widgets = require('gui.widgets')
-local textures = require('gui.textures')
 local overlay = require('plugins.overlay')
 local guidm = require('gui.dwarfmode')
 local note_manager = reqscript('internal/notes/note_manager')
