@@ -18,7 +18,8 @@ Usage
 
 ::
 
-    export-map [include|exclude] [<options>]
+    export-map
+    export-map (include|exclude) <options>
 
 Examples
 --------
