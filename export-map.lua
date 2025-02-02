@@ -19,6 +19,12 @@ for _, feature in ipairs(df.global.world.features.map_features) do
     end
 end
 
+-- right now the only tile_liquids are Water and Magma
+local liquid_list = {}
+for id, liquid in ipairs(df.tile_liquid) do
+    liquid_list[id] = liquid
+end
+
 -- copied from agitation-rebalance.lua
 -- check only one tile at the center of the map at ground lvl
 -- (this ignores different biomes on the edges of the map)
@@ -65,6 +71,16 @@ local function classify_tile(options, x, y, z)
             tile_data[position] = tileflags.subterranean
         elseif(map_option == "outside") then
             tile_data[position] = tileflags.outside
+        elseif(map_option == "liquid") then
+            if(tileflags.flow_size > 0) then
+                -- liquid_type is a boolean (true=Magma, false=Water)
+                -- converting it to a number for easy reference in key table
+                tile_data[position] = tileflags.liquid_type and 1 or 0
+            else
+                tile_data[position] = nil
+            end
+        elseif(map_option == "flow") then
+            tile_data[position] = tileflags.flow_size
         elseif(map_option == "aquifer") then
             -- hardcoding these values bc they are not directly in a list
             if(tileflags.water_table and tile_occupancy.heavy_aquifer) then
@@ -152,6 +168,17 @@ local function setup_keys(options)
         end
     end
 
+    if(options.liquid) then
+        KEYS.LIQUID = liquid_list
+    end
+
+    if(options.flow) then
+        KEYS.FLOW = {}
+        for i=0, 7 do
+            KEYS.FLOW[i] = i
+        end
+    end
+
     return KEYS
 end
 
@@ -185,7 +212,7 @@ local function export_all_z_levels(fortress_name, folder, options)
     end
 
     -- start from bottom z-level (underworld) to top z-level (sky)
-    for z = 0, 1-1 do
+    for z = 25, 25 do --zmax do
         local level_data = {}
         for y = 0, ymax - 1 do
             local row_data = {}
@@ -234,6 +261,8 @@ local options, args = {
     outside = false,
     aquifer = false,
     material = false,
+    flow = false,
+    liquid = false,
 }, {...}
 
 local positionals = argparse.processArgsGetopt(args, {
@@ -248,6 +277,8 @@ local positionals = argparse.processArgsGetopt(args, {
     {'o', 'outside', handler=function() options.outside = true end},
     {'a', 'aquifer', handler=function() options.aquifer = true end},
     {'m', 'material', handler=function() options.material = true end},
+    {'f', 'flow', handler=function() options.flow = true end},
+    {'q', 'liquid', handler=function() options.liquid = true end},
     -- local var since underworld not in ordered option
     {'u', 'underworld', handler=function() include_underworld_z = true end},
     {'e', 'evilness', handler=function() evilness = get_evilness() end},
@@ -281,6 +312,8 @@ local ordered_options = {
     "outside",
     "aquifer",
     "material",
+    "flow",
+    "liquid",
 }
 
 -- reorganize ordered options based on selected options via argparse
