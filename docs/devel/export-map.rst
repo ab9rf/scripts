@@ -49,9 +49,6 @@ When you are using options, you must include one of these settings.
 Options
 -------
 
-``help``, ``--help``
-    Shows the help menu
-
 ``-t``, ``--tiletype``
     The tile material classification. [number ID] (AIR/SOIL/STONE/RIVER/etc.)
 
