@@ -35,17 +35,6 @@ Examples
     Export the fortress map to JSON with variant, hidden, and light data
     excluded.
 
-Required
---------
-
-When you are using options, you must include one of these settings.
-
-``include``
-    Include only the data listed from options to the JSON (whitelist).
-
-``exclude``
-    Exclude only the data listed from options to the JSON (blacklist).
-
 Options
 -------
 
