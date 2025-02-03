@@ -33,6 +33,14 @@ Template for new versions:
 - `advtools`: new overlay ``advtools.fastcombat``; allows you to skip combat animations and the announcement "More" button
 
 ## Fixes
+
+## Misc Improvements
+
+## Removed
+
+# 51.04-r1.1
+
+## Fixes
 - `advtools`: fix dfhack-added conversation options not appearing in the ask whereabouts conversation tree
 - `gui/rename`: fix error when changing the language of a unit's name
 
