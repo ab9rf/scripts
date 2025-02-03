@@ -27,12 +27,16 @@ Template for new versions:
 # Future
 
 ## New Tools
+- `autocheese`: automatically make cheese using barrels that have accumulated sufficient milk
 
 ## New Features
+- `advtools`: new overlay ``advtools.fastcombat``; allows you to skip combat animations and the announcement "More" button
 
 ## Fixes
 
 ## Misc Improvements
+- `hide-tutorials`: if enabled, also hide tutorial popups for adventure mode
+- `hide-tutorials`: new ``reset`` command that will re-enable popups in the current game
 
 ## Removed
 
