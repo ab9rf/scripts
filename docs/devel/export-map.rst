@@ -130,11 +130,12 @@ JSON DATA
 ``map``
     JSON map data is arranged as: ``map[z][y][x] = {tile_data}``
 
-    JSON maps start at index [1]. (starts at map[1][1][1])
     DF maps start at index [0]. (starts at map[0][0][0])
 
-    To translate an actual DF map position from the JSON map you need add +1 to
-    all x/y/z coordinates to get the correct tile position.
+    For most JSON libraries the index starts at [0] but some languages has the
+    index start at [1]. So to translate an actual DF map position from the JSON
+    map, you may need to add +1 to all x/y/z coordinates to get the correct tile
+    position.
 
     The ``ARGUMENT_OPTION_ORDER`` determines order of tile data. (see above)
     I would recommend referencing the tile data like so:
