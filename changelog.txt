@@ -28,6 +28,7 @@ Template for new versions:
 
 ## New Tools
 - `autocheese`: automatically make cheese using barrels that have accumulated sufficient milk
+- `gui/spectate`: interactive UI for configuring `spectate`
 
 ## New Features
 - `advtools`: new overlay ``advtools.fastcombat``; allows you to skip combat animations and the announcement "More" button
