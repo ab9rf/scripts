@@ -68,7 +68,8 @@ COMMANDS_BY_IDX = {
     -- bugfix tools
     {command='adamantine-cloth-wear', help_command='tweak', group='bugfix', mode='tweak', default=true,
         desc='Prevents adamantine clothing from wearing out while being worn.'},
-    -- re-inserted below for non-Windows users (where the tweak doesn't work)
+    -- re-inserted below for non-Windows users (tweak can't load on Windows)
+    -- can be restored here once we solve issue #4292
     -- {command='craft-age-wear', help_command='tweak', group='bugfix', mode='tweak', default=true,
     --     desc='Allows items crafted from organic materials to wear out over time.'},
     {command='fix/blood-del', group='bugfix', mode='run', default=true},
