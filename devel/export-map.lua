@@ -241,10 +241,6 @@ local function export_fortress_map(options)
     export_all_z_levels(fortress_name, export_path, options)
 end
 
-if dfhack_flags.module then
-    return
-end
-
 if not dfhack.isMapLoaded() then
     qerror('This script requires a map to be loaded')
 end
