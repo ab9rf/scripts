@@ -43,8 +43,10 @@ local function get_evilness()
 end
 
 local function classify_tile(options, x, y, z)
-    -- The last z-levels of hell shrink their x/y size unexpectedly! (ಠ_ಠ)
-    -- if your map is 190x190, the last hell z-levels are gonna be like 90x90
+    -- if your map happens to cross a region boundary and different regions are
+    -- different depths, the last z-levels of hell MIGHT shrink their x/y size
+    -- so if your map is 190x190, the last hell z-levels can end up being 90x90
+
     if dfhack.maps.getTileType(x, y, z) == nil then
         return nil -- Designating the non-tiles of hell to be nil
     end
