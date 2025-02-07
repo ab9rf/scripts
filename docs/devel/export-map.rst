@@ -1,4 +1,4 @@
-export-map
+devel/export-map
 ==========
 
 .. dfhack-tool::
