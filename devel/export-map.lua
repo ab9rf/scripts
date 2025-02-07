@@ -8,8 +8,8 @@ local utils = require('utils')
 local json = require('json')
 local argparse = require('argparse')
 
-local include_underworld_z = false
 local underworld_z
+local underworld
 local evilness
 
 -- the layer of the underworld
@@ -200,16 +200,16 @@ local function export_all_z_levels(fortress_name, folder, options)
         x = xmax,
         y = ymax,
         -- subtract underworld levels if excluded from options
-        z = include_underworld_z and zmax or (zmax - underworld_z),
-        underworld_z_level = include_underworld_z and underworld_z or nil,
-        evilness = evilness or nil,
+        z = underworld and zmax or (zmax - underworld_z),
+        underworld_z_level = underworld and underworld_z or nil,
+        evilness = evilness and get_evilness() or nil,
     }
     data.KEYS = setup_keys(options)
 
     data.map = {}
 
     local zmin = 0
-    if not include_underworld_z then -- skips all z-levels in the underworld
+    if not underworld then -- skips all z-levels in the underworld
         zmin = underworld_z
     end
 
@@ -261,6 +261,8 @@ local options, args = {
     material = false,
     flow = false,
     liquid = false,
+    underworld = false,
+    evilness = false,
 }, {...}
 
 local positionals = argparse.processArgsGetopt(args, {
@@ -277,9 +279,8 @@ local positionals = argparse.processArgsGetopt(args, {
     {'m', 'material', handler=function() options.material = true end},
     {'f', 'flow', handler=function() options.flow = true end},
     {'q', 'liquid', handler=function() options.liquid = true end},
-    -- local var since underworld not in ordered option
-    {'u', 'underworld', handler=function() include_underworld_z = true end},
-    {'e', 'evilness', handler=function() evilness = get_evilness() end},
+    {'u', 'underworld', handler=function() options.underworld = true end},
+    {'e', 'evilness', handler=function() options.evilness = true end},
 })
 
 if positionals[1] == "help" or options.help then
@@ -295,8 +296,6 @@ else -- include everything
     for setting in pairs(options) do
         options[setting] = true
     end
-    -- don't forget to include underworld
-    include_underworld_z = true
 end
 
 local ordered_options = {
@@ -313,6 +312,11 @@ local ordered_options = {
     "flow",
     "liquid",
 }
+
+-- these get omitted from ordered_options since this data goes directly into the
+-- JSON object for MAP_SIZE and doesn't need to be parsed into every tile
+underworld = options.underworld
+evilness = options.evilness
 
 -- reorganize ordered options based on selected options via argparse
 -- this is so ARGUMENT_OPTION_ORDER has the correct order with no gaps
