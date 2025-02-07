@@ -1,5 +1,5 @@
 devel/export-map
-==========
+================
 
 .. dfhack-tool::
     :summary: Export map tile data to a JSON file.
