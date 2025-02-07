@@ -18,20 +18,20 @@ Usage
 
 ::
 
-    export-map
-    export-map (include|exclude) <options>
+    devel/export-map
+    devel/export-map (include|exclude) <options>
 
 Examples
 --------
 
-``export-map``
+``devel/export-map``
     Export the map to JSON with ALL data included.
 
-``export-map include -m -s -v``
+``devel/export-map include -m -s -v``
     Export the map to JSON with only materials, shape, and variant
     data included.
 
-``export-map exclude --variant --hidden --light``
+``devel/export-map exclude --variant --hidden --light``
     Export the map to JSON with variant, hidden, and light data
     excluded.
 
