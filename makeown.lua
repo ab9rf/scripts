@@ -46,7 +46,7 @@ local function fix_clothing_ownership(unit)
     for _, inv_item in ipairs(unit.inventory) do
         local item = inv_item.item
         -- only act on worn items, not weapons
-        if inv_item.mode == df.unit_inventory_item.T_mode.Worn and
+        if inv_item.mode == df.inv_item_role_type.Worn and
             not dfhack.items.getOwner(item) and
             dfhack.items.setOwner(item, unit)
         then
