@@ -872,7 +872,7 @@ function find_suitable_items(job,items,job_items)
                 if not settings.gui_item_select then
                     if (item_counts[job_id]>0 and item_suitable) or settings.build_by_items then
                         --cur_item.flags.in_job=true
-                        job.items:insert("#",{new=true,item=cur_item,role=df.jjob_role_type.Reagent,job_item_idx=job_id})
+                        job.items:insert("#",{new=true,item=cur_item,role=df.job_role_type.Reagent,job_item_idx=job_id})
                         item_counts[job_id]=item_counts[job_id]-cur_item:getTotalDimension()
                         --print(string.format("item added, job_item_id=%d, item %s, quantity left=%d",job_id,tostring(cur_item),item_counts[job_id]))
                         used_item_id[cur_item.id]=true
@@ -1021,8 +1021,8 @@ end
 --         print("AAA FAILED!")
 --         return false
 --     end
---     args.job.items[0].role=df.jjob_role_type.LinkToTarget
---     args.job.items[1].role=df.jjob_role_type.LinkToTrigger
+--     args.job.items[0].role=df.job_role_type.LinkToTarget
+--     args.job.items[1].role=df.job_role_type.LinkToTrigger
 -- end
 function fake_linking(lever,building,slots)
     local item1=slots[1].items[1]
