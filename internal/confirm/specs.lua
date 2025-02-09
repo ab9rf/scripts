@@ -367,7 +367,7 @@ ConfirmSpec{
         local max_visible_buttons = num_sections // 2
         if selected_offset >= max_visible_buttons or
             selected_idx >= num_hotkeys or
-            plotinfo.main.hotkeys[selected_idx].cmd == df.ui_hotkey.T_cmd.None
+            plotinfo.main.hotkeys[selected_idx].cmd == df.hotkey_type.None
         then
             return false
         end

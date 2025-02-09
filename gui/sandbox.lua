@@ -448,7 +448,7 @@ local function init_arena()
                 if #list > list_size then
                     utils.assign(list[list_size], element)
                 else
-                    element.new = df.embark_item_choice.T_list
+                    element.new = df.itinfost
                     list:insert('#', element)
                 end
                 list_size = list_size + 1

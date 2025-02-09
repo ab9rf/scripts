@@ -50,7 +50,7 @@ function createUnit(raceStr, casteStr, pos, locationRange, locationType, age, do
 
   if entityRawName and entityRawName~="" then
     local isValidRawName
-    for k,v in ipairs(df.global.world.raws.entities) do
+    for k,v in ipairs(df.global.world.raws.entities.all) do
       if v.code == entityRawName then
         isValidRawName = true
         break
@@ -601,7 +601,7 @@ function nameUnit(unit, entityRawName)
   --choose three random words in the appropriate things
   local entity_raw
   if entityRawName and entityRawName~="" then
-    for k,v in ipairs(df.global.world.raws.entities) do
+    for k,v in ipairs(df.global.world.raws.entities.all) do
       if v.code == entityRawName then
         entity_raw = v
         break
