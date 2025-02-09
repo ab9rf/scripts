@@ -428,7 +428,7 @@ NOTIFICATIONS_BY_IDX = {
                     if dfhack.buildings.findAtTile(unit.path.dest) then
                         message = 'moody dwarf is claiming a workshop'
                     else
-                        message = 'moody dwarf can\'t find needed workshop!'
+                        message = {{text='moody dwarf can\'t find needed workshop!', pen=COLOR_LIGHTRED}}
                     end
                 elseif job.flags.fetching or job.flags.bringing or
                     unit.path.goal == df.unit_path_goal.None
@@ -437,7 +437,7 @@ NOTIFICATIONS_BY_IDX = {
                 elseif job.flags.working then
                     message = 'moody dwarf is working'
                 else
-                    message = 'moody dwarf can\'t find needed item!'
+                    message = {{text='moody dwarf can\'t find needed item!', pen=COLOR_LIGHTRED}}
                 end
                 return true
             end)
