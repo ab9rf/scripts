@@ -383,7 +383,7 @@ NOTIFICATIONS_BY_IDX = {
         default=true,
         dwarf_fn=function()
             local count = 0
-            for _, mandate in ipairs(df.global.world.mandates) do
+            for _, mandate in ipairs(df.global.world.mandates.all) do
                 if mandate.mode == df.mandate_type.Make and
                     mandate.timeout_limit - mandate.timeout_counter < 2500
                 then

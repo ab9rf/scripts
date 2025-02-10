@@ -342,7 +342,7 @@ function create_orders(orders, quiet)
                 if it2["bearing"] then
                     local bearing = it2["bearing"]
                     local idx
-                    for i, raw in ipairs(world.raws.inorganics) do
+                    for i, raw in ipairs(world.raws.inorganics.all) do
                         if raw.id == bearing then
                             idx = i
                             break

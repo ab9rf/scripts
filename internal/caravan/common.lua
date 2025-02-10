@@ -334,7 +334,7 @@ end
 
 function get_banned_items()
     local banned_items = {}
-    for _, mandate in ipairs(df.global.world.mandates) do
+    for _, mandate in ipairs(df.global.world.mandates.all) do
         if mandate.mode == df.mandate_type.Export then
             register_item_type(banned_items, mandate)
         end
