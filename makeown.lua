@@ -69,11 +69,11 @@ function clear_enemy_status(unit)
     status_cache.slot_used[status_slot] = false
 
     for index in ipairs(status_cache.rel_map[status_slot]) do
-        status_cache.rel_map[status_slot][index] = -1
+        status_cache.rel_map[status_slot][index].ur = -1
     end
 
     for index in ipairs(status_cache.rel_map) do
-        status_cache.rel_map[index][status_slot] = -1
+        status_cache.rel_map[index][status_slot].ur = -1
     end
 
     -- TODO: what if there were status slots taken above status_slot?

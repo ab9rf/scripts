@@ -158,7 +158,7 @@ end
 function build_all_lists(printflag)
     list_of_inorganics={} -- Type 0 "Likes iron.."
     list_of_inorganics_string=""
-    vec=df.global.world.raws.inorganics -- also df.global.world.raws.inorganics_subset[0].id available
+    vec=df.global.world.raws.inorganics.all -- also df.global.world.raws.inorganics.cheap[0].id available
     for k=0,#vec-1 do
         name=vec[k].id
         list_of_inorganics[name]=k

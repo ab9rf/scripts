@@ -238,7 +238,7 @@ end
 
 function Sandbox:find_zombie_syndrome()
     if self.zombie_syndrome then return self.zombie_syndrome end
-    for _,syn in ipairs(df.global.world.raws.syndromes.all) do
+    for _,syn in ipairs(df.global.world.raws.mat_table.syndromes.all) do
         local has_flags, has_flash = false, false
         for _,effect in ipairs(syn.ce) do
             if df.creature_interaction_effect_display_namest:is_instance(effect) then

@@ -89,7 +89,7 @@ local preference_functions = {
                 mattype = mat_info.type,
                 matindex = mat_info.index,
                 mat_state = 0,
-                active = true,
+                flags = {visible = true},
                 prefstring_seed = rng:random()
             }
         else
@@ -122,7 +122,7 @@ local preference_functions = {
                 mattype = -1,
                 matindex = -1,
                 mat_state = 0,
-                active = true,
+                flags = {visible = true},
                 prefstring_seed = rng:random()
             }
         else
@@ -199,7 +199,7 @@ local preference_functions = {
                     mattype = mat_info.type,
                     matindex = mat_info.index,
                     mat_state = 1,
-                    active = true,
+                    flags = {visible = true},
                     prefstring_seed = rng:random()
                 }
             end
@@ -234,7 +234,7 @@ local preference_functions = {
                 mattype = -1,
                 matindex = -1,
                 mat_state = 0,
-                active = true,
+                flags = {visible = true},
                 prefstring_seed = rng:random()
             }
         else
@@ -275,7 +275,7 @@ local preference_functions = {
                     mattype = -1,
                     matindex = -1,
                     mat_state = 0,
-                    active = true,
+                    flags = {visible = true},
                     prefstring_seed = rng:random()
                 }
             end
@@ -310,7 +310,7 @@ local preference_functions = {
                 mattype = -1,
                 matindex = -1,
                 mat_state = 0,
-                active = true,
+                flags = {visible = true},
                 prefstring_seed = rng:random()
             }
         else
@@ -343,7 +343,7 @@ local preference_functions = {
                 mattype = -1,
                 matindex = -1,
                 mat_state = 0,
-                active = true,
+                flags = {visible = true},
                 prefstring_seed = rng:random()
             }
         else
@@ -377,7 +377,7 @@ local preference_functions = {
                 mattype = -1,
                 matindex = -1,
                 mat_state = 0,
-                active = true,
+                flags = {visible = true},
                 prefstring_seed = rng:random()
             }
         else
@@ -410,7 +410,7 @@ local preference_functions = {
                 mattype = -1,
                 matindex = -1,
                 mat_state = 0,
-                active = true,
+                flags = {visible = true},
                 prefstring_seed = rng:random()
             }
         else
