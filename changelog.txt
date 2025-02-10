@@ -40,6 +40,7 @@ Template for new versions:
 - `hide-tutorials`: if enabled, also hide tutorial popups for adventure mode
 - `hide-tutorials`: new ``reset`` command that will re-enable popups in the current game
 - `gui/notify`: moody dwarf notification turns red when they can't find workshop or items
+- `gui/confirm`: in the delete manager order confirmation dialog, show a description of which order you have selected to delete
 
 ## Removed
 
