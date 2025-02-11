@@ -7,6 +7,7 @@ local utils = require 'utils'
 local json = require 'json'
 local shifter = reqscript('internal/journal/shifter')
 local table_of_contents = reqscript('internal/journal/table_of_contents')
+local journal_context = reqscript('internal/journal/journal_context')
 
 local RESIZE_MIN = {w=54, h=20}
 local TOC_RESIZE_MIN = {w=24}
@@ -291,7 +292,11 @@ JournalScreen.ATTRS {
 }
 
 function JournalScreen:init()
-    local context = self:loadContext()
+    self.journal_context = journal_context.journal_context_factory(
+        self.save_prefix,
+        self.save_on_change
+    )
+    local context = self.journal_context:load()
 
     self:addviews{
         JournalWindow{
@@ -304,40 +309,17 @@ function JournalScreen:init()
             init_cursor=context.cursor[1],
             show_tutorial=context.show_tutorial or false,
 
-            on_text_change=self:callback('saveContext'),
-            on_cursor_change=self:callback('saveContext')
+            on_text_change=self:callback('onTextChange'),
+            on_cursor_change=self:callback('onTextChange')
         },
     }
 end
 
-function JournalScreen:loadContext()
-    local site_data = self.save_on_change and dfhack.persistent.getSiteData(
-        self.save_prefix .. JOURNAL_PERSIST_KEY
-    ) or {}
+function JournalScreen:onTextChange()
+    local text = self.subviews.journal_editor:getText()
+    local cursor = self.subviews.journal_editor:getCursor()
 
-    if not site_data.text then
-        site_data.text={''}
-        site_data.show_tutorial = true
-    end
-    site_data.cursor = site_data.cursor or {#site_data.text[1] + 1}
-
-    return site_data
-end
-
-function JournalScreen:onTextChange(text)
-    self:saveContext(text)
-end
-
-function JournalScreen:saveContext()
-    if self.save_on_change and dfhack.isWorldLoaded() then
-        local text = self.subviews.journal_editor:getText()
-        local cursor = self.subviews.journal_editor:getCursor()
-
-        dfhack.persistent.saveSiteData(
-            self.save_prefix .. JOURNAL_PERSIST_KEY,
-            {text={text}, cursor={cursor}}
-        )
-    end
+    self.journal_context:save(text, cursor)
 end
 
 function JournalScreen:onDismiss()
