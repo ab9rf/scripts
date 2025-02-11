@@ -2,6 +2,7 @@
 --@ module = true
 
 local argparse = require('argparse')
+local guidm = require('gui.dwarfmode')
 
 local function parse_args(args)
     local opts = {}
@@ -15,18 +16,6 @@ local function parse_args(args)
     end
 
     return opts
-end
-
-function get_active_cursor() --Return active fort/adv cursor or nil
-    if dfhack.world.isAdventureMode() then
-        local look = df.global.game.main_interface.adventure.look
-        if look.open and look.cursor:isValid() then
-            return look.cursor --Note: This is a df.coord
-        end
-    elseif df.global.cursor.x >= 0 then
-        return df.global.cursor
-    end
-    return nil --Not active
 end
 
 local months =
@@ -129,7 +118,7 @@ if dfhack_flags.module then
 end
 
 function main(opts)
-    local cursor = get_active_cursor()
+    local cursor = guidm.getCursorPos()
 
     if opts.copy then --Copy keyboard cursor to clipboard
         if not cursor then
