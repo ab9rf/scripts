@@ -768,7 +768,7 @@ function BoxSelection:onInput(keys)
 
     local mousePos = dfhack.gui.getMousePos(true)
     local cursorPos = guidm.getCursorPos()
-    
+
     if cursorPos and keys.SELECT then
         cursorPos.x = math.max(math.min(cursorPos.x, df.global.world.map.x_count - 1), 0)
         cursorPos.y = math.max(math.min(cursorPos.y, df.global.world.map.y_count - 1), 0)
