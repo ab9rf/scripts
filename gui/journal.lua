@@ -327,8 +327,9 @@ function JournalScreen:onDismiss()
 end
 
 function main(options)
-    if not dfhack.isMapLoaded() or not dfhack.world.isFortressMode() then
-        qerror('journal requires a fortress map to be loaded')
+    if not dfhack.isMapLoaded() or (not dfhack.world.isFortressMode()
+        and not dfhack.world.isAdventureMode()) then
+        qerror('journal requires a fortress/adventure map to be loaded')
     end
 
     local save_layout = options and options.save_layout
