@@ -59,7 +59,7 @@ end
 Spectate = defclass(Spectate, widgets.Window)
 Spectate.ATTRS {
     frame_title='Spectate',
-    frame={w=35, h=30},
+    frame={l=3, t=5, w=35, h=30},
     resizable=true,
     resize_min={w=35, h=30},
 }
