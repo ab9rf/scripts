@@ -106,7 +106,7 @@ end
 -- Will figure out which items need to be moved to the floor, returns an item_id:item map
 local function process(unit, args, need_newline)
     local silent = args.all -- Don't print details if we're iterating through all dwarves
-    local unit_name = dfhack.df2console(dfhack.TranslateName(dfhack.units.getVisibleName(unit)))
+    local unit_name = dfhack.df2console(dfhack.units.getReadableName(unit))
 
     if not silent then
         need_newline = print_line("Processing unit " .. unit_name, need_newline)
@@ -138,9 +138,9 @@ local function process(unit, args, need_newline)
     for _, inv_item in ipairs(unit.inventory) do
         local item = inv_item.item
         -- Include weapons so we can check we have them later
-        if inv_item.mode == df.unit_inventory_item.T_mode.Worn or
-            inv_item.mode == df.unit_inventory_item.T_mode.Weapon or
-            inv_item.mode == df.unit_inventory_item.T_mode.Strapped
+        if inv_item.mode == df.inv_item_role_type.Worn or
+            inv_item.mode == df.inv_item_role_type.Weapon or
+            inv_item.mode == df.inv_item_role_type.Strapped
         then
             worn_items[item.id] = item
             worn_parts[item.id] = inv_item.body_part_id

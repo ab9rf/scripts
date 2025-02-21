@@ -383,8 +383,8 @@ NOTIFICATIONS_BY_IDX = {
         default=true,
         dwarf_fn=function()
             local count = 0
-            for _, mandate in ipairs(df.global.world.mandates) do
-                if mandate.mode == df.mandate.T_mode.Make and
+            for _, mandate in ipairs(df.global.world.mandates.all) do
+                if mandate.mode == df.mandate_type.Make and
                     mandate.timeout_limit - mandate.timeout_counter < 2500
                 then
                     count = count + 1
@@ -428,7 +428,7 @@ NOTIFICATIONS_BY_IDX = {
                     if dfhack.buildings.findAtTile(unit.path.dest) then
                         message = 'moody dwarf is claiming a workshop'
                     else
-                        message = 'moody dwarf can\'t find needed workshop!'
+                        message = {{text='moody dwarf can\'t find needed workshop!', pen=COLOR_LIGHTRED}}
                     end
                 elseif job.flags.fetching or job.flags.bringing or
                     unit.path.goal == df.unit_path_goal.None
@@ -437,7 +437,7 @@ NOTIFICATIONS_BY_IDX = {
                 elseif job.flags.working then
                     message = 'moody dwarf is working'
                 else
-                    message = 'moody dwarf can\'t find needed item!'
+                    message = {{text='moody dwarf can\'t find needed item!', pen=COLOR_LIGHTRED}}
                 end
                 return true
             end)
@@ -523,6 +523,23 @@ NOTIFICATIONS_BY_IDX = {
         critical=true,
         adv_fn=curry(get_bar, get_blood, get_max_blood, "Blood", COLOR_RED),
         on_click=nil,
+    },
+    {
+        name='save-reminder',
+        desc='Shows a reminder if it has been more than 15 minutes since your last save.',
+        default=true,
+        dwarf_fn=function ()
+            local minsSinceSave = dfhack.persistent.getUnsavedSeconds()//60
+            if minsSinceSave >= 15 then
+                return "Last save: ".. (dfhack.formatInt(minsSinceSave)) ..' mins ago'
+            end
+        end,
+        on_click=function()
+            local minsSinceSave = dfhack.persistent.getUnsavedSeconds()//60
+            local message = 'It has been ' .. dfhack.formatInt(minsSinceSave) .. ' minutes since your last save. \n\nWould you like to save now?\n\n' ..
+            'You can also close this reminder and save manually.'
+            dlg.showYesNoPrompt('Save now?', message, nil, function() dfhack.run_script('quicksave') end)
+        end,
     },
 }
 
