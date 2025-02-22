@@ -45,6 +45,8 @@ Template for new versions:
 - `gui/confirm`: in the delete manager order confirmation dialog, show a description of which order you have selected to delete
 - `position`: display both adventurer and site pos simultaneously. Display map block pos+offset of selected tile.
 - `gui/sitemap`: shift click to start following the selected unit or artifact
+- `prioritize`: when prioritizing jobs of a specified type, also output how many of those jobs were already prioritized before you ran the command
+- `prioritize`: don't include already-prioritized jobs in the output of ``prioritize -j``
 
 ## Removed
 
