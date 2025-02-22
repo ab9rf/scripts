@@ -53,7 +53,7 @@ local function create_toggle_button(frame, cfg_elem, hotkey, label, cfg_elem_key
     return ToggleLabel{
         frame=frame,
         initial_option=spectate.get_config_elem(cfg_elem, cfg_elem_key),
-        on_change=function(val) dfhack.run_command('spectate', 'set', cfg_elem, tostring(val)) end,
+        on_change=function(val) dfhack.run_command('spectate', 'set', cfg_elem, cfg_elem_key, tostring(val)) end,
         key=hotkey,
         label=label,
     }
@@ -151,7 +151,7 @@ local function create_stress_list(frame, colFollow, colHover)
         table.insert(choices, make_choice({{text=elem.text, pen=elem.pen}, ' ', elem.name}, tlFollow, tlHover))
     end
 
-    table.insert(subviews, widgets.List{
+    table.insert(subviews, 1, widgets.List{
         frame={l=2},
         on_submit=function(_, choice) choice.data.tlFollow:cycle() end,
         on_submit2=function(_, choice) choice.data.tlHover:cycle() end,
