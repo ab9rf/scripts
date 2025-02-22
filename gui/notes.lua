@@ -335,8 +335,7 @@ function NotesScreen:onRenderFrame(dc, rect)
 end
 
 function NotesScreen:onAboutToShow()
-    local notes_overlay = overlay.get_state().config[OVERLAY_NAME]
-    if notes_overlay and not notes_overlay.enabled then
+    if overlay.isOverlayEnabled(OVERLAY_NAME) then
         self.should_disable_overlay = true
         overlay.overlay_command({'enable', 'notes.map_notes'})
     end
