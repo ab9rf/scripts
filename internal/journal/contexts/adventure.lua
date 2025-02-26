@@ -38,7 +38,7 @@ end
 
 function AdventurerJournalContext:save_content(text, cursor)
   if dfhack.isWorldLoaded() then
-    dfhack.persistent.saveSiteData(
+    dfhack.persistent.saveWorldData(
         get_adventurer_context_key(self.save_prefix, self.adventurer_id),
         {text={text}, cursor={cursor}}
     )
@@ -47,16 +47,24 @@ end
 
 function AdventurerJournalContext:load_content()
   if dfhack.isWorldLoaded() then
-    local site_data = dfhack.persistent.getSiteData(
+    local world_data = dfhack.persistent.getWorldData(
         get_adventurer_context_key(self.save_prefix, self.adventurer_id)
     ) or {}
 
-    if not site_data.text then
-        site_data.text={''}
-        site_data.show_tutorial = true
+    if not world_data.text then
+        world_data.text={''}
+        world_data.show_tutorial = true
     end
-    site_data.cursor = site_data.cursor or {#site_data.text[1] + 1}
-    return site_data
+    world_data.cursor = world_data.cursor or {#world_data.text[1] + 1}
+    return world_data
+  end
+end
+
+function AdventurerJournalContext:delete_content()
+  if dfhack.isWorldLoaded() then
+    dfhack.persistent.deleteWorldData(
+        get_adventurer_context_key(self.save_prefix, self.adventurer_id)
+    )
   end
 end
 

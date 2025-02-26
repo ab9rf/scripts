@@ -55,6 +55,14 @@ function FortressJournalContext:load_content()
   end
 end
 
+function FortressJournalContext:delete_content()
+  if dfhack.isWorldLoaded() then
+    dfhack.persistent.deleteSiteData(
+        get_fort_context_key(self.save_prefix)
+    )
+  end
+end
+
 function FortressJournalContext:welcomeCopy()
   return JOURNAL_WELCOME_COPY
 end

@@ -14,6 +14,8 @@ local TOC_RESIZE_MIN = {w=24}
 
 journal_config = journal_config or json.open('dfhack-config/journal.json')
 
+JOURNAL_CONTEXT_MODE = journal_context.JOURNAL_CONTEXT_MODE
+
 JournalWindow = defclass(JournalWindow, widgets.Window)
 JournalWindow.ATTRS {
     frame_title='DF Journal',
@@ -266,15 +268,15 @@ end
 JournalScreen = defclass(JournalScreen, gui.ZScreen)
 JournalScreen.ATTRS {
     focus_path='journal',
-    save_on_change=true,
+    context_mode=DEFAULT_NIL,
     save_layout=true,
     save_prefix=''
 }
 
 function JournalScreen:init()
     self.journal_context = journal_context.journal_context_factory(
-        self.save_prefix,
-        self.save_on_change
+        self.context_mode,
+        self.save_prefix
     )
     local content = self.journal_context:load_content()
 
@@ -316,12 +318,14 @@ function main(options)
     end
 
     local save_layout = options and options.save_layout
-    local save_on_change = options and options.save_on_change
+    local overrided_context_mode = options and options.context_mode
+    local context_mode = overrided_context_mode == nil and
+        journal_context.detect_journal_context_mode() or overrided_context_mode
 
     view = view and view:raise() or JournalScreen{
         save_prefix=options and options.save_prefix or '',
         save_layout=save_layout == nil and true or save_layout,
-        save_on_change=save_on_change == nil and true or save_on_change,
+        context_mode=context_mode,
     }:show()
 end
 
