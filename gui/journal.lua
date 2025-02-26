@@ -12,29 +12,6 @@ local journal_context = reqscript('internal/journal/journal_context')
 local RESIZE_MIN = {w=54, h=20}
 local TOC_RESIZE_MIN = {w=24}
 
-local JOURNAL_PERSIST_KEY = 'journal'
-
-local JOURNAL_WELCOME_COPY =  [=[
-Welcome to gui/journal, the chronicler's tool for Dwarf Fortress!
-
-Here, you can carve out notes, sketch your grand designs, or record the history of your fortress.
-The text you write here is saved together with your fort.
-
-For guidance on navigation and hotkeys, tap the ? button in the upper right corner.
-Happy digging!
-]=]
-
-local TOC_WELCOME_COPY =  [=[
-Start a line with # symbols and a space to create a header. For example:
-
-# My section heading
-
-or
-
-## My section subheading
-
-Those headers will appear here, and you can click on them to jump to them in the text.]=]
-
 journal_config = journal_config or json.open('dfhack-config/journal.json')
 
 JournalWindow = defclass(JournalWindow, widgets.Window)
@@ -47,6 +24,9 @@ JournalWindow.ATTRS {
     init_cursor=1,
     save_layout=true,
     show_tutorial=false,
+
+    toc_welcome_copy=DEFAULT_NIL,
+    journal_welcome_copy=DEFAULT_NIL,
 
     on_text_change=DEFAULT_NIL,
     on_cursor_change=DEFAULT_NIL,
@@ -77,7 +57,7 @@ function JournalWindow:init()
                 widgets.WrappedLabel{
                     view_id='table_of_contents_tutorial',
                     frame={l=0,t=0,r=0,b=3},
-                    text_to_wrap=TOC_WELCOME_COPY,
+                    text_to_wrap=self.toc_welcome_copy or '',
                     visible=false
                 }
             }
@@ -144,7 +124,7 @@ function JournalWindow:init()
             widgets.WrappedLabel{
                 view_id='journal_tutorial',
                 frame={l=0,t=1,r=0,b=0},
-                text_to_wrap=JOURNAL_WELCOME_COPY
+                text_to_wrap=self.journal_welcome_copy or ''
             }
         }
     end
@@ -296,7 +276,7 @@ function JournalScreen:init()
         self.save_prefix,
         self.save_on_change
     )
-    local context = self.journal_context:load()
+    local content = self.journal_context:load_content()
 
     self:addviews{
         JournalWindow{
@@ -305,9 +285,12 @@ function JournalScreen:init()
 
             save_layout=self.save_layout,
 
-            init_text=context.text[1],
-            init_cursor=context.cursor[1],
-            show_tutorial=context.show_tutorial or false,
+            init_text=content.text[1],
+            init_cursor=content.cursor[1],
+            show_tutorial=content.show_tutorial or false,
+
+            toc_welcome_copy=self.journal_context:tocWelcomeCopy(),
+            journal_welcome_copy=self.journal_context:welcomeCopy(),
 
             on_text_change=self:callback('onTextChange'),
             on_cursor_change=self:callback('onTextChange')
@@ -319,7 +302,7 @@ function JournalScreen:onTextChange()
     local text = self.subviews.journal_editor:getText()
     local cursor = self.subviews.journal_editor:getCursor()
 
-    self.journal_context:save(text, cursor)
+    self.journal_context:save_content(text, cursor)
 end
 
 function JournalScreen:onDismiss()
