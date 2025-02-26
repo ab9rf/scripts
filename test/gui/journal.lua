@@ -99,9 +99,6 @@ local function arrange_empty_journal(options)
     local text_area = journal_window.subviews.journal_editor.text_area
 
     text_area.enable_cursor_blink = false
-    -- if not options.save_on_change then
-    --     text_area:setText('')
-    -- end
 
     if not options.allow_layout_restore then
         local toc_panel = journal_window.subviews.table_of_contents_panel
