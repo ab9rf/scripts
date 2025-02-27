@@ -28,6 +28,7 @@ local function install_notes_overlay(options)
     end
 
     local overlay_state = overlay.get_state()
+
     return overlay_state.db['notes.map_notes'].widget
 end
 
@@ -86,16 +87,24 @@ end
 function get_visible_map_center()
     local viewport = guidm.Viewport.get()
 
-    local half_x = math.max(
-        math.floor((viewport.x1 + viewport.x2) / 2),
-        2
-    )
-    local half_y = math.max(
-        math.floor((viewport.y1 + viewport.y2) / 2),
-        2
+    local map_width, map_height = dfhack.maps.getTileSize()
+    local world_rect = gui.mkdims_wh(0, 0, map_width, map_height)
+    -- find center of visible part of the map
+    local map_rect = gui.ViewRect{rect=world_rect}:viewport(viewport)
+
+    local half_x = math.floor((map_rect.clip_x1 + map_rect.clip_x2) / 2)
+    local normalized_half_x = math.min(
+        math.max(half_x, map_rect.clip_x1),
+        map_rect.clip_x2
     )
 
-    return half_x, half_y, viewport.z
+    local half_y = math.floor((map_rect.clip_y1 + map_rect.clip_y2) / 2)
+    local normalized_half_y = math.min(
+        math.max(half_y, map_rect.clip_y1),
+        map_rect.clip_y2
+    )
+
+    return normalized_half_x, normalized_half_y, viewport.z
 end
 
 function test.load_notes_overlay()
