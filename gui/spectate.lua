@@ -188,6 +188,7 @@ function Spectate:init()
             on_change=function(val) dfhack.run_command(val and 'enable' or 'disable', 'spectate') end,
             key='CUSTOM_ALT_E',
             label='Spectate mode ',
+            enabled=dfhack.world.isFortressMode,
         },
         create_numeric_edit_field({t=4}, 'follow-seconds', 'CUSTOM_ALT_F', 'Switch target (sec): '),
         create_toggle_button({t=6}, 'auto-unpause', 'CUSTOM_ALT_U', rpad('Auto unpause', lWidth)),
