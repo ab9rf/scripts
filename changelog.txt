@@ -50,6 +50,7 @@ Template for new versions:
 - `gui/sitemap`: shift click to start following the selected unit or artifact
 - `prioritize`: when prioritizing jobs of a specified type, also output how many of those jobs were already prioritized before you ran the command
 - `prioritize`: don't include already-prioritized jobs in the output of ``prioritize -j``
+- `gui/design`: only display vanilla dimensions tooltip if the DFHack dimensions tooltip is disabled
 
 ## Removed
 
