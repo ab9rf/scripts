@@ -13,6 +13,7 @@ config = {
 }
 
 local map_points_backup = nil
+local was_overlay_enabled = overlay.isEnabled()
 
 local function install_notes_overlay(options)
     options = options or {}
@@ -20,6 +21,9 @@ local function install_notes_overlay(options)
     map_points_backup = utils.clone(map_points)
     map_points:resize(0)
 
+    local was_overlay_enabled = overlay.isEnabled()
+
+    overlay.setEnabled(true)
     overlay.rescan()
     overlay.overlay_command({'enable', 'notes.map_notes'})
 
@@ -48,6 +52,8 @@ local function cleanup(notes_overlay)
     map_points_backup = nil
 
     reload_notes()
+
+    overlay.setEnabled(was_overlay_enabled)
 end
 
 local function add_note(notes_overlay, pos, name, comment)
