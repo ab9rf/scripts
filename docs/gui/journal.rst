@@ -3,7 +3,7 @@ gui/journal
 
 .. dfhack-tool::
     :summary: Fort journal with a multi-line text editor.
-    :tags: fort interface
+    :tags: adventure fort interface
 
 The `gui/journal` interface makes it easy to take notes and document
 important details for your fortresses and adventurers.
