@@ -37,7 +37,7 @@ Template for new versions:
 - `devel/tree-info`: support adventure mode
 - `hfs-pit`: support adventure mode
 - `colonies`: support adventure mode
-- `toggle-kbd-cursor`: support adventure mode
+- `toggle-kbd-cursor`: support adventure mode (Alt-k keybinding now toggles Look mode)
 
 ## New Features
 - `advtools`: new ``advtools.fastcombat`` overlay (enabled by default) allows you to skip combat animations and the announcement "More" button by mashing the movement keys
