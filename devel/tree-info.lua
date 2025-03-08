@@ -173,11 +173,9 @@ function printTree(t)
 end
 
 if not dfhack_flags.module then
-    local p = guidm.getCursorPos()
-    if not p then
-        qerror('No cursor!')
-    end
-    p = dfhack.maps.getPlantAtTile(p)
+    local pos = guidm.getCursorPos()
+    if not pos then qerror('No cursor!') end
+    local p = dfhack.maps.getPlantAtTile(pos)
     if p and p.tree_info then
         printTree(p.tree_info)
     else
