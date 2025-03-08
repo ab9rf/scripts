@@ -1,13 +1,6 @@
 -- Launch unit to cursor location
 -- Based on propel.lua by Roses, molested by Rumrusher and I until this happened, sorry.
---[====[
 
-launch
-======
-Activate with a cursor on screen and you will go there rapidly. Attack
-something first to ride them there.
-
-]====]
 local guidm = require('gui.dwarfmode')
 
 function launch(unitSource,unitRider)
