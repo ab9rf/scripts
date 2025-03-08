@@ -50,6 +50,7 @@ Template for new versions:
 - `idle-crafting`: do not assign crafting jobs to nobles holding meetings (avoid dangling jobs)
 - `rejuvenate`: update unit portrait and sprite when aging up babies and children
 - `rejuvenate`: recalculate labor assignments for unit when aging up babies and children (so they can start accepting jobs)
+- `gui/liquids`: don't add liquids to wall tiles
 
 ## Misc Improvements
 - `hide-tutorials`: handle tutorial popups for adventure mode
