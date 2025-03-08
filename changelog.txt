@@ -48,6 +48,8 @@ Template for new versions:
 - `hfs-pit`: use correct wall types when making pits with walls
 - `gui/liquids`: using the remove tool with magma selected will no longer create unexpected unpathable tiles
 - `idle-crafting`: do not assign crafting jobs to nobles holding meetings (avoid dangling jobs)
+- `rejuvenate`: update unit portrait and sprite when aging up babies and children
+- `rejuvenate`: recalculate labor assignments for unit when aging up babies and children (so they can start accepting jobs)
 
 ## Misc Improvements
 - `hide-tutorials`: handle tutorial popups for adventure mode
