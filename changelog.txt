@@ -27,6 +27,18 @@ Template for new versions:
 # Future
 
 ## New Tools
+
+## New Features
+
+## Fixes
+
+## Misc Improvements
+
+## Removed
+
+# 51.07-r1
+
+## New Tools
 - `devel/export-map`: export map tile data to a JSON file
 - `autocheese`: automatically make cheese using barrels that have accumulated sufficient milk
 - `gui/spectate`: interactive UI for configuring `spectate`
@@ -70,8 +82,6 @@ Template for new versions:
 - `hfs-pit`: support adventure mode
 - `colonies`: support adventure mode
 - `position`: report position of the adventure mode look cursor, if active
-
-## Removed
 
 # 51.04-r1.1
 
