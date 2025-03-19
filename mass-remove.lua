@@ -10,10 +10,7 @@ local BASELINE_OFFSET = 42
 
 local function get_l_offset(parent_rect)
     local w = parent_rect.width
-    if w <= 177 then
-        return BASELINE_OFFSET + w - 114
-    end
-    return BASELINE_OFFSET + (w+1)//2 - 26
+    return BASELINE_OFFSET + (w+1)//2 - 34
 end
 
 function launch_mass_remove()
