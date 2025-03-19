@@ -97,7 +97,6 @@ end
 
 function MassRemoveToolbarOverlay:preUpdateLayout(parent_rect)
     self.frame.w = get_l_offset(parent_rect) - BASELINE_OFFSET + 18
-    print(self.frame.w)
 end
 
 function MassRemoveToolbarOverlay:onInput(keys)
