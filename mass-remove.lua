@@ -52,7 +52,7 @@ function MassRemoveToolbarOverlay:init()
                     text={
                         'Open mass removal\ninterface.\n',
                         NEWLINE,
-                        {text='Hotkey: ', pen=COLOR_GRAY}, {key='CUSTOM_CTRL_M'},
+                        {text='Hotkey: ', pen=COLOR_GRAY}, {key='CUSTOM_M'},
                     },
                 },
             },
@@ -97,7 +97,7 @@ function MassRemoveToolbarOverlay:preUpdateLayout(parent_rect)
 end
 
 function MassRemoveToolbarOverlay:onInput(keys)
-    if keys.CUSTOM_CTRL_M then
+    if keys.CUSTOM_M then
         launch_mass_remove()
         return true
     end
