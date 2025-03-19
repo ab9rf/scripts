@@ -14,6 +14,8 @@ local function get_l_offset(parent_rect)
 end
 
 function launch_mass_remove()
+    local vs = dfhack.gui.getDFViewscreen(true)
+    gui.simulateInput(vs,'LEAVESCREEN')
     dfhack.run_command('gui/mass-remove')
 end
 
