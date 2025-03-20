@@ -44,7 +44,7 @@ function MassRemoveToolbarOverlay:init()
 
     self:addviews{
         widgets.Panel{
-            frame={t=0, r=0, w=26, h=7},
+            frame={t=0, r=0, w=26, h=6},
             frame_style=gui.FRAME_PANEL,
             frame_background=gui.CLEAR_PEN,
             frame_inset={l=1, r=1},
@@ -52,7 +52,7 @@ function MassRemoveToolbarOverlay:init()
             subviews={
                 widgets.Label{
                     text={
-                        'Open mass removal\ninterface.\n',
+                        'Open mass removal\ninterface.', NEWLINE,
                         NEWLINE,
                         {text='Hotkey: ', pen=COLOR_GRAY}, {key='CUSTOM_M'},
                     },
