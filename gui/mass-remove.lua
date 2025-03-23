@@ -15,11 +15,6 @@ local overlay = require('plugins.overlay')
 local function noop()
 end
 
-local function get_l_offset(parent_rect)
-    local w = parent_rect.width
-    return BASELINE_OFFSET + (w+1)//2 - 34
-end
-
 function launch_mass_remove()
     local vs = dfhack.gui.getDFViewscreen(true)
     gui.simulateInput(vs,'LEAVESCREEN')
@@ -428,7 +423,7 @@ function MassRemoveToolbarOverlay:init()
             frame_style=gui.FRAME_PANEL,
             frame_background=gui.CLEAR_PEN,
             frame_inset={l=1, r=1},
-            visible=function() return not not self.subviews.icon:getMousePos() end,
+            visible=function() return self.subviews.icon:getMousePos() end,
             subviews={
                 widgets.Label{
                     text={
@@ -468,7 +463,7 @@ function MassRemoveToolbarOverlay:init()
                         tileset_stride=8,
                     },
                     on_click=launch_mass_remove,
-                    visible=function() return not not self.subviews.icon:getMousePos() end,
+                    visible=function() return self.subviews.icon:getMousePos() end,
                 },
             },
         },
@@ -476,7 +471,7 @@ function MassRemoveToolbarOverlay:init()
 end
 
 function MassRemoveToolbarOverlay:preUpdateLayout(parent_rect)
-    self.frame.w = get_l_offset(parent_rect) - BASELINE_OFFSET + 18
+    self.frame.w = (parent_rect.width+1)//2 - 16
 end
 
 function MassRemoveToolbarOverlay:onInput(keys)
