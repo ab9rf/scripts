@@ -2,7 +2,7 @@
 
 --@ module = true
 
-local toolbar_textures = (dfhack.textures.loadTileset('hack/data/art/mass_remove_toolbar.png', 8,12))
+local toolbar_textures = dfhack.textures.loadTileset('hack/data/art/mass_remove_toolbar.png', 8, 12)
 
 local BASELINE_OFFSET = 42
 
@@ -408,12 +408,10 @@ end
 
 MassRemoveToolbarOverlay = defclass(MassRemoveToolbarOverlay, overlay.OverlayWidget)
 MassRemoveToolbarOverlay.ATTRS{
-    desc='Adds widgets to the erase interface to open the mass removal tool',
+    desc='Adds a button to the erase toolbar to open the mass removal tool',
     default_pos={x=BASELINE_OFFSET, y=-4},
     default_enabled=true,
-    viewscreens={
-        'dwarfmode/Designate/ERASE'
-    },
+    viewscreens='dwarfmode/Designate/ERASE',
     frame={w=26, h=11},
 }
 
@@ -434,7 +432,8 @@ function MassRemoveToolbarOverlay:init()
             subviews={
                 widgets.Label{
                     text={
-                        'Open mass removal\ninterface.', NEWLINE,
+                        'Open mass removal', NEWLINE,
+                        'interface.', NEWLINE,
                         NEWLINE,
                         {text='Hotkey: ', pen=COLOR_GRAY}, {key='CUSTOM_M'},
                     },
