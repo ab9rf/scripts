@@ -4,8 +4,6 @@
 
 local toolbar_textures = dfhack.textures.loadTileset('hack/data/art/mass_remove_toolbar.png', 8, 12)
 
-local BASELINE_OFFSET = 42
-
 local gui = require('gui')
 local guidm = require('gui.dwarfmode')
 local utils = require('utils')
@@ -404,7 +402,7 @@ end
 MassRemoveToolbarOverlay = defclass(MassRemoveToolbarOverlay, overlay.OverlayWidget)
 MassRemoveToolbarOverlay.ATTRS{
     desc='Adds a button to the erase toolbar to open the mass removal tool',
-    default_pos={x=BASELINE_OFFSET, y=-4},
+    default_pos={x=42, y=-4},
     default_enabled=true,
     viewscreens='dwarfmode/Designate/ERASE',
     frame={w=26, h=11},
