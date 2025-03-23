@@ -533,7 +533,7 @@ local function main_loop()
         for idx, threshold in ipairs(thresholds) do
             if ignore_happy and is_happy and threshold < max_threshold then
                 -- ignore happy and ecstatic units for any threshold but the highest
-                print(dfhack.df2console(("idle-crafting: skipping happy unit %s"):format(dfhack.units.getReadableName(unit))))
+                -- print(dfhack.df2console(("idle-crafting: skipping happy unit %s"):format(dfhack.units.getReadableName(unit))))
                 goto next_unit
             end
 
