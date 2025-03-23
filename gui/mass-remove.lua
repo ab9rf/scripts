@@ -401,7 +401,7 @@ end
 
 MassRemoveToolbarOverlay = defclass(MassRemoveToolbarOverlay, overlay.OverlayWidget)
 MassRemoveToolbarOverlay.ATTRS{
-    desc='Adds a button to the erase toolbar to open the mass removal tool',
+    desc='Adds a button to the erase toolbar to open the mass removal tool.',
     default_pos={x=42, y=-4},
     default_enabled=true,
     viewscreens='dwarfmode/Designate/ERASE',
