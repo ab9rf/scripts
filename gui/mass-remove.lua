@@ -16,7 +16,7 @@ end
 function launch_mass_remove()
     local vs = dfhack.gui.getDFViewscreen(true)
     gui.simulateInput(vs,'LEAVESCREEN')
-    MassRemoveScreen{}:show()
+    dfhack.run_script('gui/mass-remove')
 end
 
 local function get_first_job(bld)
