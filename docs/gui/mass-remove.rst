@@ -19,8 +19,6 @@ Usage
 ::
 
     gui/mass-remove
-
-
 Overlay
 -------
 
