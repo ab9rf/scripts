@@ -469,7 +469,12 @@ function MassRemoveToolbarOverlay:init()
 end
 
 function MassRemoveToolbarOverlay:preUpdateLayout(parent_rect)
-    self.frame.w = (parent_rect.width+1)//2 - 16
+    local w = parent_rect.width
+    if w <= 130 then
+        self.frame.w = 50
+    else
+        self.frame.w = (parent_rect.width+1)//2 - 15
+    end
 end
 
 function MassRemoveToolbarOverlay:onInput(keys)
