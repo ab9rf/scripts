@@ -405,7 +405,7 @@ MassRemoveToolbarOverlay.ATTRS{
     default_pos={x=42, y=-4},
     default_enabled=true,
     viewscreens='dwarfmode/Designate/ERASE',
-    frame={w=26, h=11},
+    frame={w=26, h=10},
 }
 
 function MassRemoveToolbarOverlay:init()
