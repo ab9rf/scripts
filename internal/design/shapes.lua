@@ -732,7 +732,7 @@ function Star:init()
             type = "plusminus",
             value = 2,
             min = 1,
-            max = 99,
+            max = 100,
             keys = { "CUSTOM_N", "CUSTOM_SHIFT_N" },
         },
     }
@@ -771,7 +771,6 @@ function Star:update(points, extra_points)
     self.arr = {}
     if #points < self.min_points then return end
     self.threshold = self.options.total_points.value - 2 * self.options.next_point_offset.value
-    if self.threshold < 0 then return end
     local top_left, bot_right = self:get_point_dims()
     self.height = bot_right.y - top_left.y
     self.width = bot_right.x - top_left.x
