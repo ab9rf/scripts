@@ -762,7 +762,7 @@ function vnormalize(point)
 end
 
 function add_offset(coord, offset)
-    return math.tointeger(coord + (offset > 0 and math.floor(offset+0.5) or math.ceil(offset-0.5)))
+    return coord + (offset > 0 and math.floor(offset+0.5) or math.ceil(offset-0.5))
 end
 
 function Star:update(points, extra_points)
@@ -802,15 +802,15 @@ function Star:update(points, extra_points)
         self:plot_bresenham(add_offset(top_left.x, p2.x), add_offset(top_left.y, p2.y), add_offset(top_left.x, p1.x), add_offset(top_left.y, p1.y), thickness)
     end
 
-    if not self.options.hollow.value then
+    if not self.options.hollow.value or self.invert then
         for x = top_left.x, bot_right.x do
             if not self.arr[x] then self.arr[x] = {} end
             for y = top_left.y, bot_right.y do
-                local value = self:has_point(x - top_left.x, y - top_left.y)
+                local value = self.arr[x][y] or (not self.options.hollow.value and self:has_point(x - top_left.x, y - top_left.y))
                 if self.invert then
-                    self.arr[x][y] = not self.arr[x][y] and not value
+                    self.arr[x][y] = not value
                 else
-                    self.arr[x][y] = self.arr[x][y] or value
+                    self.arr[x][y] = value
                 end
 
                 self.num_tiles = self.num_tiles + (self.arr[x][y] and 1 or 0)
