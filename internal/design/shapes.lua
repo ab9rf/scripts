@@ -692,7 +692,7 @@ Star = defclass(Star, LineDrawer)
 Star.ATTRS {
     name = "Star",
     texture_offset = 25,
-    button_chars = util.make_ascii_button('*', '*'),
+    button_chars = util.make_ascii_button('*', 15),
     extra_points = { { label = "Main Axis" } }
 }
 
