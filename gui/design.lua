@@ -344,14 +344,14 @@ function Design:init()
             chars=shape.button_chars,
             tileset=shape_tileset,
             tileset_offset=shape.texture_offset,
-            tileset_stride=24,
+            tileset_stride=28,
         })
         table.insert(shape_button_specs_selected, {
             chars=shape.button_chars,
             pens=COLOR_YELLOW,
             tileset=shape_tileset,
-            tileset_offset=shape.texture_offset+(24*3),
-            tileset_stride=24,
+            tileset_offset=shape.texture_offset+(28*3),
+            tileset_stride=28,
         })
     end
 
