@@ -452,9 +452,29 @@ function ModlistWindow:init()
             initial_option=false,
             on_change=function() self:refresh_list() end,
         },
+        widgets.Divider{
+            frame={t=2, h=1},
+            frame_style=gui.FRAME_THIN,
+            frame_style_l=false,
+            frame_style_r=false,
+        },
         widgets.HotkeyLabel{
-            frame={t=0, r=0},
-            label='Copy list to clipboard',
+            frame={t=4, r=0},
+            label='Export to clipboard (single line)',
+            text_pen=COLOR_YELLOW,
+            auto_width=true,
+            on_activate=function()
+                local text = {}
+                for _,choice in ipairs(self.subviews.list:getChoices()) do
+                    table.insert(text, ('%s %s'):format(choice.data.name, choice.data.version))
+                end
+                dfhack.internal.setClipboardTextCp437Multiline(table.concat(text, ', '))
+            end,
+            enabled=function() return #self.subviews.list:getChoices() > 0 end,
+        },
+        widgets.HotkeyLabel{
+            frame={t=5, r=0},
+            label='Export to clipboard (with links)',
             text_pen=COLOR_YELLOW,
             auto_width=true,
             on_activate=function()
@@ -466,14 +486,8 @@ function ModlistWindow:init()
             end,
             enabled=function() return #self.subviews.list:getChoices() > 0 end,
         },
-        widgets.Divider{
-            frame={t=2, h=1},
-            frame_style=gui.FRAME_THIN,
-            frame_style_l=false,
-            frame_style_r=false,
-        },
         widgets.Label{
-            frame={l=0, t=3},
+            frame={l=0, t=4},
             text={
                 'Load',
                 NEWLINE,
@@ -481,12 +495,12 @@ function ModlistWindow:init()
             },
         },
         widgets.Label{
-            frame={l=7, t=4},
+            frame={l=7, t=5},
             text='Mod',
         },
         widgets.List{
             view_id='list',
-            frame={t=6, b=2},
+            frame={t=7, b=2},
         },
         widgets.Label{
             frame={l=0, b=0},
