@@ -342,8 +342,10 @@ function Design:init()
     local DESIGN_CHAR_WIDTH = 8
     local DESIGN_CHAR_HEIGHT = 12
     local shape_tileset = dfhack.textures.loadTileset('hack/data/art/design.png', DESIGN_CHAR_WIDTH, DESIGN_CHAR_HEIGHT, true)
+
     local STRIDE = DESIGN_ICONS_WIDTH / DESIGN_CHAR_WIDTH
     local CHARS_PER_ROW = DESIGN_ICONS_HEIGHT / (DESIGN_ICON_ROW_COUNT * DESIGN_CHAR_HEIGHT)
+
     local shape_options, shape_button_specs, shape_button_specs_selected = {}, {}, {}
     for _, shape in ipairs(shapes.all_shapes) do
         table.insert(shape_options, {label=shape.name, value=shape})

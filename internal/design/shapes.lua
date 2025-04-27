@@ -404,35 +404,6 @@ end
 
 LineDrawer = defclass(LineDrawer, Shape)
 
-Line = defclass(Line, LineDrawer)
-Line.ATTRS {
-    name = "Line",
-    extra_points = { { label = "Curve Point" }, { label = "Second Curve Point" } },
-    invertable = false,  -- Doesn't support invert
-    basic_shape = false, -- Driven by points, not rectangle bounds
-    texture_offset = 17,
-    button_chars = util.make_ascii_button(250, '(')
-}
-
-function Line:init()
-    self.options = {
-        thickness = {
-            name = "Line thickness",
-            type = "plusminus",
-            value = 1,
-            min = 1,
-            max = function(shape) if not shape.height or not shape.width then
-                    return nil
-                else
-                    return math.max(shape.height, shape.width)
-
-                end
-            end,
-            keys = { "CUSTOM_T", "CUSTOM_SHIFT_T" },
-        },
-    }
-end
-
 function LineDrawer:plot_bresenham(x0, y0, x1, y1, thickness)
     local dx = math.abs(x1 - x0)
     local dy = math.abs(y1 - y0)
@@ -472,7 +443,35 @@ function LineDrawer:plot_bresenham(x0, y0, x1, y1, thickness)
             p = p - 1
         end
     end
+end
 
+Line = defclass(Line, LineDrawer)
+Line.ATTRS {
+    name = "Line",
+    extra_points = { { label = "Curve Point" }, { label = "Second Curve Point" } },
+    invertable = false,  -- Doesn't support invert
+    basic_shape = false, -- Driven by points, not rectangle bounds
+    texture_offset = 17,
+    button_chars = util.make_ascii_button(250, '(')
+}
+
+function Line:init()
+    self.options = {
+        thickness = {
+            name = "Line thickness",
+            type = "plusminus",
+            value = 1,
+            min = 1,
+            max = function(shape) if not shape.height or not shape.width then
+                    return nil
+                else
+                    return math.max(shape.height, shape.width)
+
+                end
+            end,
+            keys = { "CUSTOM_T", "CUSTOM_SHIFT_T" },
+        },
+    }
 end
 
 local function get_granularity(x0, y0, x1, y1, bezier_point1, bezier_point2)
@@ -821,4 +820,4 @@ end
 -- module users can get shapes through this global, shape option values
 -- persist in these as long as the module is loaded
 -- idk enough lua to know if this is okay to do or not
-all_shapes = { Rectangle {}, Ellipse {}, Rows {}, Diag {}, Line {}, FreeForm {}, Star {} }
+all_shapes = { Rectangle {}, Ellipse {}, Star {}, Rows {}, Diag {}, Line {}, FreeForm {} }
