@@ -133,7 +133,7 @@ local function get_unit_disposition_and_pen_and_affiliation(unit)
     elseif dfhack.units.isVisitor(unit) or dfhack.units.isDiplomat(unit) then
         return prefix..'visitor', COLOR_MAGENTA, get_affiliation(unit)
     elseif dfhack.units.isMerchant(unit) or dfhack.units.isForest(unit) then
-        return prefix..'merchant'..(dfhack.units.isAnimal(unit) and ' animal' or ''), COLOR_BROWN, get_affiliation(unit)
+        return prefix..'merchant'..(dfhack.units.isAnimal(unit) and ' animal' or ''), COLOR_BLUE, get_affiliation(unit)
     end
     return prefix..'friendly', COLOR_LIGHTGREEN
 end
