@@ -144,7 +144,7 @@ local function get_unit_choice_text(unit)
         dfhack.units.getReadableName(unit), NEWLINE,
         {gap=2, text=disposition, pen=disposition_pen},
         affiliation and ': ' or '',
-        {text=affiliation, pen=COLOR_YELLOW},
+        {text=affiliation, pen=COLOR_BROWN},
     }
 end
 
