@@ -18,7 +18,7 @@ end
 Sitemap = defclass(Sitemap, widgets.Window)
 Sitemap.ATTRS {
     frame_title='Sitemap',
-    frame={w=67, r=2, t=18, h=25},
+    frame={w=67, r=2, t=18, h=26},
     resizable=true,
     resize_min={w=44, h=20},
     frame_inset={l=1, t=1, r=0, b=0},
@@ -141,12 +141,10 @@ end
 local function get_unit_choice_text(unit)
     local disposition, disposition_pen, affiliation = get_unit_disposition_and_pen_and_affiliation(unit)
     return {
-        dfhack.units.getReadableName(unit),
-        ' (',
-        {text=disposition, pen=disposition_pen},
+        dfhack.units.getReadableName(unit), NEWLINE,
+        {gap=2, text=disposition, pen=disposition_pen},
         affiliation and ': ' or '',
         {text=affiliation, pen=COLOR_YELLOW},
-        ')',
     }
 end
 
@@ -277,6 +275,7 @@ function Sitemap:init()
                         },
                         widgets.FilteredList{
                             view_id='list',
+                            row_height=2,
                             on_submit=zoom_to_unit,
                             on_submit2=follow_unit,
                             choices=unit_choices,
