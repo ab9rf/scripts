@@ -16,10 +16,16 @@ Template for new versions:
 
 ## New Features
 
-- `gui/design`: add option to draw N-point stars, hollow or filled or inverted, and change the main axis to orient in any direction
+- `gui/design`: add new option to draw N-point stars.
+  - The default has 5 points, use 'B'/'b' to increase/decrease points.
+  - They can be hollow or filled, and inverted.
+  - The next-point offset can be increased/decreased using 'N'/'n' which particularly affects 7 point stars and above to make them spikier or smoother, but can also be used to decrease to 1 to make symmetrical polygons or increase to N which only paints the vertexes.
+  - The orientation can be changed by adding a main axis point using 'v' and moving this to point in the desired direction.
 
 ## Fixes
 
+- `gui/design`: reduced diameter of star as thickness increases to remain within bounding box
+ 
 ## Misc Improvements
 
 ## Removed
