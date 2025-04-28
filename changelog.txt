@@ -38,6 +38,7 @@ Template for new versions:
 - `starvingdead`: ensure undead decay does not happen faster than the declared decay rate when saving and loading the game
 
 ## Misc Improvements
+- `remove-stress`: also applied to long-term stress, immediately removing stressed and haggard statuses
 
 ## Removed
 
