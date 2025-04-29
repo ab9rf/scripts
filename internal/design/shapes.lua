@@ -490,7 +490,7 @@ function Line:cubic_bezier(x0, y0, x1, y1, bezier_point1, bezier_point2, thickne
             0.5)
         local y = math.floor(((1 - t) ^ 3 * y0 + 3 * (1 - t) ^ 2 * t * y2 + 3 * (1 - t) * t ^ 2 * y3 + t ^ 3 * y1) +
             0.5)
-        for i = 0, thickness - 1 do
+        for i = -math.floor(thickness / 2), math.ceil(thickness / 2) - 1 do
             for j = -math.floor(thickness / 2), math.ceil(thickness / 2) - 1 do
                 if not self.arr[x + j] then self.arr[x + j] = {} end
                 if not self.arr[x + j][y + i] then
@@ -507,7 +507,7 @@ function Line:cubic_bezier(x0, y0, x1, y1, bezier_point1, bezier_point2, thickne
         0.5)
     local y_end = math.floor(((1 - 1) ^ 3 * y0 + 3 * (1 - 1) ^ 2 * 1 * y2 + 3 * (1 - 1) * 1 ^ 2 * y3 + 1 ^ 3 * y1) +
         0.5)
-    for i = 0, thickness - 1 do
+    for i = -math.floor(thickness / 2), math.ceil(thickness / 2) - 1 do
         for j = -math.floor(thickness / 2), math.ceil(thickness / 2) - 1 do
             if not self.arr[x_end + j] then self.arr[x_end + j] = {} end
             if not self.arr[x_end + j][y_end + i] then
