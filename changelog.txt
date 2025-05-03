@@ -29,6 +29,7 @@ Template for new versions:
 # Future
 
 ## New Tools
+- `deteriorate`: (reinstated) allow corpses, body parts, food, and/or damaged clothes to rot away
 - `modtools/moddable-gods`: (reinstated) create new deities from scratch
 
 ## New Features
