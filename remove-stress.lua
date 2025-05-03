@@ -1,7 +1,6 @@
 -- Sets stress to negative one million
 --By Putnam; http://www.bay12forums.com/smf/index.php?topic=139553.msg5820486#msg5820486
 --edited by Bumber
---edited by BlakeMW
 --@module = true
 
 local utils = require('utils')
