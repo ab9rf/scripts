@@ -17,6 +17,7 @@ Template for new versions:
 ## New Features
 
 ## Fixes
+- `gui/gm-unit`: remove reference to ``think_counter``, removed in v51.12
 
 ## Misc Improvements
 
