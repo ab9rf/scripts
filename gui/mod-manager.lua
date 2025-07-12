@@ -12,6 +12,9 @@ local widgets = require('gui.widgets')
 local presets_file = json.open("dfhack-config/mod-manager.json")
 local GLOBAL_KEY = 'mod-manager'
 
+-- hardly an elegant solution, but mysteriously,
+-- using from_fields.src_dir[i].startswith('data/vanilla') in move_mod_entry()
+-- leads to lua complaining that it 'cannot read field string.startswith: not found'
 local vanilla_modules = {
     ['vanilla_text'] = true,
     ['vanilla_languages'] = true,
@@ -97,7 +100,7 @@ local function move_mod_entry(viewscreen, to, from, mod_id, mod_version)
     for i, v in ipairs(from_fields.id) do
         local version = from_fields.numeric_version[i]
         local vanilla = vanilla_modules[mod_id]
-        -- assuming that vanilla mods will not have multiple possible indices
+        -- assumes that vanilla mods will not have multiple possible indices.
         if v.value == mod_id and (vanilla or version == mod_version) then
             mod_index = i
             break
