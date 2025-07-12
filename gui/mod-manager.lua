@@ -12,11 +12,45 @@ local widgets = require('gui.widgets')
 local presets_file = json.open("dfhack-config/mod-manager.json")
 local GLOBAL_KEY = 'mod-manager'
 
+local vanilla_modules = {
+    ['vanilla_text'] = true,
+    ['vanilla_languages'] = true,
+    ['vanilla_descriptors'] = true,
+    ['vanilla_materials'] = true,
+    ['vanilla_environment'] = true,
+    ['vanilla_plants'] = true,
+    ['vanilla_items'] = true,
+    ['vanilla_buildings'] = true,
+    ['vanilla_bodies'] = true,
+    ['vanilla_creatures'] = true,
+    ['vanilla_entities'] = true,
+    ['vanilla_reactions'] = true,
+    ['vanilla_interactions'] = true,
+    ['vanilla_descriptors_graphics'] = true,
+    ['vanilla_plants_graphics'] = true,
+    ['vanilla_items_graphics'] = true,
+    ['vanilla_buildings_graphics'] = true,
+    ['vanilla_creatures_graphics'] = true,
+    ['vanilla_interactions_graphics'] = true,
+    ['vanilla_world_map'] = true,
+    ['vanilla_interface'] = true,
+    ['vanilla_music'] = true,
+}
+
+function get_moddable_viewscreen(type)
+    local vs = nil
+    if type == 'region' then
+        vs = dfhack.gui.getViewscreenByType(df.viewscreen_new_regionst, 0)
+    elseif type == 'arena' then
+        vs = dfhack.gui.getViewscreenByType(df.viewscreen_new_arenast, 0)
+    end
+    return vs
+end
+
 -- get_newregion_viewscreen and get_modlist_fields are declared as global functions
 -- so external tools can call them to get the DF mod list
 function get_newregion_viewscreen()
-    local vs = dfhack.gui.getViewscreenByType(df.viewscreen_new_regionst, 0)
-    return vs
+    return get_moddable_viewscreen('region')
 end
 
 function get_modlist_fields(kind, viewscreen)
@@ -62,7 +96,9 @@ local function move_mod_entry(viewscreen, to, from, mod_id, mod_version)
     local mod_index = nil
     for i, v in ipairs(from_fields.id) do
         local version = from_fields.numeric_version[i]
-        if v.value == mod_id and version == mod_version then
+        local vanilla = vanilla_modules[mod_id]
+        -- assuming that vanilla mods will not have multiple possible indices
+        if v.value == mod_id and (vanilla or version == mod_version) then
             mod_index = i
             break
         end
