@@ -15,7 +15,6 @@ local GLOBAL_KEY = 'mod-manager'
 -- Shamelessly taken from hack/library/lua/script-manager.lua
 local function vanilla(dir)
     dir = dir.value
-    dir = dir -- better safe than sorry i guess
     return dir:startswith('data/vanilla')
 end
 
