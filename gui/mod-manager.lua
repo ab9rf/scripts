@@ -144,7 +144,7 @@ local function swap_modlist(viewscreen, modlist)
     local failures = {}
     local changed = {}
     for _, v in ipairs(modlist) do
-        res = enable_mod(viewscreen, v.id, v.version)
+        local res = enable_mod(viewscreen, v.id, v.version)
         if not res.success then
             table.insert(failures, v.id)
         end
