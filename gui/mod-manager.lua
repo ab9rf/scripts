@@ -19,7 +19,7 @@ function vanilla(dir)
     return dir:startswith('data/vanilla')
 end
 
--- get_moddable_viewscreen(), get_any_moddable_viewscreen() and get_modlist_fields are declared 
+-- get_moddable_viewscreen(), get_any_moddable_viewscreen() and get_modlist_fields are declared
 -- as global functions so external tools can call them to get the DF mod list
 function get_moddable_viewscreen(type)
     local vs = nil
@@ -31,10 +31,12 @@ function get_moddable_viewscreen(type)
     return vs
 end
 
--- get_newregion_viewscreen and get_modlist_fields are declared as global functions
--- so external tools can call them to get the DF mod list
-function get_newregion_viewscreen()
-    return get_moddable_viewscreen('region')
+function get_any_moddable_viewscreen()
+    local vs = dfhack.gui.getViewscreenByType(df.viewscreen_new_regionst, 0)
+    if not vs then
+        vs = dfhack.gui.getViewscreenByType(df.viewscreen_new_arenast, 0)
+    end
+    return vs
 end
 
 function get_modlist_fields(kind, viewscreen)
@@ -157,7 +159,7 @@ ModmanageMenu.ATTRS {
 }
 
 local function save_new_preset(preset_name)
-    local viewscreen = get_newregion_viewscreen()
+    local viewscreen = get_any_moddable_viewscreen()
     local modlist = get_active_modlist(viewscreen)
     table.insert(presets_file.data, { name = preset_name, modlist = modlist })
     presets_file:write()
@@ -177,7 +179,7 @@ local function overwrite_preset(idx)
         return
     end
 
-    local viewscreen = get_newregion_viewscreen()
+    local viewscreen = get_any_moddable_viewscreen()
     local modlist = get_active_modlist(viewscreen)
     presets_file.data[idx].modlist = modlist
     presets_file:write()
@@ -188,7 +190,7 @@ local function load_preset(idx, unset_default_on_failure)
         return
     end
 
-    local viewscreen = get_newregion_viewscreen()
+    local viewscreen = get_any_moddable_viewscreen()
     local modlist = presets_file.data[idx].modlist
     local failures = swap_modlist(viewscreen, modlist)
 
@@ -225,7 +227,7 @@ local function load_preset(idx, unset_default_on_failure)
             table.insert(text, NEWLINE)
         end
         dialogs.showMessage("Warning", text)
-end
+    end
 end
 
 local function find_preset_by_name(name)
@@ -593,7 +595,7 @@ ModmanageOverlay.ATTRS {
     desc = "Adds a link to the mod selection screen for accessing the mod manager.",
     default_pos = { x=5, y=-6 },
     version = 2,
-    viewscreens = { "new_region/Mods" },
+    viewscreens = { "new_region/Mods", "new_arena/Mods" },
     default_enabled=true,
 }
 
@@ -656,7 +658,7 @@ notification_timer_fn()
 local default_applied = false
 dfhack.onStateChange[GLOBAL_KEY] = function(sc)
     if sc == SC_VIEWSCREEN_CHANGED then
-        local vs = get_newregion_viewscreen()
+        local vs = get_any_moddable_viewscreen()
         if vs and not default_applied then
             default_applied = true
             for i, v in ipairs(presets_file.data) do
