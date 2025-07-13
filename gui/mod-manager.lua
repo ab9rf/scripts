@@ -13,7 +13,7 @@ local presets_file = json.open("dfhack-config/mod-manager.json")
 local GLOBAL_KEY = 'mod-manager'
 
 -- Shamelessly taken from hack/library/lua/script-manager.lua
-function vanilla(dir)
+local function vanilla(dir)
     dir = dir.value
     dir = dir -- better safe than sorry i guess
     return dir:startswith('data/vanilla')
@@ -75,23 +75,29 @@ function get_modlist_fields(kind, viewscreen)
     end
 end
 
+--- @return { success: boolean, version: string }
 local function move_mod_entry(viewscreen, to, from, mod_id, mod_version)
     local to_fields = get_modlist_fields(to, viewscreen)
     local from_fields = get_modlist_fields(from, viewscreen)
 
     local mod_index = nil
+    local loaded_version = nil
     for i, v in ipairs(from_fields.id) do
         local version = from_fields.numeric_version[i]
         local src_dir = from_fields.src_dir[i]
+        local displayed_version = from_fields.displayed_version[i].value
         -- assumes that vanilla mods will not have multiple possible indices.
         if v.value == mod_id and (vanilla(src_dir) or version == mod_version) then
+            if version ~= mod_version then
+                loaded_version = displayed_version
+            end
             mod_index = i
             break
         end
     end
 
     if mod_index == nil then
-        return false
+        return { success= false, version= nil }
     end
 
     for k, v in pairs(to_fields) do
@@ -106,13 +112,15 @@ local function move_mod_entry(viewscreen, to, from, mod_id, mod_version)
         v:erase(mod_index)
     end
 
-    return true
+    return { success= true, version= loaded_version }
 end
 
+--- @return { success: boolean, version: string }
 local function enable_mod(viewscreen, mod_id, mod_version)
     return move_mod_entry(viewscreen, "object_load_order", "available", mod_id, mod_version)
 end
 
+--- @return { success: boolean, version: string }
 local function disable_mod(viewscreen, mod_id, mod_version)
     return move_mod_entry(viewscreen, "available", "object_load_order", mod_id, mod_version)
 end
@@ -127,6 +135,7 @@ local function get_active_modlist(viewscreen)
     return t
 end
 
+--- @return { failures: [string], changed: [{ id: string, new: string }] }
 local function swap_modlist(viewscreen, modlist)
     local current = get_active_modlist(viewscreen)
     for _, v in ipairs(current) do
@@ -134,12 +143,17 @@ local function swap_modlist(viewscreen, modlist)
     end
 
     local failures = {}
+    local changed = {}
     for _, v in ipairs(modlist) do
-        if not enable_mod(viewscreen, v.id, v.version) then
+        res = enable_mod(viewscreen, v.id, v.version)
+        if not res.success then
             table.insert(failures, v.id)
         end
+        if res.version then
+            table.insert(changed, { id= v.id, new= res.version })
+        end
     end
-    return failures
+    return { failures= failures, changed= changed }
 end
 
 --------------------
@@ -192,33 +206,53 @@ local function load_preset(idx, unset_default_on_failure)
 
     local viewscreen = get_any_moddable_viewscreen()
     local modlist = presets_file.data[idx].modlist
-    local failures = swap_modlist(viewscreen, modlist)
+    local results = swap_modlist(viewscreen, modlist)
+    local failures = results.failures
+    local changes = results.changed
+    local text = {}
 
-    if #failures > 0 then
-        local text = {}
-        if unset_default_on_failure then
-            presets_file.data[idx].default = false
-            presets_file:write()
+    local failed = #failures > 0
+    local changed = #changes > 0
+    local should_warn = failed or changed
 
-            table.insert(text, {
-                text='Failed to load some mods from your default preset.',
-                pen=COLOR_LIGHTRED,
-            })
+    if should_warn then
+        if failed then
+            if unset_default_on_failure then
+                presets_file.data[idx].default = false
+                presets_file:write()
+
+                table.insert(text, {
+                    text='Failed to load some mods from your default preset.',
+                    pen=COLOR_LIGHTRED,
+                })
+                table.insert(text, NEWLINE)
+                table.insert(text, {
+                    text='Preset is being unmarked as the default for safety.',
+                    pen=COLOR_LIGHTRED,
+                })
+            else
+                table.insert(text, {
+                    text='Failed to load some mods from the preset.',
+                    pen=COLOR_LIGHTRED,
+                })
+            end
+        end
+        if failed and changed then
             table.insert(text, NEWLINE)
+        end
+        if changed then
             table.insert(text, {
-                text='Preset is being unmarked as the default for safety.',
-                pen=COLOR_LIGHTRED,
-            })
-        else
-            table.insert(text, {
-                text='Failed to load some mods from the preset.',
+                text='Some vanilla mods have been updated.',
                 pen=COLOR_LIGHTRED,
             })
         end
         table.insert(text, NEWLINE)
-        table.insert(text, NEWLINE)
         table.insert(text, 'Please re-create your preset with mods you currently have installed.')
         table.insert(text, NEWLINE)
+        table.insert(text, NEWLINE)
+    end
+
+    if failed then
         table.insert(text, 'Here are the mods that failed to load:')
         table.insert(text, NEWLINE)
         table.insert(text, NEWLINE)
@@ -226,6 +260,23 @@ local function load_preset(idx, unset_default_on_failure)
             table.insert(text, ('- %s'):format(v))
             table.insert(text, NEWLINE)
         end
+    end
+
+    if failed and changed then
+        table.insert(text, NEWLINE) -- just to separate the sections
+    end
+
+    if changed then
+        table.insert(text, 'Here are the vanilla mods that have been updated:')
+        table.insert(text, NEWLINE)
+        table.insert(text, NEWLINE)
+        for _, v in ipairs(changes) do
+            table.insert(text, ('- %s to %s'):format(v.id, v.new))
+            table.insert(text, NEWLINE)
+        end
+    end
+
+    if should_warn then
         dialogs.showMessage("Warning", text)
     end
 end
