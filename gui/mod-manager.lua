@@ -199,6 +199,44 @@ local function overwrite_preset(idx)
     presets_file:write()
 end
 
+local function prepare_warning(text, failed, changed, unset_default_on_failure)
+    if not failed and not changed then return end
+
+    if failed then
+        if unset_default_on_failure then
+            table.insert(text, {
+                text='Failed to load some mods from your default preset.',
+                pen=COLOR_LIGHTRED,
+            })
+            table.insert(text, NEWLINE)
+            table.insert(text, {
+                text='Preset is being unmarked as the default for safety.',
+                pen=COLOR_LIGHTRED,
+            })
+        else
+            table.insert(text, {
+                text='Failed to load some mods from the preset.',
+                pen=COLOR_LIGHTRED,
+            })
+        end
+    end
+
+    if failed and changed then
+        table.insert(text, NEWLINE)
+    end
+
+    if changed then
+        table.insert(text, {
+            text='Some vanilla mods have been updated.',
+            pen=COLOR_LIGHTRED,
+        })
+    end
+    table.insert(text, NEWLINE)
+    table.insert(text, 'Please re-create your preset with mods you currently have installed.')
+    table.insert(text, NEWLINE)
+    table.insert(text, NEWLINE)
+end
+
 local function load_preset(idx, unset_default_on_failure)
     if idx > #presets_file.data then
         return
@@ -213,43 +251,11 @@ local function load_preset(idx, unset_default_on_failure)
 
     local failed = #failures > 0
     local changed = #changes > 0
-    local should_warn = failed or changed
 
-    if should_warn then
-        if failed then
-            if unset_default_on_failure then
-                presets_file.data[idx].default = false
-                presets_file:write()
-
-                table.insert(text, {
-                    text='Failed to load some mods from your default preset.',
-                    pen=COLOR_LIGHTRED,
-                })
-                table.insert(text, NEWLINE)
-                table.insert(text, {
-                    text='Preset is being unmarked as the default for safety.',
-                    pen=COLOR_LIGHTRED,
-                })
-            else
-                table.insert(text, {
-                    text='Failed to load some mods from the preset.',
-                    pen=COLOR_LIGHTRED,
-                })
-            end
-        end
-        if failed and changed then
-            table.insert(text, NEWLINE)
-        end
-        if changed then
-            table.insert(text, {
-                text='Some vanilla mods have been updated.',
-                pen=COLOR_LIGHTRED,
-            })
-        end
-        table.insert(text, NEWLINE)
-        table.insert(text, 'Please re-create your preset with mods you currently have installed.')
-        table.insert(text, NEWLINE)
-        table.insert(text, NEWLINE)
+    prepare_warning(text, failed, changed)
+    if failed and unset_default_on_failure then
+        presets_file.data[idx].default = false
+        presets_file:write()
     end
 
     if failed then
@@ -276,7 +282,7 @@ local function load_preset(idx, unset_default_on_failure)
         end
     end
 
-    if should_warn then
+    if failed or changed then
         dialogs.showMessage("Warning", text)
     end
 end
