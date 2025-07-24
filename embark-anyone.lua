@@ -1,19 +1,17 @@
 local dialogs = require('gui.dialogs')
 local utils = require('utils')
 
-function addCivToEmbarkList(info)
-   local viewscreen = dfhack.gui.getDFViewscreen(true)
-   if viewscreen._type ~= df.viewscreen_choose_start_sitest then
-      qerror("This script can only be used on the embark screen!")
+function embarkAnyone()
+
+   function addCivToEmbarkList(info)
+      local viewscreen = dfhack.gui.getDFViewscreen(true)
+
+      viewscreen.start_civ:insert ('#', info.civ)
+      viewscreen.start_civ_nem_num:insert ('#', info.nemeses)
+      viewscreen.start_civ_entpop_num:insert ('#', info.pops)
+      viewscreen.start_civ_site_num:insert ('#', info.sites)
    end
 
-   viewscreen.start_civ:insert ('#', info.civ)
-   viewscreen.start_civ_nem_num:insert ('#', info.nemeses)
-   viewscreen.start_civ_entpop_num:insert ('#', info.pops)
-   viewscreen.start_civ_site_num:insert ('#', info.sites)
-end
-
-function embarkAnyone()
    local viewscreen = dfhack.gui.getDFViewscreen(true)
    if viewscreen._type ~= df.viewscreen_choose_start_sitest then
       qerror("This script can only be used on the embark screen!")
