@@ -17,7 +17,6 @@ Template for new versions:
 ## New Features
 
 ## Fixes
-- ``embark-anyone``: validate viewscreen before using, avoids a crash
 
 ## Misc Improvements
 
@@ -32,6 +31,19 @@ Template for new versions:
 ## New Features
 
 ## Fixes
+
+## Misc Improvements
+
+## Removed
+
+# 52.02-r1
+
+## New Tools
+
+## New Features
+
+## Fixes
+- ``embark-anyone``: validate viewscreen before using, avoids a crash
 
 ## Misc Improvements
 
