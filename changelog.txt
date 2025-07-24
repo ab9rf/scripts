@@ -17,6 +17,7 @@ Template for new versions:
 ## New Features
 
 ## Fixes
+- ``embark-anyone``: validate viewscreen before using, avoids a crash
 
 ## Misc Improvements
 
