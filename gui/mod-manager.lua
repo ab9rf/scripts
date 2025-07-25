@@ -134,7 +134,8 @@ local function get_active_modlist(viewscreen)
     return t
 end
 
---- @return { failures: [string], changed: [{ id: string, new: string }] }
+--- @return string[]
+--- @return { id: string, new: string }[]
 local function swap_modlist(viewscreen, modlist)
     local current = get_active_modlist(viewscreen)
     for _, v in ipairs(current) do
