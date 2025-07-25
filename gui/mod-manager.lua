@@ -13,7 +13,6 @@ local presets_file = json.open("dfhack-config/mod-manager.json")
 local GLOBAL_KEY = 'mod-manager'
 
 local function vanilla(dir)
-    dir = dir.value
     return dir:startswith('data/vanilla')
 end
 
@@ -245,7 +244,7 @@ local function load_preset(idx, unset_default_on_failure)
 
     local viewscreen = get_any_moddable_viewscreen()
     local modlist = presets_file.data[idx].modlist
-    local failures, changed = swap_modlist(viewscreen, modlist)
+    local failures, changes = swap_modlist(viewscreen, modlist)
     local text = {}
 
     local failed = #failures > 0
