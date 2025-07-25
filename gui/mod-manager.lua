@@ -112,7 +112,7 @@ local function move_mod_entry(viewscreen, to, from, mod_id, mod_version)
         v:erase(mod_index)
     end
 
-    return { success= true, version= loaded_version }
+    return true, loaded_version
 end
 
 --- @return { success: boolean, version: string }
