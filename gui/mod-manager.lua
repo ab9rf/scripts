@@ -243,7 +243,7 @@ local function load_preset(idx, unset_default_on_failure)
 
     local viewscreen = get_any_moddable_viewscreen()
     local modlist = presets_file.data[idx].modlist
-    local results = swap_modlist(viewscreen, modlist)
+    local failures, changed = swap_modlist(viewscreen, modlist)
     local failures = results.failures
     local changes = results.changed
     local text = {}
