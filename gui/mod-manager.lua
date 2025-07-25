@@ -12,7 +12,6 @@ local widgets = require('gui.widgets')
 local presets_file = json.open("dfhack-config/mod-manager.json")
 local GLOBAL_KEY = 'mod-manager'
 
--- Shamelessly taken from hack/library/lua/script-manager.lua
 local function vanilla(dir)
     dir = dir.value
     return dir:startswith('data/vanilla')
@@ -75,7 +74,7 @@ function get_modlist_fields(kind, viewscreen)
 end
 
 ---@return boolean  # true if the mod entry was moved; false if the mod or mod version was not found.
----@return version  # string - DISPLAYED_VERSION from the mod's info.txt 
+---@return version  # string - DISPLAYED_VERSION from the mod's info.txt
 local function move_mod_entry(viewscreen, to, from, mod_id, mod_version)
     local to_fields = get_modlist_fields(to, viewscreen)
     local from_fields = get_modlist_fields(from, viewscreen)
@@ -116,13 +115,13 @@ local function move_mod_entry(viewscreen, to, from, mod_id, mod_version)
 end
 
 ---@return boolean  # true if the mod entry was moved; false if the mod or mod version was not found.
----@return version  # string - DISPLAYED_VERSION from the mod's info.txt 
+---@return version  # string - DISPLAYED_VERSION from the mod's info.txt
 local function enable_mod(viewscreen, mod_id, mod_version)
     return move_mod_entry(viewscreen, "object_load_order", "available", mod_id, mod_version)
 end
 
 ---@return boolean  # returns true if the mod entry was moved; returns false if the mod or mod version was not found.
----@return version  # string - DISPLAYED_VERSION from the mod's info.txt 
+---@return version  # string - DISPLAYED_VERSION from the mod's info.txt
 local function disable_mod(viewscreen, mod_id, mod_version)
     return move_mod_entry(viewscreen, "available", "object_load_order", mod_id, mod_version)
 end
