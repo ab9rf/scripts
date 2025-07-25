@@ -152,7 +152,7 @@ local function swap_modlist(viewscreen, modlist)
             table.insert(changed, { id= v.id, new= res.version })
         end
     end
-    return { failures= failures, changed= changed }
+    return failures, changed
 end
 
 --------------------
