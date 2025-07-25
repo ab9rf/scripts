@@ -115,12 +115,14 @@ local function move_mod_entry(viewscreen, to, from, mod_id, mod_version)
     return true, loaded_version
 end
 
---- @return { success: boolean, version: string }
+---@return boolean  # true if the mod entry was moved; false if the mod or mod version was not found.
+---@return version  # string - DISPLAYED_VERSION from the mod's info.txt 
 local function enable_mod(viewscreen, mod_id, mod_version)
     return move_mod_entry(viewscreen, "object_load_order", "available", mod_id, mod_version)
 end
 
---- @return { success: boolean, version: string }
+---@return boolean  # returns true if the mod entry was moved; returns false if the mod or mod version was not found.
+---@return version  # string - DISPLAYED_VERSION from the mod's info.txt 
 local function disable_mod(viewscreen, mod_id, mod_version)
     return move_mod_entry(viewscreen, "available", "object_load_order", mod_id, mod_version)
 end
@@ -146,11 +148,11 @@ local function swap_modlist(viewscreen, modlist)
     local failures = {}
     local changed = {}
     for _, v in ipairs(modlist) do
-        local res = enable_mod(viewscreen, v.id, v.version)
-        if not res.success then
+        local success, version = enable_mod(viewscreen, v.id, v.version)
+        if not success then
             table.insert(failures, v.id)
-        elseif res.version then
-            table.insert(changed, { id= v.id, new= res.version })
+        elseif version then
+            table.insert(changed, { id= v.id, new= version })
         end
     end
     return failures, changed
@@ -245,7 +247,6 @@ local function load_preset(idx, unset_default_on_failure)
     local viewscreen = get_any_moddable_viewscreen()
     local modlist = presets_file.data[idx].modlist
     local failures, changed = swap_modlist(viewscreen, modlist)
-    local failures = results.failures
     local text = {}
 
     local failed = #failures > 0
