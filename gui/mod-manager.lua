@@ -245,7 +245,6 @@ local function load_preset(idx, unset_default_on_failure)
     local modlist = presets_file.data[idx].modlist
     local failures, changed = swap_modlist(viewscreen, modlist)
     local failures = results.failures
-    local changes = results.changed
     local text = {}
 
     local failed = #failures > 0
