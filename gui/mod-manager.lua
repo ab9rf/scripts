@@ -74,7 +74,8 @@ function get_modlist_fields(kind, viewscreen)
     end
 end
 
---- @return { success: boolean, version: string }
+---@return boolean  # true if the mod entry was moved; false if the mod or mod version was not found.
+---@return version  # string - DISPLAYED_VERSION from the mod's info.txt 
 local function move_mod_entry(viewscreen, to, from, mod_id, mod_version)
     local to_fields = get_modlist_fields(to, viewscreen)
     local from_fields = get_modlist_fields(from, viewscreen)
