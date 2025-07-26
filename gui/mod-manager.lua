@@ -72,8 +72,8 @@ function get_modlist_fields(kind, viewscreen)
     end
 end
 
----@return boolean  # true if the mod entry was moved; false if the mod or mod version was not found.
----@return version  # string - DISPLAYED_VERSION from the mod's info.txt
+---@return boolean      # true if the mod entry was moved; false if the mod or mod version was not found.
+---@return string|nil   # loaded version - DISPLAYED_VERSION from the mod's info.txt
 local function move_mod_entry(viewscreen, to, from, mod_id, mod_version)
     local to_fields = get_modlist_fields(to, viewscreen)
     local from_fields = get_modlist_fields(from, viewscreen)
@@ -95,7 +95,7 @@ local function move_mod_entry(viewscreen, to, from, mod_id, mod_version)
     end
 
     if mod_index == nil then
-        return { success= false, version= nil }
+        return false, nil
     end
 
     for k, v in pairs(to_fields) do
@@ -106,21 +106,21 @@ local function move_mod_entry(viewscreen, to, from, mod_id, mod_version)
         end
     end
 
-    for k, v in pairs(from_fields) do
+    for _, v in pairs(from_fields) do
         v:erase(mod_index)
     end
 
     return true, loaded_version
 end
 
----@return boolean  # true if the mod entry was moved; false if the mod or mod version was not found.
----@return version  # string - DISPLAYED_VERSION from the mod's info.txt
+---@return boolean      # true if the mod entry was moved; false if the mod or mod version was not found.
+---@return string|nil   # loaded version - DISPLAYED_VERSION from the mod's info.txt
 local function enable_mod(viewscreen, mod_id, mod_version)
     return move_mod_entry(viewscreen, "object_load_order", "available", mod_id, mod_version)
 end
 
----@return boolean  # returns true if the mod entry was moved; returns false if the mod or mod version was not found.
----@return version  # string - DISPLAYED_VERSION from the mod's info.txt
+---@return boolean      # true if the mod entry was moved; false if the mod or mod version was not found.
+---@return string|nil   # loaded version - DISPLAYED_VERSION from the mod's info.txt
 local function disable_mod(viewscreen, mod_id, mod_version)
     return move_mod_entry(viewscreen, "available", "object_load_order", mod_id, mod_version)
 end
