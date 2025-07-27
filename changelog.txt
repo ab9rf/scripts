@@ -32,6 +32,7 @@ Template for new versions:
 - `gui/mod-manager`: now supports arena mode
 
 ## Fixes
+- `gui/mod-manager`: hide other versions of loaded mods and unhides them when unloaded
 - `gui/mod-manager`: gracefully handle vanilla mods with different versions from the user's preset
 
 ## Misc Improvements
