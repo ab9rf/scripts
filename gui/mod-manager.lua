@@ -137,11 +137,10 @@ local function set_available_mods(viewscreen, loaded)
     local base_avail = get_modlist_fields('base_available', viewscreen)
     local unused = {}
     for i, id in ipairs(base_avail.id) do
-        if loaded[id.value] then goto continue end
-
-        local version = base_avail.numeric_version[i]
-        table.insert(unused, { id= id.value, version= version })
-        ::continue::
+        if not loaded[id.value] then
+            local version = base_avail.numeric_version[i]
+            table.insert(unused, { id= id.value, version= version })
+        end
     end
 
     for _, v in ipairs(unused) do
@@ -174,15 +173,12 @@ local function swap_modlist(viewscreen, modlist)
         local success, version = enable_mod(viewscreen, v.id, v.version)
         if not success then
             table.insert(failures, v.id)
-            goto continue
+        else
+            if version then
+                table.insert(changed, { id= v.id, new= version })
+            end
+            loaded[v.id] = true
         end
-
-        loaded[v.id] = true
-        if version then
-            table.insert(changed, { id= v.id, new= version })
-        end
-
-        ::continue::
     end
 
     set_available_mods(viewscreen, loaded)
