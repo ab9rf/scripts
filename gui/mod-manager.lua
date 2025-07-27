@@ -72,7 +72,7 @@ function get_modlist_fields(kind, viewscreen)
     end
 end
 
----@return boolean      # true if the mod entry was moved; false if the mod or mod version was not found.
+---@return boolean      # true if the mod entry was copied over; false if the mod or mod version was not found.
 ---@return string|nil   # loaded version - DISPLAYED_VERSION from the mod's info.txt
 local function copy_mod_entry(viewscreen, to, from, mod_id, mod_version)
     local to_fields = get_modlist_fields(to, viewscreen)
@@ -109,13 +109,13 @@ local function copy_mod_entry(viewscreen, to, from, mod_id, mod_version)
     return true, loaded_version
 end
 
----@return boolean      # true if the mod entry was moved; false if the mod or mod version was not found.
+---@return boolean      # true if the mod entry was copied over; false if the mod or mod version was not found.
 ---@return string|nil   # loaded version - DISPLAYED_VERSION from the mod's info.txt
 local function enable_mod(viewscreen, mod_id, mod_version)
     return copy_mod_entry(viewscreen, "object_load_order", "base_available", mod_id, mod_version)
 end
 
----@return boolean      # true if the mod entry was moved; false if the mod or mod version was not found.
+---@return boolean      # true if the mod entry was copied over; false if the mod or mod version was not found.
 ---@return string|nil   # loaded version - DISPLAYED_VERSION from the mod's info.txt
 local function make_available_mod(viewscreen, mod_id, mod_version)
     return copy_mod_entry(viewscreen, "available", "base_available", mod_id, mod_version)
