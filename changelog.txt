@@ -17,6 +17,7 @@ Template for new versions:
 ## New Features
 
 ## Fixes
+- `gui/mod-manager`: hide other versions of loaded mods and unhides them when unloaded
 
 ## Misc Improvements
 
