@@ -74,7 +74,7 @@ end
 
 ---@return boolean      # true if the mod entry was moved; false if the mod or mod version was not found.
 ---@return string|nil   # loaded version - DISPLAYED_VERSION from the mod's info.txt
-local function move_mod_entry(viewscreen, to, from, mod_id, mod_version)
+local function copy_mod_entry(viewscreen, to, from, mod_id, mod_version)
     local to_fields = get_modlist_fields(to, viewscreen)
     local from_fields = get_modlist_fields(from, viewscreen)
 
@@ -106,23 +106,51 @@ local function move_mod_entry(viewscreen, to, from, mod_id, mod_version)
         end
     end
 
-    for _, v in pairs(from_fields) do
-        v:erase(mod_index)
-    end
-
     return true, loaded_version
 end
 
 ---@return boolean      # true if the mod entry was moved; false if the mod or mod version was not found.
 ---@return string|nil   # loaded version - DISPLAYED_VERSION from the mod's info.txt
 local function enable_mod(viewscreen, mod_id, mod_version)
-    return move_mod_entry(viewscreen, "object_load_order", "available", mod_id, mod_version)
+    return copy_mod_entry(viewscreen, "object_load_order", "base_available", mod_id, mod_version)
 end
 
 ---@return boolean      # true if the mod entry was moved; false if the mod or mod version was not found.
 ---@return string|nil   # loaded version - DISPLAYED_VERSION from the mod's info.txt
-local function disable_mod(viewscreen, mod_id, mod_version)
-    return move_mod_entry(viewscreen, "available", "object_load_order", mod_id, mod_version)
+local function make_available_mod(viewscreen, mod_id, mod_version)
+    return copy_mod_entry(viewscreen, "available", "base_available", mod_id, mod_version)
+end
+
+local function clear_mods(viewscreen)
+    local active_modlist = get_modlist_fields('object_load_order', viewscreen)
+    local avail_modlist = get_modlist_fields('available', viewscreen)
+    for _, modlist in ipairs({active_modlist, avail_modlist}) do
+        for _, v in pairs(modlist) do
+            for i = #v - 1, 0, -1 do
+                v:erase(i)
+            end
+        end
+    end
+end
+
+local function set_available_mods(viewscreen, loaded)
+    local base_avail = get_modlist_fields('base_available', viewscreen)
+    local unused = {}
+    for i, id in ipairs(base_avail.id) do
+        local j = utils.linear_index(loaded, id.value)
+        if j then goto continue end
+
+        local version = base_avail.numeric_version[i]
+        table.insert(unused, { id= id.value, version= version })
+        ::continue::
+    end
+
+    for _, v in ipairs(unused) do
+        local success, _ = make_available_mod(viewscreen, v.id, v.version)
+        if not success then
+            dfhack.printerr('failed to show '..v.id..' in available list')
+        end
+    end
 end
 
 local function get_active_modlist(viewscreen)
@@ -138,21 +166,27 @@ end
 --- @return string[]
 --- @return { id: string, new: string }[]
 local function swap_modlist(viewscreen, modlist)
-    local current = get_active_modlist(viewscreen)
-    for _, v in ipairs(current) do
-        disable_mod(viewscreen, v.id, v.version)
-    end
+    clear_mods(viewscreen)
 
     local failures = {}
     local changed = {}
+    local loaded = {}
     for _, v in ipairs(modlist) do
         local success, version = enable_mod(viewscreen, v.id, v.version)
         if not success then
             table.insert(failures, v.id)
-        elseif version then
+            goto continue
+        end
+
+        table.insert(loaded, v.id)
+        if version then
             table.insert(changed, { id= v.id, new= version })
         end
+
+        ::continue::
     end
+
+    set_available_mods(viewscreen, loaded)
     return failures, changed
 end
 
