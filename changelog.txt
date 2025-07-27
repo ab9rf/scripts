@@ -29,11 +29,23 @@ Template for new versions:
 ## New Tools
 
 ## New Features
+
+## Fixes
+
+## Misc Improvements
+
+## Removed
+
+# 52.02-r2
+
+## New Tools
+
+## New Features
 - `gui/mod-manager`: now supports arena mode
 
 ## Fixes
-- `gui/mod-manager`: hide other versions of loaded mods and unhides them when unloaded
 - `gui/mod-manager`: gracefully handle vanilla mods with different versions from the user's preset
+- `gui/mod-manager`: hide other versions of loaded mods and unhides them when unloaded
 
 ## Misc Improvements
 
