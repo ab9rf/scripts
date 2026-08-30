@@ -34,7 +34,7 @@ function clearNemesisFromLinkedSites(nem)
 end
 
 function createNemesis(unit)
-    local nemesis = unit:create_nemesis(1, 1)
+    local nemesis = unit:create_nemesis(1, 1, false)
     nemesis.figure.flags.never_cull = true
     return nemesis
 end
