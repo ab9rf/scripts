@@ -40,6 +40,7 @@ Template for new versions:
 - `caravan`: the ``Trade`` overlay will use the trader's appraisal skill instead of the broker's to round/obfuscate the value of items
 
 ## Removed
+- `confirm`: removed the ``squad-disband`` and ``hotkey-reset`` confirmations; the game asks for both itself now ("Really disband?" and "Really overwrite")
 
 # 53.15-r2
 
