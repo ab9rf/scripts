@@ -19,7 +19,11 @@ function writeOutput(base_folder)
         for _, pop in ipairs(region.population) do
             local raw_id
             local out
-            if pop.type >= 5 then
+            if
+                pop.type == df.world_population_type.Tree or
+                pop.type == df.world_population_type.Grass or
+                pop.type == df.world_population_type.Bush
+            then
                 raw_id = df.plant_raw.find(pop.plant).id
                 out = plants
             else
