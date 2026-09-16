@@ -32,6 +32,8 @@ Template for new versions:
 
 ## New Features
 
+- `gui/mod-manager`: warn when loading a preset that doesn't include vanilla mods that were added to the game after the preset was saved
+
 ## Fixes
 - `bodyswap`: fix "invalid argument count" when the target unit has no nemesis record
 - `fix/loyaltycascade`: guard against citizens that are not historical figures and emit a warning.
