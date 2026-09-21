@@ -62,6 +62,7 @@ COMMANDS_BY_IDX = {
         params={'--time', '1', '--timeUnits', 'days', '--command', '[', 'orders', 'sort', ']'}},
     {command='prioritize', group='automation', mode='enable'},
     {command='seedwatch', group='automation', mode='enable'},
+    {command='stockflow', group='automation', mode='enable'},
     {command='suspendmanager', group='automation', mode='enable'},
     {command='tailor', group='automation', mode='enable'},
     {command='tailor confiscate false', group='automation', mode='run',
