@@ -61,4 +61,3 @@ Usage:
 
 ``stop``
     Stop a running ``watch`` early.
-
