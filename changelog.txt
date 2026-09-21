@@ -32,6 +32,7 @@ Template for new versions:
 - `gui/export-world-map`: New GUI tool to configure world map exports from the embark selection screen.
 
 ## New Features
+- `gui/unit-info-viewer`: the unit character sheet now shows the viewed unit's current and long-term mood, color-coded by stress level
 
 ## Fixes
 - `bodyswap`: fix "invalid argument count" when the target unit has no nemesis record
