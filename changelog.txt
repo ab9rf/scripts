@@ -35,6 +35,8 @@ Template for new versions:
 ## New Features
 - `gui/unit-info-viewer`: the unit character sheet now shows the viewed unit's current and long-term mood, color-coded by stress level
 
+- `gui/mod-manager`: warn when loading a preset that doesn't include vanilla mods that were added to the game after the preset was saved
+
 ## Fixes
 - `bodyswap`: fix "invalid argument count" when the target unit has no nemesis record
 - `caravan`: fix doubled "total value of items marked for trade" after toggling filter options, and keep item marks when switching between filter views in the ``Bring goods to depot`` overlay
