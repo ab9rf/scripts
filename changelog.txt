@@ -27,11 +27,10 @@ Template for new versions:
 # Future
 
 ## New Tools
-- `fix/stuck-written-materials`: free written materials that are stuck in a non-existent job
-
-- `devel/infinite-sky-probe`: tool for testing whether infinite sky is working correctly
-- `gui/export-world-map`: New GUI tool to configure world map exports from the embark selection screen.
 - `devel/datamine`: watch live values for changes and diff structure snapshots to aid script development and reverse engineering
+- `devel/infinite-sky-probe`: tool for testing whether infinite sky is working correctly
+- `fix/stuck-written-materials`: free written materials that are stuck in a non-existent job
+- `gui/export-world-map`: New GUI tool to configure world map exports from the embark selection screen.
 
 ## New Features
 - `gui/create-item`: quality selection prompt now has 0-5 hotkeys matching the quality levels
