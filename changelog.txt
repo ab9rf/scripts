@@ -27,6 +27,7 @@ Template for new versions:
 # Future
 
 ## New Tools
+- `fix/stuck-written-materials`: free written materials that are stuck in a non-existent job
 
 - `devel/infinite-sky-probe`: tool for testing whether infinite sky is working correctly
 - `gui/export-world-map`: New GUI tool to configure world map exports from the embark selection screen.
