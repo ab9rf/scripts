@@ -25,7 +25,8 @@ COMMANDS_BY_IDX = {
     {command='autofarm threshold 150 grass_tail_pig', group='automation', mode='run',
         desc='Enable if you usually farm pig tails for the clothing industry.'},
     {command='autofish', group='automation', mode='enable'},
-    --{command='autolabor', group='automation', mode='enable'}, -- hide until it works better
+    {command='autolabor', group='automation', mode='enable',
+        desc='Automatically assign labors. Runs in the mode selected on the work details screen or with the mode command (legacy autolabor, modern labormanager, or starvation-only monitor).'},
     {command='automilk', help_command='workorder', group='automation', mode='repeat',
         desc='Automatically milk creatures that are ready for milking.',
         params={'--time', '14', '--timeUnits', 'days', '--command', '[', 'workorder', '"{\\"job\\":\\"MilkCreature\\",\\"item_conditions\\":[{\\"condition\\":\\"AtLeast\\",\\"value\\":2,\\"flags\\":[\\"empty\\"],\\"item_type\\":\\"BUCKET\\"}]}"', ']'}},
