@@ -27,6 +27,7 @@ Template for new versions:
 # Future
 
 ## New Tools
+- `export-worldgen`: export the loaded world's generation parameters as a ``world_gen.txt`` stanza that can regenerate it, with optional world painter (``PS_*``) map data
 - `devel/datamine`: watch live values for changes and diff structure snapshots to aid script development and reverse engineering
 - `devel/infinite-sky-probe`: tool for testing whether infinite sky is working correctly
 - `fix/stuck-written-materials`: free written materials that are stuck in a non-existent job
@@ -44,6 +45,7 @@ Template for new versions:
 - `caravan`: fix doubled "total value of items marked for trade" after toggling filter options, and keep item marks when switching between filter views in the ``Bring goods to depot`` overlay
 - `combine`: dyes are combined again, but only when their ``dye_profile`` matches, so mixed dyes no longer revert to a component dye
 - `fix/loyaltycascade`: guard against citizens that are not historical figures and emit a warning.
+- `full-heal`: ``--all-citizens`` still matches dead citizens (for resurrection) now that ``dfhack.units.isCitizen`` excludes the dead
 - `gui/settings-manager`: preserve built-in work details added after saved settings were created
 - `gui/siegemanager`: fix nil index if there are no siege engines on the map
 - `hide-tutorials`: also suppress the adventure mode start tutorial (defaults its checkbox to off and dismisses the popups)
