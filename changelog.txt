@@ -28,12 +28,29 @@ Template for new versions:
 
 ## New Tools
 - `export-worldgen`: export the loaded world's generation parameters as a ``world_gen.txt`` stanza that can regenerate it, with optional world painter (``PS_*``) map data
+
+## New Features
+
+## Fixes
+- `advtools`, `ghostly`, 'hide-tutorials`, `launch`, `markdown`, `resize-armor`, `resurrect-adv`, `toggle-kbd-cursor`, `gui/create-item`, `gui/notify`, `gui/unit-info-viewer`: now detect arena adventure mode
+- `gui/reveal`: don't allow use in arena, since underlying `reveal` plugin doesn't support it
+
+## Misc Improvements
+
+- `gui/export-world-map`: export of bridge and road materials and more precise bridge coordinates
+
+## Removed
+
+# 53.16-r2
+
+## New Tools
 - `devel/datamine`: watch live values for changes and diff structure snapshots to aid script development and reverse engineering
 - `devel/infinite-sky-probe`: tool for testing whether infinite sky is working correctly
 - `fix/stuck-written-materials`: free written materials that are stuck in a non-existent job
 - `gui/export-world-map`: New GUI tool to configure world map exports from the embark selection screen.
 
 ## New Features
+- `exportlegends`: recreate the Classic population and history exports, and add a compact world-map metadata companion with river and road connectivity
 - `gui/create-item`: quality selection prompt now has 0-5 hotkeys matching the quality levels
 - `gui/mod-manager`: warn when loading a preset that doesn't include vanilla mods that were added to the game after the preset was saved
 - `gui/unit-info-viewer`: the unit character sheet now shows the viewed unit's current and long-term mood, color-coded by stress level
